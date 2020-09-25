@@ -60,4 +60,4 @@ def main():
     print('[TIEMPO TOTAL DE EJECUCION: {}s]'.format(time.time() - t0))
 
 if __name__ == '__main__':
-    main()
+    main() 
