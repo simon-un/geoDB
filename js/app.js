@@ -200,15 +200,15 @@ const setupPosts = data => {
     }
 };
 
-const dataTitle = document.querySelector('#title-table');
+const dataTitle = document.querySelector('#table-title');
 const dataList = document.querySelector('#table-body');
 
-const setupData = (keys, obj) => {
+const setupData = (obj) => {
+    keys = Object.keys(obj)
+
     if (keys.length) {
         let html = '';
         keys.forEach(key => {
-            // const post = doc.data();
-            // console.log(post)
             const th = `
                 <th scope="col" style ="word-break:break-all;">${key}</th>
             `; 
@@ -226,9 +226,9 @@ const setupData = (keys, obj) => {
             html += td;
           });
           dataList.innerHTML = html;
-
     } else {
-        dataList.innerHTML = '<p class="text-center" >Login to see Infor about the Project</p>'
+        dataTitle.innerHTML = ''
+        dataList.innerHTML = ''
     }
 };
 
@@ -323,15 +323,14 @@ auth.onAuthStateChanged(user => {
 
             dbRt.ref('ARS43P1').on('value',(snap)=>{
                 obj = snap.val(); //equivalente a Dictionary en pyhon
-                console.log(obj)
-                var keys = Object.keys(obj); // Obtiene las llaves del objeto
-                setupData(keys, obj) 
-                console.log(keys)
+                // var keys = Object.keys(obj); // Obtiene las llaves del objeto
+                setupData(obj) 
                 console.log(Object.keys(snap.child('ESTRATOS').val()))
               });
     } else {
         userUid = null
         setupPosts([]);
+        setupData([]) 
         loginCheck(user);
         // Cada vez que se cambia algo de la db se ejecuta
         taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
