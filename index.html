@@ -6,6 +6,7 @@
     <title>Mi App</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
 
@@ -42,6 +43,20 @@
               </div>
           </div>
       </div>
+
+      <!-- TABLA -->
+      <div class="table-responsive text-nowrap col-md-10 mx-auto">
+      <table class="table">
+        <thead class="thead-dark">
+            <tr id="title-table">
+            </tr>
+        </thead>
+        <tbody>
+            <tr id='table-body'>
+            </tr>
+        </tbody>
+        </table>
+        </div>
 
       <!-- FORMULARIO  -->
       <div class="container p-4 formul style="display: none;"" > 
@@ -134,6 +149,7 @@
         https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
 
 
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
@@ -155,6 +171,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth()
     const db = firebase.firestore()
+    const dbRt = firebase.database() // Database in real-time
+    
     // firebase.analytics();
     </script>
 

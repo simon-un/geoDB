@@ -200,6 +200,38 @@ const setupPosts = data => {
     }
 };
 
+const dataTitle = document.querySelector('#title-table');
+const dataList = document.querySelector('#table-body');
+
+const setupData = (keys, obj) => {
+    if (keys.length) {
+        let html = '';
+        keys.forEach(key => {
+            // const post = doc.data();
+            // console.log(post)
+            const th = `
+                <th scope="col" style ="word-break:break-all;">${key}</th>
+            `; 
+            html += th;
+        })
+        dataTitle.innerHTML = html;
+
+        html = '';
+        Object.keys(obj).forEach(key => {
+            console.log(key, obj[key]);
+
+            const td = `
+            <td>${obj[key]}</th>
+            `; 
+            html += td;
+          });
+          dataList.innerHTML = html;
+
+    } else {
+        dataList.innerHTML = '<p class="text-center" >Login to see Infor about the Project</p>'
+    }
+};
+
 //Google Login
 const googleButton = document.querySelector('#googleLogin');
 
@@ -288,6 +320,15 @@ auth.onAuthStateChanged(user => {
                     })
                 })
             })
+
+            dbRt.ref('ARS43P1').on('value',(snap)=>{
+                obj = snap.val(); //equivalente a Dictionary en pyhon
+                console.log(obj)
+                var keys = Object.keys(obj); // Obtiene las llaves del objeto
+                setupData(keys, obj) 
+                console.log(keys)
+                console.log(Object.keys(snap.child('ESTRATOS').val()))
+              });
     } else {
         userUid = null
         setupPosts([]);
