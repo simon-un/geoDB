@@ -196,7 +196,11 @@ const setupPosts = data => {
         })
         postList.innerHTML = html;
     } else {
-        postList.innerHTML = '<p class="text-center" >Login to see Infor about the Project</p>'
+        postList.innerHTML = `<p class="text-center" ><h5>Inicie sesión para mostrar información de sus proyectos</h5></p>
+                                <div class="view overlay zoom">
+                                    <img src="logo.png" class="img-fluid " alt="smaple image">
+                                </div>
+        `
     }
 };
 
