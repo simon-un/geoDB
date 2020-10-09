@@ -187,9 +187,9 @@ const setupPosts = data => {
             const post = doc.data();
             console.log(post)
             const li = `
-                <li class='list-group-item list-group-item-action'>
+                <li style="text-align:center" class='list-group-item list-group-item-action'>
                     <h5>${post.title}</h5>
-                    <p>${post.description}</p>
+                    <p style="text-align:justify">${post.description}</p>
                 </li>
             `; 
             html += li;
