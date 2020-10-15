@@ -6,12 +6,13 @@
     <title>Mi App</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
 
     <!-- navegacion -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="#">GEO-DB</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -27,7 +28,7 @@
               <a class="nav-link" href="#" id="logout">Log Out</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SIMON</a>
             </li>
           </ul>
         </div>
@@ -39,9 +40,98 @@
               <div class="col-md-6 offset-md-3">
                   <ul class="list-group posts">
                   </ul>
+                  <ul>
+
+                  </ul>
+                  
+                    <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#check" aria-expanded="false" aria-controls="check">
+                        ¿Qué hemos logrado?
+                    </button>
+                    
+                    <ul>
+
+                    </ul>
+
+                  <div class="collapse form-group" id="check">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
+                        <label class="custom-control-label" for="customCheck1">Servicios de Autenticación</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
+                        <label class="custom-control-label" for="customCheck1">Servicio de Base de Datos</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
+                        <label class="custom-control-label" for="customCheck1">Lectura de datos almacenados en Firebase</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
+                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en Firebase</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
+                        <label class="custom-control-label" for="customCheck1">Crear, remover y editar datos almacenados</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
+                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en Firebase</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">Lectura de datos geotécnicos y despliegue por jerarquía</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">Visualización de datos geotécnicos según coordenadas</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">Escritura de datos geotécnicos</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2"> .... </label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">Interacción entre usuarios (Compartir proyectos)</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">subida de archivos xlsx, JSON, CSV, etc.</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2">Gráfica de perfiles</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
+                        <label class="custom-control-label" for="customCheck2"> .... </label>
+                    </div>
+                </div>
               </div>
           </div>
       </div>
+
+      <!-- TABLA -->
+      <div class="table-responsive text-nowrap col-md-10 mx-auto">
+      <table class="table">
+        <thead class="thead-dark">
+            <tr id="table-title">
+            </tr>
+        </thead>
+        <tbody>
+            <tr id='table-body'>
+            </tr>
+        </tbody>
+        </table>
+        </div>
+
+        <!-- DATOS -->
+        <div class="table-responsive text-nowrap col-md-10 mx-auto" id="inicio">
+    
+        </div>
 
       <!-- FORMULARIO  -->
       <div class="container p-4 formul style="display: none;"" > 
@@ -51,10 +141,10 @@
                     <div class="card-body">
                         <form id="task-form">
                             <div class="form-group">
-                              <input type="text" id="task-title" class="form-control" placeholder="Task Title" required>
+                              <input type="text" id="task-title" class="form-control" placeholder="ID Exploracion" required>
                             </div>
                             <div class="form-group">
-                              <textarea id="task-description" rows="3" class='form-control' placeholder="Task Description" required></textarea>
+                              <textarea id="task-description" rows="3" class='form-control' placeholder="Descripcion" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary" id="btn-task-form">
                                 Save
@@ -73,7 +163,7 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+            <h5 class="modal-title" id="staticBackdropLabel">SIGN UP</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -86,7 +176,7 @@
                     <div class="form-group">
                         <input type="password" id='signup-password' class="form-control" placeholder="Password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">SignUp</button>
+                    <button type="submit" class="btn btn-primary">CONTINUE</button>
                     
                 </form>
             </div>
@@ -99,7 +189,7 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+            <h5 class="modal-title" id="staticBackdropLabel">SIGN IN</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -134,6 +224,7 @@
         https://firebase.google.com/docs/web/setup#available-libraries -->
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
 
 
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
@@ -155,6 +246,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth()
     const db = firebase.firestore()
+    const dbRt = firebase.database() // Database in real-time
+    
     // firebase.analytics();
     </script>
 

@@ -30,8 +30,8 @@ signupForm.addEventListener('submit', (e) => {
     const email = document.querySelector('#signup-email').value;
     const password = document.querySelector('#signup-password').value;
 
-    console.log(email)
-    console.log(password)
+    // console.log(email)
+    // console.log(password)
 
     auth
         .createUserWithEmailAndPassword(email, password)
@@ -39,7 +39,7 @@ signupForm.addEventListener('submit', (e) => {
             //clear the form
             signupForm.reset()
             $('#signupModal').modal('hide')
-            console.log('sign up')
+            // console.log('sign up')
         })
 })
 
@@ -52,8 +52,8 @@ signinForm.addEventListener('submit', (e) => {
     const email = document.querySelector('#signin-email').value;
     const password = document.querySelector('#signin-password').value;
 
-    console.log(email)
-    console.log(password)
+    // console.log(email)
+    // console.log(password)
 
     auth
         .signInWithEmailAndPassword(email, password)
@@ -61,7 +61,7 @@ signinForm.addEventListener('submit', (e) => {
             //clear the form
             signinForm.reset()
             $('#signinModal').modal('hide')
-            console.log('sign in correcto')
+            // console.log('sign in correcto')
         })
 })
 
@@ -71,7 +71,7 @@ const logout = document.querySelector('#logout')
 logout.addEventListener('click', e => {
     e.preventDefault()
     auth.signOut().then(() => {
-        console.log('Sign out correcto')
+        // console.log('Sign out correcto')
     })
 })
 
@@ -105,7 +105,7 @@ window.addEventListener('DOMContentLoaded', async (e) => {
         querySnapshot.forEach(doc => {
 
             
-            console.log(doc.data())
+            // console.log(doc.data())
     
             const task = doc.data();
             task.id = doc.id;
@@ -135,7 +135,7 @@ window.addEventListener('DOMContentLoaded', async (e) => {
 
                     editStatus = true
                     id = doc.id
-                    console.log('ID', id)
+                    // console.log('ID', id)
 
                     taskform['task-title'].value = task.title
                     taskform['task-description'].value = task.description
@@ -185,20 +185,185 @@ const setupPosts = data => {
         let html = '';
         data.forEach(doc => {
             const post = doc.data();
-            console.log(post)
+            // console.log(post)
             const li = `
-                <li class='list-group-item list-group-item-action'>
+                <li style="text-align:center" class='list-group-item list-group-item-action'>
                     <h5>${post.title}</h5>
-                    <p>${post.description}</p>
+                    <p style="text-align:justify">${post.description}</p>
                 </li>
             `; 
             html += li;
         })
         postList.innerHTML = html;
     } else {
-        postList.innerHTML = '<p class="text-center" >Login to see Infor about the Project</p>'
+        postList.innerHTML = `<p class="text-center" ><h5>Inicie sesión para mostrar información de sus proyectos</h5></p>
+                                <div class="view overlay zoom">
+                                    <img src="logo.png" class="img-fluid " alt="smaple image">
+                                </div>
+        `
     }
 };
+
+const dataTitle = document.querySelector('#table-title');
+const dataList = document.querySelector('#table-body');
+
+const setupData = (obj) => {
+    keys = Object.keys(obj)
+
+    if (keys.length) {
+        let html = '';
+        keys.forEach(key => {
+            const th = `
+                <th scope="col" style ="word-break:break-all;">${key}</th>
+            `; 
+            html += th;
+        })
+        dataTitle.innerHTML = html;
+
+        html = '';
+        Object.keys(obj).forEach(key => {
+            console.log(key, obj[key]);
+
+            const td = `
+            <td>${obj[key]}</th>
+            `; 
+            html += td;
+          });
+          dataList.innerHTML = html;
+    } else {
+        dataTitle.innerHTML = ''
+        dataList.innerHTML = ''
+    }
+};
+
+var dict = {}
+var dict2 = {}
+const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(obj).forEach(key => {
+    console.log('adentral')
+
+    console.log('OBJJJ', obj)
+    console.log('KEY', key)
+    console.log('OBJ[KEY]', obj[key])
+
+    if (typeof (obj[key]) === 'object') {
+
+        var id = ''
+        color_btn = ['btn-outline-primary', 'btn-outline-primary', 'btn-outline-success', 'btn-outline-primary', 'btn-outline-info',
+                 'btn-outline-warning', 'btn-outline-danger']
+
+        color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
+                 'text-warning', 'text-info']
+
+        color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary','table-info', 'table-warning', 'table-danger']
+            
+        id = key + uniqueID() // Para crear ids unicos
+        dicc = get(dicc, ID, [color_btn[i], color_tr[i]])
+
+        console.log('id', id, 'ID', ID, 'ID_prev', ID_prev)
+        
+
+
+            if (status === true) {
+                t = `
+                <tr>
+                    <td colspan="10">
+                        <div class="${ID} collapse" id="${key+ID}" >
+                            <button class="btn ${dicc[ID][0]} btn-sm" type="button" data-toggle="collapse" data-target=".${id}" aria-expanded="false" aria-controls="${id}">
+                                ${key}
+                            </button>
+                        </div>    
+
+                        <div class = "collapse ${id}" >
+                            <table class="table table-bordered" >
+                                <tbody id="tbody${id}">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                `;
+
+                var doc = document.querySelector('#tbody'+ID)
+                
+            } else {
+                t = `
+                <div id="${key+ID}">
+                    <table class="table borderless w-auto small table-sm" >
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm" type="button" data-toggle="collapse" data-target=".${id}" aria-expanded="false" aria-controls="${id}">
+                                        ${key}
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class = "collapse ${id}" >
+                                        <table class="table table-bordered">
+                                            <tbody id="tbody${id}">
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                
+                `;
+
+                var doc = document.querySelector('#inicio');
+
+            }
+    
+            doc.innerHTML += t;
+
+            i+=1
+
+            var color = dicc[ID][1]
+            console.log(document.documentElement.innerHTML)
+            
+            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color);
+        
+    } else {
+
+        color_tr = ['table-primary', 'table-success', 'table-info', 'table-warning', 'table-danger']
+
+        t_r = `
+                        <tr class="${col}">
+                            <th scope="row">${key}</td>
+                            <td>${obj[key]}</td>
+                        </tr>
+            `
+
+        var docInfo = document.querySelector('#tbody'+ID);
+        docInfo.innerHTML += t_r;
+
+        console.log('id2', id, 'ID', ID, 'ID_prev', ID_prev)
+    
+    } 
+
+    
+})
+}
+
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+  }
+
+function uniqueID() {
+    return Math.floor(Math.random() * Date.now())
+    }   
+
+function get(object, key, default_value) {
+    if (typeof object[key] == "undefined") {
+        object[key] = default_value
+    }
+    // var result = object[key];
+    return object
+}
 
 //Google Login
 const googleButton = document.querySelector('#googleLogin');
@@ -207,11 +372,11 @@ googleButton.addEventListener('click', e => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider)
         .then(result => {
-            console.log('Google sign in')
+            // console.log('Google sign in')
             signinForm.reset()
             $('#signinModal').modal('hide')
         }).catch(error => {
-            console.log('mistake')
+            // console.log('mistake')
         })
 });
 
@@ -224,11 +389,11 @@ facebookButton.addEventListener('click', e => {
     const provider = new firebase.auth.FacebookAuthProvider();
     auth.signInWithPopup(provider)
         .then(result => {
-            console.log(result)
+            // console.log(result)
             signinForm.reset()
             $('#signinModal').modal('hide')
         }).catch(error => {
-            console.log(error)
+            // console.log(error)
         })
 })
 
@@ -249,7 +414,7 @@ auth.onAuthStateChanged(user => {
                 querySnapshot.forEach(doc => {
         
                     
-                    console.log(doc.data())
+                    // console.log(doc.data())
             
                     const task = doc.data();
                     task.id = doc.id;
@@ -279,7 +444,7 @@ auth.onAuthStateChanged(user => {
         
                             editStatus = true
                             id = doc.id
-                            console.log('ID', id)
+                            // console.log('ID', id)
         
                             taskform['task-title'].value = task.title
                             taskform['task-description'].value = task.description
@@ -288,9 +453,28 @@ auth.onAuthStateChanged(user => {
                     })
                 })
             })
+
+            dbRt.ref('ARS43P1').on('value',(snap)=>{
+                obj = snap.val(); //equivalente a Dictionary en pyhon
+                // var keys = Object.keys(obj); // Obtiene las llaves del objeto
+                console.log(typeof obj)
+                obj = {'ARS43P1': obj}
+                var idInicial = ''
+                Object.values(obj).filter( v => { 
+                    if (typeof v === 'object') {
+                        idInicial = getKeyByValue(obj, v)
+                    }
+                })
+                console.log(idInicial)
+                setupData(obj)
+                
+                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '')
+                console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
+              });
     } else {
         userUid = null
         setupPosts([]);
+        setupData([]) 
         loginCheck(user);
         // Cada vez que se cambia algo de la db se ejecuta
         taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
