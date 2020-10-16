@@ -30,9 +30,6 @@ signupForm.addEventListener('submit', (e) => {
     const email = document.querySelector('#signup-email').value;
     const password = document.querySelector('#signup-password').value;
 
-    // console.log(email)
-    // console.log(password)
-
     auth
         .createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
@@ -40,6 +37,27 @@ signupForm.addEventListener('submit', (e) => {
             signupForm.reset()
             $('#signupModal').modal('hide')
             // console.log('sign up')
+        })
+        .catch(error =>{
+            // https://firebase.google.com/docs/reference/js/firebase.auth.Error
+            let code = error.code;
+            let msg = "Ocurrió un error. Por favor contacta a SIMON.\nDiles que tienes el error: " + error.code;
+            switch (code) {
+                case "auth/weak-password":
+                    msg = 'Contraseña muy corta. Debe tener al menos 6 caracteres.'
+                    break;
+                case "auth/email-already-in-use":
+                    msg = 'Este correo ya esta en uso. Puedes restablecer tu contraseña.'
+                    break;
+                case "auth/invalid-email":
+                    msg = 'Por favor ingresa un correo válido.'
+                    break;
+                default:
+                    break;
+            
+                }
+            document.getElementById("warning-msg-signup").innerHTML = msg;
+            document.getElementById("warning-msg-signup").style.display = 'block';
         })
 })
 
@@ -63,6 +81,23 @@ signinForm.addEventListener('submit', (e) => {
             $('#signinModal').modal('hide')
             // console.log('sign in correcto')
         })
+        .catch(error => {
+            // https://firebase.google.com/docs/reference/js/firebase.auth.Error
+            let code = error.code;
+            let msg = "Ocurrió un error. Por favor contacta a SIMON.\nDiles que tienes el error: " + error.code;
+            switch (code) {
+                case "auth/wrong-password":
+                    msg = "Contraseña incorrecta."
+                    break;
+                case "auth/user-not-found":
+                    msg = "El usuario no existe. Puedes ingresar con redes sociales o crear una cuenta nueva."
+                    break;
+                default:
+                    break;
+            }
+            document.getElementById("warning-msg-signin").innerHTML = msg;
+            document.getElementById("warning-msg-signin").style.display = 'block';
+        }) 
 })
 
 //Logout

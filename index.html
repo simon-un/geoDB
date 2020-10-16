@@ -176,7 +176,8 @@
                     <div class="form-group">
                         <input type="password" id='signup-password' class="form-control" placeholder="Password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">CONTINUE</button>
+                    <div id="warning-msg-signup" class="alert alert-warning" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary">CONTINUAR</button>
                     
                 </form>
             </div>
@@ -202,7 +203,8 @@
                     <div class="form-group">
                         <input type="password" id='signin-password' class="form-control" placeholder="Password" required>
                     </div>
-                    <button type="submit" class="btn btn-secondary btn-block">Login</button>
+                    <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
+                    <button type="submit" id='signin-button' class="btn btn-secondary btn-block">Login</button>
                     <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
                     <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With Facebook</button>
                 </form>
