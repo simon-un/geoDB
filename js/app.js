@@ -92,6 +92,8 @@ signinForm.addEventListener('submit', (e) => {
                 case "auth/user-not-found":
                     msg = "El usuario no existe. Puedes ingresar con redes sociales o crear una cuenta nueva."
                     break;
+                case "auth/invalid-email":
+                    msg = "Verifica que el correo ingresado sea el correcto."
                 default:
                     break;
             }
