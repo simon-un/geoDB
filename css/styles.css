@@ -3,4 +3,37 @@
     width: 70%; 
  }
 
- /* #mapid { height: 800px; } */
+ /*
+*  position: relative gives a new position context
+*/
+.wrapper {
+    position: relative;
+  }
+
+#alert-notif{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 10%);
+    width: 80%;
+}
+
+#sidebar-button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    padding: 9px;
+    text-decoration-color: blue;
+    z-index: 2;
+    background-color: #55595c;
+    color: white;
+    font-weight: 900;
+    align-content: center;
+    
+}
+
+#mapid{
+    position: relative;
+}
