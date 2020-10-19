@@ -56,7 +56,6 @@ window.addEventListener('resize', (evt) => {
 
 alertnotif.addEventListener('click',()=>{
     alertnotif.style.display = 'none';
-    // mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height)+'px';
 })
 
 const map = L.map('mapid').setView([4.6384979,-74.082547], 16);
@@ -81,12 +80,26 @@ showMsg = (msg, className = 'alert alert-primary') => {
     alertnotif.style.display = 'block';
 }
 
-optionsBtn.addEventListener('click', () => {
-    window.alert("Here I am!")
-    optionsBtn.style.display = "none";
-})
-
 mapdiv.addEventListener('click', ()=>{
     showMsg("Hizo click en el mapa", 'alert alert-info')
-    optionsBtn.style.display = "block";
+    // optionsBtn.style.display = "block";
 })
+
+// Working on the side panel
+const sidePanel = document.getElementById("mySidebar");
+sidePanel.style.height = mapdiv.style.height;
+
+/* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
+function openNav() {
+    document.getElementById("mySidebar").style.width = "50%";//"250px";
+    document.getElementById("map-div").style.marginRight = "50%";//"250px";
+    optionsBtn.style.display = "none";
+  }
+  function closeNav() {
+    document.getElementById("mySidebar").style.width = "0";
+    document.getElementById("map-div").style.marginRight = "0";
+    optionsBtn.style.display = "block";
+  }
+
+
+  
