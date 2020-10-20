@@ -19,6 +19,20 @@
     width: 80%;
 }
 
+#maininfo {
+    background-color: white;
+    padding: 4px;
+}
+
+#maininfo p {
+  margin: auto;
+  padding: 6px;
+  font-size: 18px;
+  margin: 0;
+  display: inline;
+  margin-left: 10px;
+}
+
 #sidebar-button{
     position: absolute;
     top: 0;
@@ -47,32 +61,40 @@
     z-index: 1; /* Stay on top */
     bottom: 0;
     right: 0;
-    background-color: #343A40; /* Black*/
+    background-color: white; /* Black*/
     overflow-x: hidden; /* Disable horizontal scroll */
-    padding-top: 60px; /* Place content 60px from the top */
+    padding-top: 0; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+    border-left: solid black 1px;
+    border-top: solid black 1px;
   }
   
   /* The sidebar links */
-  .sidebar a {
-    padding: 8px 8px 8px 32px;
+  .sidebar .sideheader {
+    padding: 0;
+    padding-left: 5px;
     text-decoration: none;
     font-size: 20px;
-    color: whitesmoke;
+    color: black;
     display: block;
     transition: 0.3s;
-  }
-  
-  /* When you mouse over the navigation links, change their color */
-  .sidebar a:hover {
-    color: #f1f1f1;
+    width: 90%;
   }
   
   /* Position and style the close button (top right corner) */
   .sidebar .closebtn {
     position: absolute;
+    width: 20px;
+    padding: 0;
+    color: black;
     top: 0;
-    right: 25px;
-    font-size: 36px;
-    margin-left: 50px;  
+    right: 0;
+    font-size: 20px;
+    cursor: pointer;
+    border-left: solid black 1px;
+    text-align: center;
   } 
+
+  .headerdiv {
+    border-bottom: solid black 1px;
+  }

@@ -47,11 +47,19 @@ const mapdiv = document.getElementById('mapid');
 const navbar = document.getElementById('navbarid');
 const alertnotif = document.getElementById('alert-notif');
 const optionsBtn = document.getElementById('sidebar-button');
+const mainfo = document.getElementById('maininfo');
 
-mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height)+'px';
+navbar.style.height = String(navbar.getBoundingClientRect().height / 2) +'px';
+mainfo.style.height = String(navbar.getBoundingClientRect().height) +'px';
+mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2)+'px';
 
 window.addEventListener('resize', (evt) => {
     mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height)+'px';
+    if (window.innerWidth < 1300) {
+        document.getElementById('welcome-message').style.display = 'none';
+    }else{
+        document.getElementById('welcome-message').style.display = 'inline';
+    }
 })
 
 alertnotif.addEventListener('click',()=>{
@@ -91,8 +99,8 @@ sidePanel.style.height = mapdiv.style.height;
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function openNav() {
-    document.getElementById("mySidebar").style.width = "50%";//"250px";
-    document.getElementById("map-div").style.marginRight = "50%";//"250px";
+    document.getElementById("mySidebar").style.width = "60%";
+    document.getElementById("map-div").style.marginRight = "60%";
     optionsBtn.style.display = "none";
   }
   function closeNav() {

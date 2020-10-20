@@ -44,6 +44,13 @@
               </ul>
             </div>
           </nav>
+      <div id="maininfo">
+        <p id="welcome-message" style="float: left;font-weight: bold;">Hola Usuario! Bienvenido a tu gestor de información geotécnica</p>
+        <p style="float: right;">Diseñador</p>
+        <p style="float: right;background-color: #cac5c5;border-top: solid black 1px;font-weight: bold;">Rol: </p>
+        <p style="float: right;padding-right: 20px;">Acueducto Veredal Cajicá </p>
+        <p style="float: right;background-color: #cac5c5;border-top: solid black 1px;font-weight: bold;">Proyecto: </p>
+      </div>
 
       <!-- MAIN CONTENT -->
       <div id="full-wrapper">
@@ -51,13 +58,27 @@
           <button type="button" class="btn btn-secondary" id="sidebar-button" data-toggle="tooltip" data-placement="left" title="Abrir propiedades" onclick="openNav()">
             <img src="./images/list.png" alt="" />
           </button>
+
           <div class="alert alert-primary" role="alert" id="alert-notif" style="z-index: 2; padding: 5px 10px;"> <p id="alertMsgP" style="display:inline; margin: 0;" >Bienvenido al mapa!</p> <p style="display:inline; float: right; margin: 0;" >(Click para esconder)</p></div>
             <div id="mapid" style="z-index: 1;"></div>
         </div>
     
           <div id="mySidebar" class="sidebar">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <a href="#">Aquí iría la info</a>>
+            <div class="headerdiv">
+              <div class="sideheader">Información</div>
+              <div class="closebtn" onclick="closeNav()">&times;</div>
+            </div>
+            <ul class="nav nav-tabs">
+              <li class="nav-item">
+                <a class="nav-link active" href="#">Estructuras</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Sondeos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Laboratorio</a>
+              </li>
+            </ul>
           </div>
       </div>
   
