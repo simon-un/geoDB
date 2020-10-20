@@ -46,12 +46,19 @@
           </nav>
 
       <!-- MAIN CONTENT -->
-      <div class="wrapper">
-      <div id="sidebar-button">
-        <img src="./images/list.png" alt="" />
-      </div>
-      <div class="alert alert-primary" role="alert" id="alert-notif" style="z-index: 2; padding: 5px 10px;"> <p id="alertMsgP" style="display:inline; margin: 0;" >Bienvenido al mapa!</p> <p style="display:inline; float: right; margin: 0;" >(Click para esconder)</p></div>
-        <div id="mapid" style="z-index: 1;"></div>
+      <div id="full-wrapper">
+        <div class="wrapper" id="map-div">
+          <button type="button" class="btn btn-secondary" id="sidebar-button" data-toggle="tooltip" data-placement="left" title="Abrir propiedades" onclick="openNav()">
+            <img src="./images/list.png" alt="" />
+          </button>
+          <div class="alert alert-primary" role="alert" id="alert-notif" style="z-index: 2; padding: 5px 10px;"> <p id="alertMsgP" style="display:inline; margin: 0;" >Bienvenido al mapa!</p> <p style="display:inline; float: right; margin: 0;" >(Click para esconder)</p></div>
+            <div id="mapid" style="z-index: 1;"></div>
+        </div>
+    
+          <div id="mySidebar" class="sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#">Aquí iría la info</a>>
+          </div>
       </div>
   
     <!-- BOOTSTRAP SCRIPTS -->
