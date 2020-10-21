@@ -274,37 +274,32 @@ const setupData = (obj) => {
 };
 
 var dict = {}
-var dict2 = {}
-const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(obj).forEach(key => {
-    console.log('adentral')
+var dictLevel = {}
+const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {Object.keys(obj).forEach(key => {
 
-    console.log('OBJJJ', obj)
-    console.log('KEY', key)
-    console.log('OBJ[KEY]', obj[key])
 
-    if (typeof (obj[key]) === 'object') {
+    if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
 
         var id = ''
-        color_btn = ['btn-outline-primary', 'btn-outline-primary', 'btn-outline-success', 'btn-outline-primary', 'btn-outline-info',
-                 'btn-outline-warning', 'btn-outline-danger']
+        color_btn = color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
+        'btn-warning', 'btn-danger']
 
         color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
                  'text-warning', 'text-info']
 
         color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary','table-info', 'table-warning', 'table-danger']
+        position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
             
         id = key + uniqueID() // Para crear ids unicos
-        dicc = get(dicc, ID, [color_btn[i], color_tr[i]])
+        dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
+        Level = get(dictLevel, key+ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
 
-        console.log('id', id, 'ID', ID, 'ID_prev', ID_prev)
         
-
-
             if (status === true) {
                 t = `
                 <tr>
                     <td colspan="10">
-                        <div class="${ID} collapse" id="${key+ID}" >
+                        <div class="${ID} collapse ${dicc[ID][2]}" id="${key+ID}" >
                             <button class="btn ${dicc[ID][0]} btn-sm" type="button" data-toggle="collapse" data-target=".${id}" aria-expanded="false" aria-controls="${id}">
                                 ${key}
                             </button>
@@ -351,18 +346,19 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(
                 
                 `;
 
-                var doc = document.querySelector('#inicio');
+                var doc = document.querySelector('#'+ID_prev);
 
             }
     
             doc.innerHTML += t;
 
+            i = dictLevel[key + ID]
             i+=1
 
             var color = dicc[ID][1]
             console.log(document.documentElement.innerHTML)
             
-            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color);
+            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color, depth, true);
         
     } else {
 
@@ -377,8 +373,6 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(
 
         var docInfo = document.querySelector('#tbody'+ID);
         docInfo.innerHTML += t_r;
-
-        console.log('id2', id, 'ID', ID, 'ID_prev', ID_prev)
     
     } 
 
@@ -505,7 +499,7 @@ auth.onAuthStateChanged(user => {
                 console.log(idInicial)
                 setupData(obj)
                 
-                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '')
+                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
                 console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
               });
     } else {
