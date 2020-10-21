@@ -491,11 +491,11 @@ auth.onAuthStateChanged(user => {
                 })
             })
 
-            dbRt.ref('ARS43P1').on('value',(snap)=>{
+            dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
                 obj = snap.val(); //equivalente a Dictionary en pyhon
                 // var keys = Object.keys(obj); // Obtiene las llaves del objeto
                 console.log(typeof obj)
-                obj = {'ARS43P1': obj}
+                obj = {'EXPLORACIONES': obj}
                 var idInicial = ''
                 Object.values(obj).filter( v => { 
                     if (typeof v === 'object') {
