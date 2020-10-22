@@ -63,23 +63,31 @@
             <div id="mapid" style="z-index: 1;"></div>
         </div>
     
-          <div id="mySidebar" class="sidebar">
-            <div class="headerdiv">
-              <div class="sideheader">Información</div>
-              <div class="closebtn" onclick="closeNav()">&times;</div>
+          <div id="mySidebar" class="sidebar">      
+            <nav class="sticky-top">
+              <div class="nav nav-tabs bg-light"  role="tablist">
+                <a class="nav-item nav-link active" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab" aria-controls="nav-info" aria-selected="true">Información</a>
+                <a class="nav-item nav-link" id="nav-structures-tab" data-toggle="tab" href="#nav-structures" role="tab" aria-controls="nav-structures" aria-selected="true">Estructuras</a>
+                <a class="nav-item nav-link" id="nav-sondeos-tab" data-toggle="tab" href="#nav-sondeos" role="tab" aria-controls="nav-sondeos" aria-selected="false">Sondeos</a>
+                <a class="nav-item nav-link" id="nav-laboratories-tab" data-toggle="tab" href="#nav-laboratories" role="tab" aria-controls="nav-laboratories" aria-selected="false">Laboratorio</a>
+                <div class="closebtn" onclick="closeNav()">&times;</div>
+              </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="nav-info" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <div class="table-responsive text-nowrap col-md-12 mx-auto" id="inicio" style="display: none">
+      
+                </div>
+              </div>
+              <div class="tab-pane fade" id="nav-structures" role="tabpanel" aria-labelledby="nav-home-tab">
+                <div style="max-width: 70%; height: auto; margin:auto; padding: 40px">
+                  <img src="porcentaje.png" class="img-fluid " alt="smaple image">
+                </div>
+              </div>
+              <div class="tab-pane fade" id="nav-sondeos" role="tabpanel" aria-labelledby="nav-profile-tab"></div>
+              <div class="tab-pane fade" id="nav-laboratories" role="tabpanel" aria-labelledby="nav-contact-tab"></div>
             </div>
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a class="nav-link active" href="#">Estructuras</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Sondeos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Laboratorio</a>
-              </li>
-            </ul>
-          </div>
+        </div>
       </div>
   
     <!-- BOOTSTRAP SCRIPTS -->

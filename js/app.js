@@ -444,8 +444,6 @@ auth.onAuthStateChanged(user => {
                 taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
                 querySnapshot.forEach(doc => {
         
-                    
-                    // console.log(doc.data())
             
                     const task = doc.data();
                     task.id = doc.id;
