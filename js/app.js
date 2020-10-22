@@ -30,9 +30,6 @@ signupForm.addEventListener('submit', (e) => {
     const email = document.querySelector('#signup-email').value;
     const password = document.querySelector('#signup-password').value;
 
-    // console.log(email)
-    // console.log(password)
-
     auth
         .createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
@@ -40,6 +37,27 @@ signupForm.addEventListener('submit', (e) => {
             signupForm.reset()
             $('#signupModal').modal('hide')
             // console.log('sign up')
+        })
+        .catch(error =>{
+            // https://firebase.google.com/docs/reference/js/firebase.auth.Error
+            let code = error.code;
+            let msg = "Ocurrió un error. Por favor contacta a SIMON.\nDiles que tienes el error: " + error.code;
+            switch (code) {
+                case "auth/weak-password":
+                    msg = 'Contraseña muy corta. Debe tener al menos 6 caracteres.'
+                    break;
+                case "auth/email-already-in-use":
+                    msg = 'Este correo ya esta en uso. Puedes restablecer tu contraseña.'
+                    break;
+                case "auth/invalid-email":
+                    msg = 'Por favor ingresa un correo válido.'
+                    break;
+                default:
+                    break;
+            
+                }
+            document.getElementById("warning-msg-signup").innerHTML = msg;
+            document.getElementById("warning-msg-signup").style.display = 'block';
         })
 })
 
@@ -63,6 +81,25 @@ signinForm.addEventListener('submit', (e) => {
             $('#signinModal').modal('hide')
             // console.log('sign in correcto')
         })
+        .catch(error => {
+            // https://firebase.google.com/docs/reference/js/firebase.auth.Error
+            let code = error.code;
+            let msg = "Ocurrió un error. Por favor contacta a SIMON.\nDiles que tienes el error: " + error.code;
+            switch (code) {
+                case "auth/wrong-password":
+                    msg = "Contraseña incorrecta."
+                    break;
+                case "auth/user-not-found":
+                    msg = "El usuario no existe. Puedes ingresar con redes sociales o crear una cuenta nueva."
+                    break;
+                case "auth/invalid-email":
+                    msg = "Verifica que el correo ingresado sea el correcto."
+                default:
+                    break;
+            }
+            document.getElementById("warning-msg-signin").innerHTML = msg;
+            document.getElementById("warning-msg-signin").style.display = 'block';
+        }) 
 })
 
 //Logout
@@ -237,37 +274,32 @@ const setupData = (obj) => {
 };
 
 var dict = {}
-var dict2 = {}
-const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(obj).forEach(key => {
-    console.log('adentral')
+var dictLevel = {}
+const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {Object.keys(obj).forEach(key => {
 
-    console.log('OBJJJ', obj)
-    console.log('KEY', key)
-    console.log('OBJ[KEY]', obj[key])
 
-    if (typeof (obj[key]) === 'object') {
+    if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
 
         var id = ''
-        color_btn = ['btn-outline-primary', 'btn-outline-primary', 'btn-outline-success', 'btn-outline-primary', 'btn-outline-info',
-                 'btn-outline-warning', 'btn-outline-danger']
+        color_btn = color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
+        'btn-warning', 'btn-danger']
 
         color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
                  'text-warning', 'text-info']
 
         color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary','table-info', 'table-warning', 'table-danger']
+        position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
             
         id = key + uniqueID() // Para crear ids unicos
-        dicc = get(dicc, ID, [color_btn[i], color_tr[i]])
+        dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
+        Level = get(dictLevel, key+ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
 
-        console.log('id', id, 'ID', ID, 'ID_prev', ID_prev)
         
-
-
             if (status === true) {
                 t = `
                 <tr>
                     <td colspan="10">
-                        <div class="${ID} collapse" id="${key+ID}" >
+                        <div class="${ID} collapse ${dicc[ID][2]}" id="${key+ID}" >
                             <button class="btn ${dicc[ID][0]} btn-sm" type="button" data-toggle="collapse" data-target=".${id}" aria-expanded="false" aria-controls="${id}">
                                 ${key}
                             </button>
@@ -314,18 +346,19 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(
                 
                 `;
 
-                var doc = document.querySelector('#inicio');
+                var doc = document.querySelector('#'+ID_prev);
 
             }
     
             doc.innerHTML += t;
 
+            i = dictLevel[key + ID]
             i+=1
 
             var color = dicc[ID][1]
             console.log(document.documentElement.innerHTML)
             
-            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color);
+            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color, depth, true);
         
     } else {
 
@@ -340,8 +373,6 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col) => {Object.keys(
 
         var docInfo = document.querySelector('#tbody'+ID);
         docInfo.innerHTML += t_r;
-
-        console.log('id2', id, 'ID', ID, 'ID_prev', ID_prev)
     
     } 
 
@@ -413,8 +444,6 @@ auth.onAuthStateChanged(user => {
                 taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
                 querySnapshot.forEach(doc => {
         
-                    
-                    // console.log(doc.data())
             
                     const task = doc.data();
                     task.id = doc.id;
@@ -454,11 +483,11 @@ auth.onAuthStateChanged(user => {
                 })
             })
 
-            dbRt.ref('ARS43P1').on('value',(snap)=>{
+            dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
                 obj = snap.val(); //equivalente a Dictionary en pyhon
                 // var keys = Object.keys(obj); // Obtiene las llaves del objeto
                 console.log(typeof obj)
-                obj = {'ARS43P1': obj}
+                obj = {'EXPLORACIONES': obj}
                 var idInicial = ''
                 Object.values(obj).filter( v => { 
                     if (typeof v === 'object') {
@@ -468,7 +497,7 @@ auth.onAuthStateChanged(user => {
                 console.log(idInicial)
                 setupData(obj)
                 
-                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '')
+                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
                 console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
               });
     } else {

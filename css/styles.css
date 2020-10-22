@@ -2,3 +2,99 @@
     margin: auto;
     width: 70%; 
  }
+
+ /*
+*  position: relative gives a new position context
+*/
+.wrapper {
+    position: relative;
+    transition: margin-right .5s; /* If you want a transition effect */
+  }
+
+#alert-notif{
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 10%);
+    width: 80%;
+}
+
+#maininfo {
+    background-color: white;
+    padding: 4px;
+}
+
+#maininfo p {
+  margin: auto;
+  padding: 6px;
+  font-size: 18px;
+  margin: 0;
+  display: inline;
+  margin-left: 10px;
+}
+
+#sidebar-button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    padding: 9px;
+    text-decoration-color: blue;
+    z-index: 2;
+    background-color: #343A40;
+    color: white;
+    font-weight: 900;
+    align-content: center;
+    margin-top: 2.1px;
+}
+
+#mapid{
+    position: relative;
+}
+
+/* The sidebar menu */
+.sidebar {
+    height: 0; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    bottom: 0;
+    right: 0;
+    background-color: white; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 0; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+    border-left: solid black 1px;
+    border-top: solid black 1px;
+  }
+  
+  /* The sidebar links */
+  .sidebar .sideheader {
+    padding: 0;
+    padding-left: 5px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    display: block;
+    transition: 0.3s;
+    width: 90%;
+  }
+  
+  /* Position and style the close button (top right corner) */
+  .sidebar .closebtn {
+    position: absolute;
+    width: 20px;
+    padding: 0;
+    color: black;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    cursor: pointer;
+    border-left: solid black 1px;
+    text-align: center;
+  } 
+
+  .headerdiv {
+    border-bottom: solid black 1px;
+  }
