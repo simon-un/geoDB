@@ -483,23 +483,23 @@ auth.onAuthStateChanged(user => {
                 })
             })
 
-            dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
-                obj = snap.val(); //equivalente a Dictionary en pyhon
-                // var keys = Object.keys(obj); // Obtiene las llaves del objeto
-                console.log(typeof obj)
-                obj = {'EXPLORACIONES': obj}
-                var idInicial = ''
-                Object.values(obj).filter( v => { 
-                    if (typeof v === 'object') {
-                        idInicial = getKeyByValue(obj, v)
-                    }
-                })
-                console.log(idInicial)
-                setupData(obj)
+            // dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
+            //     obj = snap.val(); //equivalente a Dictionary en pyhon
+            //     // var keys = Object.keys(obj); // Obtiene las llaves del objeto
+            //     console.log(typeof obj)
+            //     obj = {'EXPLORACIONES': obj}
+            //     var idInicial = ''
+            //     Object.values(obj).filter( v => { 
+            //         if (typeof v === 'object') {
+            //             idInicial = getKeyByValue(obj, v)
+            //         }
+            //     })
+            //     console.log(idInicial)
+            //     setupData(obj)
                 
-                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
-                console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
-              });
+            //     unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
+            //     console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
+            //   });
     } else {
         userUid = null
         setupPosts([]);

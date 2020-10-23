@@ -164,13 +164,16 @@ auth.onAuthStateChanged(user => {
     if (user) {
         // window.alert("Está logeado")
         loggedInLinks.forEach(link => {link.style.display = 'block'})
-        dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
+        console.log('Descargando...');
+        dbRt.ref('COORDS').on('value',(snap)=>{
             var obj = snap.val(); //equivalente a Dictionary en pyhon
             
-            obj = {'EXPLORACIONES': obj}
+            // obj = {'EXPLORACIONES': obj}
+            // console.log(obj);
             graphMarkers(obj)
 
           });
+          console.log('Finalizado');
     } else {
         userUid = null
         loginCheck(user);
@@ -207,65 +210,66 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-const marker = L.marker([4.6384979,-74.082547]).addTo(map);
+// const marker = L.marker([4.6384979,-74.082547]).addTo(map);
 
 const inicio = document.querySelector('#inicio')
 var list = []
 var clicked = false
 
 const graphMarkers = (Obj) => {
-    obj = Obj['EXPLORACIONES']
-    Object.keys(obj).forEach(key => {
+    // obj = Obj['EXPLORACIONES']
+    // obj = Obj['COORDS']
+    Object.keys(Obj).forEach(key => {
+        console.log(key);
+        // dict = {}
+        // dictLevel = {}
 
-        dict = {}
-        dictLevel = {}
-
-        div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+        // div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
         
-        </div>`
+        // </div>`
 
-        inicio.innerHTML += div
+        // inicio.innerHTML += div
 
-        var objMod = {}
+        // var objMod = {}
 
-        objMod[key] = obj[key]
-        unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+        // objMod[key] = obj[key]
+        // unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
 
-        window['marker'+key] = L.marker([obj[key]['Norte'], obj[key]['Este']]).addTo(map)
+        window['marker'+key] = L.marker([Obj[key]['Norte'], Obj[key]['Este']]).addTo(map)
         
-        window['clicked'+'marker'+key] = false
-        window['marker'+key].bindPopup(`<b>ID_EXPLORACION:</b><br>${obj[key]['ID_EXPLORACION']}`)
-        list.push(['marker'+key])
+        // window['clicked'+'marker'+key] = false
+        // window['marker'+key].bindPopup(`<b>ID_EXPLORACION:</b><br>${obj[key]['ID_EXPLORACION']}`)
+        // list.push(['marker'+key])
 
-        window['marker'+key].on('click', e => {
-            console.log('clicked')
+        // window['marker'+key].on('click', e => {
+        //     console.log('clicked')
 
             
             // location.href = './pag1.html'
-            openNav()
-            $('#inicio').toggle()
-            window['marker'+key].openPopup()
-            if (!clicked) {
-                // window['marker'+key].setIcon(greenIcon)
-                window['marker'+key].openPopup()
-                clicked = true
-                $("#inicio").children().hide(); 
-                $('#'+key+'inicio').show()
-            }
-            else {
-                // window['marker'+key].setIcon(blueIcon)
-                clicked = false
-            }
-        }).on('mouseover', e => {
-            console.log('mouse over')
-            window['marker'+key].openPopup()
-        }).on('mouseout', e => {
-            console.log('Fueraa')
-            if (!window['clicked'+'marker'+key]) {
-            window['marker'+key].closePopup()
-            }
-        })
-        list.push(eval('marker'+key))
+            // openNav()
+            // $('#inicio').toggle()
+            // window['marker'+key].openPopup()
+            // if (!clicked) {
+            //     // window['marker'+key].setIcon(greenIcon)
+            //     window['marker'+key].openPopup()
+            //     clicked = true
+            //     $("#inicio").children().hide(); 
+            //     $('#'+key+'inicio').show()
+            // }
+        //     else {
+        //         // window['marker'+key].setIcon(blueIcon)
+        //         clicked = false
+        //     }
+        // }).on('mouseover', e => {
+        //     console.log('mouse over')
+        //     window['marker'+key].openPopup()
+        // }).on('mouseout', e => {
+        //     console.log('Fueraa')
+        //     if (!window['clicked'+'marker'+key]) {
+        //     window['marker'+key].closePopup()
+        //     }
+        // })
+        // list.push(eval('marker'+key))
     })
 }
 
