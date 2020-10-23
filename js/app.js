@@ -235,7 +235,7 @@ const setupPosts = data => {
     } else {
         postList.innerHTML = `<p class="text-center" ><h5>Inicie sesión para mostrar información de sus proyectos</h5></p>
                                 <div class="view overlay zoom">
-                                    <img src="logo.png" class="img-fluid " alt="smaple image">
+                                    <img src="/images/logo.png" class="img-fluid " alt="smaple image">
                                 </div>
         `
     }
