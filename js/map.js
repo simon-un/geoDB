@@ -9,11 +9,17 @@ var userUid = null; // Id del usuario para trar info
 
 const loginCheck = user => {
     if (user) {
-        loggedInLinks.forEach(link => {link.style.display = 'block'})
-        loggedOutLinks.forEach(link => {link.style.display = 'none'})
+        loggedInLinks.forEach(link => {
+            link.style.display = 'block'
+        })
+        loggedOutLinks.forEach(link => {
+            link.style.display = 'none'
+        })
 
     } else {
-        loggedInLinks.forEach(link => {link.style.display = 'none'})
+        loggedInLinks.forEach(link => {
+            link.style.display = 'none'
+        })
         document.getElementById('goback').click();
     }
 }
@@ -33,29 +39,32 @@ logout.addEventListener('click', e => {
 // Unpack
 var dict = {}
 var dictLevel = {}
-const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {Object.keys(obj).forEach(key => {
+const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
+    Object.keys(obj).forEach(key => {
 
-    if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
+        if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
 
-        var id = ''
+            var id = ''
 
-        color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
-                 'btn-warning', 'btn-danger']
+            color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
+                'btn-warning', 'btn-danger'
+            ]
 
-        color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
-                 'text-warning', 'text-info']
+            color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
+                'text-warning', 'text-info'
+            ]
 
-        color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary','table-info', 'table-warning', 'table-danger']
-        position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
-            
-        id = key + uniqueID() // Para crear ids unicos
-        if (status === true) {
-            dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
-        } else {
-           dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
-        }
+            color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary', 'table-info', 'table-warning', 'table-danger']
+            position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
 
-        Level = get(dictLevel, key+ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
+            id = key + uniqueID() // Para crear ids unicos
+            if (status === true) {
+                dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
+            } else {
+                dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
+            }
+
+            Level = get(dictLevel, key + ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
 
             if (status === true) {
                 t = `
@@ -78,8 +87,8 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
                 </tr>
                 `;
 
-                var doc = document.querySelector('#tbody'+ID)
-                
+                var doc = document.querySelector('#tbody' + ID)
+
             } else {
                 t = `
                 <div id="${key+ID}">
@@ -108,46 +117,46 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
                 
                 `;
 
-                var doc = document.querySelector('#'+ID_prev);
+                var doc = document.querySelector('#' + ID_prev);
 
             }
-    
+
             doc.innerHTML += t;
 
             i = dictLevel[key + ID]
-            i+=1
+            i += 1
 
             var color = dicc[ID][1]
-            
-            return unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color, depth, true);
-        
-    } else {
 
-        color_tr = ['table-primary', 'table-success', 'table-info', 'table-warning', 'table-danger']
+            return unpack(obj[key], Object.values(obj[key]).filter(v => typeof v === 'object').length, id, true, key + ID, i, dicc, color, depth, true);
 
-        t_r = `
+        } else {
+
+            color_tr = ['table-primary', 'table-success', 'table-info', 'table-warning', 'table-danger']
+
+            t_r = `
                         <tr class="${col}">
                             <th scope="row">${key}</td>
                             <td>${obj[key]}</td>
                         </tr>
             `
 
-        var docInfo = document.querySelector('#tbody'+ID);
-        docInfo.innerHTML += t_r;
-    
-    } 
+            var docInfo = document.querySelector('#tbody' + ID);
+            docInfo.innerHTML += t_r;
 
-    
-})
+        }
+
+
+    })
 }
 
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
-  }
+}
 
 function uniqueID() {
     return Math.floor(Math.random() * Date.now())
-    }   
+}
 
 function get(object, key, default_value) {
     if (typeof object[key] == "undefined") {
@@ -163,22 +172,24 @@ function get(object, key, default_value) {
 auth.onAuthStateChanged(user => {
     if (user) {
         // window.alert("Está logeado")
-        loggedInLinks.forEach(link => {link.style.display = 'block'})
+        loggedInLinks.forEach(link => {
+            link.style.display = 'block'
+        })
         console.log('Descargando...');
-        dbRt.ref('COORDS').on('value',(snap)=>{
+        dbRt.ref('COORDS').on('value', (snap) => {
             var obj = snap.val(); //equivalente a Dictionary en pyhon
-            
+
             // obj = {'EXPLORACIONES': obj}
             // console.log(obj);
             graphMarkers(obj)
 
-          });
-          console.log('Finalizado');
+        });
+        console.log('Finalizado');
     } else {
         userUid = null
         loginCheck(user);
-        }
-    })
+    }
+})
 
 // Starting to work on the map
 const mapdiv = document.getElementById('mapid');
@@ -187,24 +198,24 @@ const alertnotif = document.getElementById('alert-notif');
 const optionsBtn = document.getElementById('sidebar-button');
 const mainfo = document.getElementById('maininfo');
 
-navbar.style.height = String(navbar.getBoundingClientRect().height / 2) +'px';
-mainfo.style.height = String(navbar.getBoundingClientRect().height) +'px';
-mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2)+'px';
+navbar.style.height = String(navbar.getBoundingClientRect().height / 2) + 'px';
+mainfo.style.height = String(navbar.getBoundingClientRect().height) + 'px';
+mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
 
 window.addEventListener('resize', (evt) => {
-    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height)+'px';
+    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height) + 'px';
     if (window.innerWidth < 1300) {
         document.getElementById('welcome-message').style.display = 'none';
-    }else{
+    } else {
         document.getElementById('welcome-message').style.display = 'inline';
     }
 })
 
-alertnotif.addEventListener('click',()=>{
+alertnotif.addEventListener('click', () => {
     alertnotif.style.display = 'none';
 })
 
-const map = L.map('mapid').setView([4.6384979,-74.082547], 16);
+const map = L.map('mapid').setView([4.6384979, -74.082547], 16);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -212,60 +223,67 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // const marker = L.marker([4.6384979,-74.082547]).addTo(map);
 
-const inicio = document.querySelector('#inicio')
+var inicio = document.querySelector('#inicio')
 var list = []
 var clicked = false
 
 const graphMarkers = (Obj) => {
-    // obj = Obj['EXPLORACIONES']
+
     Object.keys(Obj).forEach(key => {
-        console.log(key);
-        // dict = {}
-        // dictLevel = {}
 
-        // div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
-        
-        // </div>`
+        window['marker' + key] = L.marker([Obj[key]['Norte'], Obj[key]['Este']]).addTo(map)
 
-        // inicio.innerHTML += div
+        window['clicked'+'marker'+key] = false
+        window['marker' + key].bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+        // list.push(['marker'+key]) // Utilizar para agrupar exploraciones
 
-        // var objMod = {}
+        var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
+                                // un objeto de firebase
 
-        // objMod[key] = obj[key]
-        // unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+        window['marker' + key].on('click', e => {
 
-        window['marker'+key] = L.marker([Obj[key]['Norte'], Obj[key]['Este']]).addTo(map)
-        
-        // window['clicked'+'marker'+key] = false
-        window['marker'+key].bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
-        // list.push(['marker'+key])
+            if (!infoRequested['marker' + key]) {
+                infoRequested['marker' + key] = true
+                dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                    var obj = snap.val()
+                    dict = {}
+                    dictLevel = {}
 
-        window['marker'+key].on('click', e => {
-        //     console.log('clicked')
+                    div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+                    
+                    </div>`
+                    inicio.innerHTML += div
 
+                    var objMod = {}
             
-            // location.href = './pag1.html'
-            // openNav()
-            // $('#inicio').toggle()
-            window['marker'+key].openPopup()
-            if (!clicked) {
-            //     // window['marker'+key].setIcon(greenIcon)
-                window['marker'+key].openPopup()
-                clicked = true
-                $("#inicio").children().hide(); 
-                $('#'+key+'inicio').show()
+                    objMod[key] = obj
+                    unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+                })
+            } else {
+                console.log('Object requested')
             }
-            else {
+
+
+            openNav()
+            $('#inicio').toggle()
+            window['marker' + key].openPopup()
+            if (!clicked) {
+                //     // window['marker'+key].setIcon(greenIcon)
+                window['marker' + key].openPopup()
+                clicked = true
+                $("#inicio").children().hide();
+                $('#' + key + 'inicio').show()
+            } else {
                 // window['marker'+key].setIcon(blueIcon)
                 clicked = false
             }
         }).on('mouseover', e => {
             console.log('mouse over')
-            window['marker'+key].openPopup()
+            window['marker' + key].openPopup()
         }).on('mouseout', e => {
             console.log('Fueraa')
-            if (!window['clicked'+'marker'+key]) {
-            window['marker'+key].closePopup()
+            if (!window['clicked' + 'marker' + key]) {
+                window['marker' + key].closePopup()
             }
         })
         // list.push(eval('marker'+key))
@@ -274,8 +292,8 @@ const graphMarkers = (Obj) => {
 
 map.on('click', e => {
     if (clicked) {
-    $('#inicio').toggle()
-    clicked = false
+        $('#inicio').toggle()
+        clicked = false
     }
 })
 
@@ -293,7 +311,7 @@ showMsg = (msg, className = 'alert alert-primary') => {
     alertnotif.style.display = 'block';
 }
 
-mapdiv.addEventListener('click', ()=>{
+mapdiv.addEventListener('click', () => {
     showMsg("Hizo click en el mapa", 'alert alert-info')
     // optionsBtn.style.display = "block";
 })
@@ -307,12 +325,10 @@ function openNav() {
     document.getElementById("mySidebar").style.width = "50%";
     document.getElementById("map-div").style.marginRight = "50%";
     optionsBtn.style.display = "none";
-  }
-  function closeNav() {
+}
+
+function closeNav() {
     document.getElementById("mySidebar").style.width = "0";
     document.getElementById("map-div").style.marginRight = "0";
     optionsBtn.style.display = "block";
-  }
-
-
-  
+}
