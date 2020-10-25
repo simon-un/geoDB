@@ -218,7 +218,6 @@ var clicked = false
 
 const graphMarkers = (Obj) => {
     // obj = Obj['EXPLORACIONES']
-    // obj = Obj['COORDS']
     Object.keys(Obj).forEach(key => {
         console.log(key);
         // dict = {}
@@ -238,37 +237,37 @@ const graphMarkers = (Obj) => {
         window['marker'+key] = L.marker([Obj[key]['Norte'], Obj[key]['Este']]).addTo(map)
         
         // window['clicked'+'marker'+key] = false
-        // window['marker'+key].bindPopup(`<b>ID_EXPLORACION:</b><br>${obj[key]['ID_EXPLORACION']}`)
+        window['marker'+key].bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
         // list.push(['marker'+key])
 
-        // window['marker'+key].on('click', e => {
+        window['marker'+key].on('click', e => {
         //     console.log('clicked')
 
             
             // location.href = './pag1.html'
             // openNav()
             // $('#inicio').toggle()
-            // window['marker'+key].openPopup()
-            // if (!clicked) {
+            window['marker'+key].openPopup()
+            if (!clicked) {
             //     // window['marker'+key].setIcon(greenIcon)
-            //     window['marker'+key].openPopup()
-            //     clicked = true
-            //     $("#inicio").children().hide(); 
-            //     $('#'+key+'inicio').show()
-            // }
-        //     else {
-        //         // window['marker'+key].setIcon(blueIcon)
-        //         clicked = false
-        //     }
-        // }).on('mouseover', e => {
-        //     console.log('mouse over')
-        //     window['marker'+key].openPopup()
-        // }).on('mouseout', e => {
-        //     console.log('Fueraa')
-        //     if (!window['clicked'+'marker'+key]) {
-        //     window['marker'+key].closePopup()
-        //     }
-        // })
+                window['marker'+key].openPopup()
+                clicked = true
+                $("#inicio").children().hide(); 
+                $('#'+key+'inicio').show()
+            }
+            else {
+                // window['marker'+key].setIcon(blueIcon)
+                clicked = false
+            }
+        }).on('mouseover', e => {
+            console.log('mouse over')
+            window['marker'+key].openPopup()
+        }).on('mouseout', e => {
+            console.log('Fueraa')
+            if (!window['clicked'+'marker'+key]) {
+            window['marker'+key].closePopup()
+            }
+        })
         // list.push(eval('marker'+key))
     })
 }
