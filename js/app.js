@@ -235,7 +235,7 @@ const setupPosts = data => {
     } else {
         postList.innerHTML = `<p class="text-center" ><h5>Inicie sesión para mostrar información de sus proyectos</h5></p>
                                 <div class="view overlay zoom">
-                                    <img src="logo.png" class="img-fluid " alt="smaple image">
+                                    <img src="/images/logo.png" class="img-fluid " alt="smaple image">
                                 </div>
         `
     }
@@ -483,23 +483,23 @@ auth.onAuthStateChanged(user => {
                 })
             })
 
-            dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
-                obj = snap.val(); //equivalente a Dictionary en pyhon
-                // var keys = Object.keys(obj); // Obtiene las llaves del objeto
-                console.log(typeof obj)
-                obj = {'EXPLORACIONES': obj}
-                var idInicial = ''
-                Object.values(obj).filter( v => { 
-                    if (typeof v === 'object') {
-                        idInicial = getKeyByValue(obj, v)
-                    }
-                })
-                console.log(idInicial)
-                setupData(obj)
+            // dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
+            //     obj = snap.val(); //equivalente a Dictionary en pyhon
+            //     // var keys = Object.keys(obj); // Obtiene las llaves del objeto
+            //     console.log(typeof obj)
+            //     obj = {'EXPLORACIONES': obj}
+            //     var idInicial = ''
+            //     Object.values(obj).filter( v => { 
+            //         if (typeof v === 'object') {
+            //             idInicial = getKeyByValue(obj, v)
+            //         }
+            //     })
+            //     console.log(idInicial)
+            //     setupData(obj)
                 
-                unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
-                console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
-              });
+            //     unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
+            //     console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
+            //   });
     } else {
         userUid = null
         setupPosts([]);
