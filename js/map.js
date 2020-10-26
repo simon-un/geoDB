@@ -171,11 +171,9 @@ function get(object, key, default_value) {
 
 auth.onAuthStateChanged(user => {
     if (user) {
-        // window.alert("Está logeado")
         loggedInLinks.forEach(link => {
             link.style.display = 'block'
         })
-        console.log('Descargando...');
         dbRt.ref('COORDS').on('value', (snap) => {
             var obj = snap.val(); //equivalente a Dictionary en pyhon
 
@@ -184,7 +182,7 @@ auth.onAuthStateChanged(user => {
             graphMarkers(obj)
 
         });
-        console.log('Finalizado');
+        document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*) .*/)[1] + '! Bienvenido a tu gestor de información geotécnica';
     } else {
         userUid = null
         loginCheck(user);
