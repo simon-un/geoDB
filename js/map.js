@@ -176,14 +176,22 @@ auth.onAuthStateChanged(user => {
             link.style.display = 'block'
         })
         console.log('Descargando...');
-        dbRt.ref('COORDS').on('value', (snap) => {
-            var obj = snap.val(); //equivalente a Dictionary en pyhon
 
-            // obj = {'EXPLORACIONES': obj}
-            // console.log(obj);
-            graphMarkers(obj)
 
-        });
+        // dbRt.ref('COORDS').on('value', (snap) => {
+        //     var obj = snap.val(); //equivalente a Dictionary en pyhon
+
+        //     // obj = {'EXPLORACIONES': obj}
+        //     // console.log(obj);
+        //     graphMarkers(obj)
+
+        // });
+
+
+        dbRt.ref('COORDSGEOJSON').on('value', (snap) => {
+            var obj = snap.val();
+            graphGeoMarkers(obj)
+        })
         console.log('Finalizado');
     } else {
         userUid = null
@@ -287,6 +295,75 @@ const graphMarkers = (Obj) => {
             }
         })
         // list.push(eval('marker'+key))
+    })
+}
+
+function whenClicked(e) {
+    // e = event
+    console.log(e);
+    // You can make your ajax call declaration here
+    //$.ajax(... 
+  }
+  
+  function onEachFeature(feature, layer) {
+      //bind click
+      console.log(feature, layer)
+    //   layer.on({
+    //       click: whenClicked
+    //   });
+  }
+  
+
+const graphGeoMarkers = (Obj) => {
+
+    var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
+                                // un objeto de firebase
+    Object.keys(Obj).forEach(key => {
+        L.geoJSON(Obj[key], {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                layer.on({
+                    click: (e) => {
+                        if (!infoRequested['marker' + key]) {
+                            infoRequested['marker' + key] = true
+                            dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                                var obj = snap.val()
+                                dict = {}
+                                dictLevel = {}
+            
+                                div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+                                
+                                </div>`
+                                inicio.innerHTML += div
+            
+                                var objMod = {}
+                        
+                                objMod[key] = obj
+                                unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+                            })
+                        } else {
+                            console.log('Object requested')
+                        }
+
+                        openNav()
+
+                        $('#inicio').toggle()
+                        layer.openPopup()
+
+                        if (!clicked) {
+                            //     // window['marker'+key].setIcon(greenIcon)
+                            layer.openPopup()
+                            clicked = true
+                            $("#inicio").children().hide();
+                            $('#' + key + 'inicio').show()
+                        } else {
+                            // window['marker'+key].setIcon(blueIcon)
+                            clicked = false
+                        }
+                    }
+                });
+            }
+        }).addTo(map)
     })
 }
 
