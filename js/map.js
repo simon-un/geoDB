@@ -360,7 +360,15 @@ const graphGeoMarkers = (Obj) => {
                             // window['marker'+key].setIcon(blueIcon)
                             clicked = false
                         }
-                    }
+                    },
+                mouseover: e => {
+                    layer.openPopup()
+                },
+                mouseout: e => {
+                    if (!clicked) {
+                        layer.closePopup()
+                    }  
+                }
                 });
             }
         }).addTo(map)
