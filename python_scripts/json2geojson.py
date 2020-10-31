@@ -17,9 +17,15 @@ for expl in data:
         'Norte' : data[expl]['Norte'],
         'Este' : data[expl]['Este']
     }
-    coordsGeojson[expl] = {
-        "type": "Point",
-        "coordinates": [data[expl]['Este'], data[expl]['Norte']]
+    coordsGeojson[expl] = {"type": "Feature",
+                           "geometry": {
+                               "type": "Point",
+                                "coordinates": [data[expl]['Este'], data[expl]['Norte']]
+                                },
+                            "properties": {
+                                "title": expl
+                            }
+
     }
 
 new_data['COORDS'] = coords

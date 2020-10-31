@@ -177,8 +177,9 @@ auth.onAuthStateChanged(user => {
         })
         console.log('Descargando...');
 
+        // Por el momento se trabaja con geoJSON pero NO descartar
 
-        // dbRt.ref('COORDS').on('value', (snap) => {
+        // dbRt.ref('COORDS').on('value', (snap) => { 
         //     var obj = snap.val(); //equivalente a Dictionary en pyhon
 
         //     // obj = {'EXPLORACIONES': obj}
@@ -223,7 +224,7 @@ alertnotif.addEventListener('click', () => {
     alertnotif.style.display = 'none';
 })
 
-const map = L.map('mapid').setView([4.6384979, -74.082547], 16);
+const map = L.map('mapid').setView([4.6384979, -74.082547], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -296,30 +297,18 @@ const graphMarkers = (Obj) => {
         })
         // list.push(eval('marker'+key))
     })
-}
+}  
 
-function whenClicked(e) {
-    // e = event
-    console.log(e);
-    // You can make your ajax call declaration here
-    //$.ajax(... 
-  }
-  
-  function onEachFeature(feature, layer) {
-      //bind click
-      console.log(feature, layer)
-    //   layer.on({
-    //       click: whenClicked
-    //   });
-  }
-  
-
+group = new L.FeatureGroup();
 const graphGeoMarkers = (Obj) => {
 
     var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
                                 // un objeto de firebase
     Object.keys(Obj).forEach(key => {
-        L.geoJSON(Obj[key], {
+        group.addLayer(L.geoJSON(Obj[key], {
+            onEachFeature: {
+                title: key 
+            },
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
                 layer.on({
@@ -351,13 +340,11 @@ const graphGeoMarkers = (Obj) => {
                         layer.openPopup()
 
                         if (!clicked) {
-                            //     // window['marker'+key].setIcon(greenIcon)
                             layer.openPopup()
                             clicked = true
                             $("#inicio").children().hide();
                             $('#' + key + 'inicio').show()
                         } else {
-                            // window['marker'+key].setIcon(blueIcon)
                             clicked = false
                         }
                     },
@@ -369,9 +356,18 @@ const graphGeoMarkers = (Obj) => {
                 }
                 });
             }
-        }).addTo(map)
+        }).addTo(map))
     })
 }
+
+map.addLayer(group)
+
+var overlayMaps = {
+    "Exploraciones Bogota": group
+};
+L.control.layers({}, overlayMaps, {
+    position: 'topleft'
+}).addTo(map);
 
 map.on('click', e => {
     if (clicked) {
@@ -379,6 +375,42 @@ map.on('click', e => {
         clicked = false
     }
 })
+
+var controlSearch = new L.Control.Search({
+    position:'topleft',		
+    layer: group,
+    initial: true,
+    zoom: 20,
+    marker: false,
+    firstTipSubmit: true,
+    textErr: 'Exploración no encontrada',
+    textPlaceholder: 'Buscar',
+});
+
+var greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+var blueIcon = new L.Icon({
+iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+iconSize: [25, 41],
+iconAnchor: [12, 41],
+popupAnchor: [1, -34],
+shadowSize: [41, 41]
+});
+
+controlSearch.on('search:locationfound', e => {
+    e.layer.setIcon(greenIcon)
+    e.layer.openPopup()
+})
+
+map.addControl(controlSearch)
 
 showMsg = (msg, className = 'alert alert-primary') => {
     // Options for className:
