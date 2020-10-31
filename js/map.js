@@ -365,9 +365,7 @@ const graphGeoMarkers = (Obj) => {
                     layer.openPopup()
                 },
                 mouseout: e => {
-                    if (!clicked) {
                         layer.closePopup()
-                    }  
                 }
                 });
             }
