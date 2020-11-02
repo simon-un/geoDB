@@ -6,7 +6,7 @@
     <title>Perfil</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/profile.css">
 </head>
 <body>
 
@@ -47,18 +47,17 @@
         <div class="row">
           <!-- left column -->
           <div class="col-md-3">
-            <div class="text-center">
-              <img src="/images/avatar.jpg" class="avatar img-circle" alt="avatar">
-              <h6>Cambiar foto...</h6>
-              
-              <input type="file" class="form-control">
+            <div class="text-center" id="profile-container">
+              <img src="/images/change.png" id="changeImage" class="avatar img-circle" alt="avatar">
+              <img src="/images/avatar.jpg" id="profileImage" class="avatar img-circle" alt="avatar">
+              <input type="file" id="imageUpload" class="form-control" capture>
             </div>
           </div>
           
           <!-- edit form column -->
           <div class="col-md-9 personal-info">
-            <div class="alert alert-info alert-dismissable">
-              <a class="panel-close close" data-dismiss="alert">×</a> 
+            <div class="alert alert-info" id="alert">
+              <a class="panel-close close" onclick="hideAlert()" style="cursor: pointer;">×</a> 
               <i class="fa fa-coffee"></i>
               Revisa con atención la información antes de guardar cambios.
             </div>
@@ -72,19 +71,21 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-lg-3 control-label">Company:</label>
+                <label class="col-lg-3 control-label">Correo (no editable):</label>
                 <div class="col-lg-8">
-                  <input class="form-control" type="text" value="">
+                  <input class="form-control" type="text" id="mail" value="" readonly>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-md-3 control-label"></label>
                 <div class="col-md-8">
-                    <input type="button" class="btn btn-primary" value="Cambiar contraseña">
+                    <input type="button" onclick="changePassword()" class="btn btn-secundary" value="Cambiar contraseña">
                 </div>
+              </div>
+              <div class="form-group" id="emailVer">
                 <label class="col-md-3 control-label"></label>
                 <div class="col-md-8">
-                    <input type="button" class="btn btn-primary" value="Verificar email">
+                    <input type="button" onclick="sendVerification()"  class="btn btn-secundary" value="Verificar email">
                 </div>
               </div>
               <div class="form-group">
@@ -92,7 +93,7 @@
                 <div class="col-md-8">
                   <input type="button" id="save-changes" class="btn btn-primary" value="Guardar cambios">
                   <span></span>
-                  <input type="reset" class="btn btn-default" value="Cancelar">
+                  <input type="reset" class="btn btn-default" onclick="cancel()" value="Cancelar">
                 </div>
               </div>
             </form>
@@ -107,7 +108,9 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
-    
+    <!-- JQuery script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
 
@@ -116,6 +119,7 @@
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-storage.js"></script>
 
 
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
@@ -138,6 +142,7 @@
     const auth = firebase.auth()
     const db = firebase.firestore()
     const dbRt = firebase.database() // Database in real-time
+    const storageFb = firebase.storage();
     
     // firebase.analytics();
     </script>

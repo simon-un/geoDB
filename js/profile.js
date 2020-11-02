@@ -40,16 +40,107 @@ auth.onAuthStateChanged(user => {
             link.style.display = 'block'
         })
         document.getElementById('name').value = user.displayName;
+        document.getElementById('mail').value = user.email;
+        if (user.photoURL){
+            document.getElementById('profileImage').src = user.photoURL;
+            // console.log(user.photoURL);
+            // console.log(user);
+        }
+        if (user.emailVerified) {
+            document.getElementById('emailVer').style.display = 'none';
+        }
     } else {
         userUid = null
         loginCheck(user);
     }
 })
 
-document.getElementById('save-changes').addEventListener('click', (evt) =>{
+// Save changes to firestore
+document.getElementById('save-changes').addEventListener('click', (evt) => {
     let user = auth.currentUser;
     user.updateProfile({
         displayName: document.getElementById('name').value,
     });
-    console.log(user);
+    document.getElementById('alert').lastChild.textContent = 'Datos actualizados con éxito!';
+    document.getElementById('alert').style.display = 'block';
 })
+
+// Simple function to hide the alert
+hideAlert = () => {
+    document.getElementById('alert').style.display = 'none';
+}
+
+// Function to change password via email
+changePassword = () => {
+    let user = auth.currentUser;
+    auth.sendPasswordResetEmail(user.email).then(function () {
+        document.getElementById('alert').lastChild.textContent = 'Revisa tu correo ' + String(user.email) + ' y sigue las instrucciones.';
+        document.getElementById('alert').style.display = 'block';
+    }).catch(function (error) {
+        document.getElementById('alert').lastChild.textContent = 'Ocurrio un error, contáctanos con el mensaje: ' + String(error.code);
+        document.getElementById('alert').style.display = 'block';
+    });
+}
+
+// Function to send email verification
+sendVerification = () => {
+    let user = auth.currentUser;
+    user.sendEmailVerification().then(function () {
+        document.getElementById('alert').lastChild.textContent = 'Revisa tu correo ' + String(user.email) + ' y sigue las instrucciones.';
+        document.getElementById('alert').style.display = 'block';
+    }).catch(function (error) {
+        document.getElementById('alert').lastChild.textContent = 'Ocurrio un error, contáctanos con el mensaje: ' + String(error.code);
+        document.getElementById('alert').style.display = 'block';
+    });
+}
+
+// Function to dismiss this page and go back
+cancel = () => {
+    document.getElementById('goback').click();
+}
+
+// Changing profile picture
+$("#changeImage").click(function (e) {
+    $("#imageUpload").click();
+});
+
+document.getElementById('profile-container').addEventListener('mouseenter', () => {
+    document.getElementById('changeImage').style.display = 'block';
+})
+
+document.getElementById('profile-container').addEventListener('mouseleave', () => {
+    document.getElementById('changeImage').style.display = 'none';
+})
+
+function updateImage(uploader) {
+    // Resize the image using https://www.therogerlab.com/how-can-i/javascript/resize-an-image.html#resizeImage
+    $('#profileImage').attr('src', window.URL.createObjectURL(uploader.files[0]));
+    let storageRef = storageFb.ref();
+    let imageRef = 'images/'+ auth.currentUser.uid +'.jpg'
+    var userImagesRef = storageRef.child(imageRef);
+    let file = uploader.files[0];
+    userImagesRef.put(file).then(function (snapshot) {
+        console.log('Uploaded  the image!');
+        snapshot.ref.getDownloadURL().then(function (downloadURL) {
+            console.log('File available at', downloadURL);
+            let user = auth.currentUser;
+            user.updateProfile({
+                photoURL: downloadURL,
+            });
+        });
+    });
+
+}
+
+$("#imageUpload").change(function () {
+    if (this.files && this.files[0] && String(this.files[0].type).match(/image\/.*/)) {
+        updateImage(this);
+        document.getElementById('alert').lastChild.textContent = 'Foto actualizada con éxito.';
+        document.getElementById('alert').className = "alert alert-success";
+        document.getElementById('alert').style.display = 'block';
+    } else {
+        document.getElementById('alert').lastChild.textContent = 'Por favor sube una imagen válida';
+        document.getElementById('alert').className = "alert alert-danger";
+        document.getElementById('alert').style.display = 'block';
+    }
+});

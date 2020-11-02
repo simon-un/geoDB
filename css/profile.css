@@ -1,0 +1,40 @@
+input.btn.btn-secundary{
+    background-color: rgb(180, 175, 175);
+    color: black;
+}
+
+#imageUpload
+{
+    display: none;
+}
+
+#profileImage
+{
+    position: absolute;
+    left: 0;
+    z-index: 1;
+}
+
+#profile-container img {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    -o-border-radius: 50%;
+    border-radius: 50%;
+}
+
+/* #hover-change :hover{
+    display: block;
+} */
+
+#changeImage {
+    opacity:0.6;
+    position: absolute;
+    left: 0;
+    z-index: 2;
+    display: none;
+    cursor: pointer;
+}

@@ -182,7 +182,7 @@ auth.onAuthStateChanged(user => {
             graphMarkers(obj)
 
         });
-        document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*) .*/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+        document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
     } else {
         userUid = null
         loginCheck(user);
