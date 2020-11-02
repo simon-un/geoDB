@@ -174,15 +174,31 @@ auth.onAuthStateChanged(user => {
         loggedInLinks.forEach(link => {
             link.style.display = 'block'
         })
+
         dbRt.ref('COORDS').on('value', (snap) => {
             var obj = snap.val(); //equivalente a Dictionary en pyhon
 
-            // obj = {'EXPLORACIONES': obj}
-            // console.log(obj);
-            graphMarkers(obj)
+        // Por el momento se trabaja con geoJSON pero NO descartar
 
         });
         document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+
+        // dbRt.ref('COORDS').on('value', (snap) => { 
+        //     var obj = snap.val(); //equivalente a Dictionary en pyhon
+
+        //     // obj = {'EXPLORACIONES': obj}
+        //     // console.log(obj);
+        //     graphMarkers(obj)
+
+        // });
+
+
+        dbRt.ref('COORDSGEOJSON').on('value', (snap) => {
+            var obj = snap.val();
+            graphGeoMarkers(obj)
+        })
+
+
     } else {
         userUid = null
         loginCheck(user);
@@ -213,7 +229,7 @@ alertnotif.addEventListener('click', () => {
     alertnotif.style.display = 'none';
 })
 
-const map = L.map('mapid').setView([4.6384979, -74.082547], 16);
+const map = L.map('mapid').setView([4.6384979, -74.082547], 12);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -286,7 +302,77 @@ const graphMarkers = (Obj) => {
         })
         // list.push(eval('marker'+key))
     })
+}  
+
+group = new L.FeatureGroup();
+const graphGeoMarkers = (Obj) => {
+
+    var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
+                                // un objeto de firebase
+    Object.keys(Obj).forEach(key => {
+        group.addLayer(L.geoJSON(Obj[key], {
+            onEachFeature: {
+                title: key 
+            },
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                layer.on({
+                    click: (e) => {
+                        if (!infoRequested['marker' + key]) {
+                            infoRequested['marker' + key] = true
+                            dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                                var obj = snap.val()
+                                dict = {}
+                                dictLevel = {}
+            
+                                div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+                                
+                                </div>`
+                                inicio.innerHTML += div
+            
+                                var objMod = {}
+                        
+                                objMod[key] = obj
+                                unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+                            })
+                        } else {
+                            console.log('Object requested')
+                        }
+
+                        openNav()
+
+                        $('#inicio').toggle()
+                        layer.openPopup()
+
+                        if (!clicked) {
+                            layer.openPopup()
+                            clicked = true
+                            $("#inicio").children().hide();
+                            $('#' + key + 'inicio').show()
+                        } else {
+                            clicked = false
+                        }
+                    },
+                mouseover: e => {
+                    layer.openPopup()
+                },
+                mouseout: e => {
+                        layer.closePopup()
+                }
+                });
+            }
+        }).addTo(map))
+    })
 }
+
+map.addLayer(group)
+
+var overlayMaps = {
+    "Exploraciones Bogota": group
+};
+L.control.layers({}, overlayMaps, {
+    position: 'topleft'
+}).addTo(map);
 
 map.on('click', e => {
     if (clicked) {
@@ -294,6 +380,42 @@ map.on('click', e => {
         clicked = false
     }
 })
+
+var controlSearch = new L.Control.Search({
+    position:'topleft',		
+    layer: group,
+    initial: true,
+    zoom: 20,
+    marker: false,
+    firstTipSubmit: true,
+    textErr: 'Exploración no encontrada',
+    textPlaceholder: 'Buscar',
+});
+
+var greenIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+var blueIcon = new L.Icon({
+iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+iconSize: [25, 41],
+iconAnchor: [12, 41],
+popupAnchor: [1, -34],
+shadowSize: [41, 41]
+});
+
+controlSearch.on('search:locationfound', e => {
+    e.layer.setIcon(greenIcon)
+    e.layer.openPopup()
+})
+
+map.addControl(controlSearch)
 
 showMsg = (msg, className = 'alert alert-primary') => {
     // Options for className:
