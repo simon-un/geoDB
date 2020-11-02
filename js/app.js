@@ -37,6 +37,9 @@ signupForm.addEventListener('submit', (e) => {
             signupForm.reset()
             $('#signupModal').modal('hide')
             // console.log('sign up')
+            auth.currentUser.updateProfile({
+                displayName: String(auth.currentUser.email).match(/(.*)@.*/)[1],
+            });
         })
         .catch(error =>{
             // https://firebase.google.com/docs/reference/js/firebase.auth.Error
