@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi App</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/index.css">
     <script src="leaflet-search-master\src\leaflet-search.js"></script>
     <link rel="stylesheet" href="leaflet-search-master\src\leaflet-search.css" />
 </head>
+
 <body>
 
     <!-- navegacion -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">GEO-DB</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item logged-out" style="display: none;">
-              <a class="nav-link" href="#" data-toggle="modal" data-target="#signinModal">Sign In <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item logged-out" style="display: none;">
-              <a class="nav-link" href="#" data-toggle="modal" data-target="#signupModal">Sign Up</a>
-            </li>
-            <li class="nav-item logged-in" style="display: none;">
-                <a class="nav-link" href="./map.html" id="mapBtn">Ir al mapa</a>
-            </li>
-            <li class="nav-item logged-in" style="display: none;">
-                <a class="nav-link" href="./profile.html" id="mapBtn">Tu perfil</a>
-            </li>
-            <li class="nav-item logged-in" style="display: none;">
-              <a class="nav-link" href="#" id="logout">Log Out</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SIMON</a>
-            </li>
-          </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item logged-out" style="display: none;">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#signinModal">Sign In <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item logged-out" style="display: none;">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#signupModal">Sign Up</a>
+                </li>
+                <li class="nav-item logged-in" style="display: none;">
+                    <a class="nav-link" href="./map.html" id="mapBtn">Ir al mapa</a>
+                </li>
+                <li class="nav-item logged-in" style="display: none;">
+                    <a class="nav-link" href="./profile.html" id="mapBtn">Tu perfil</a>
+                </li>
+                <li class="nav-item logged-in" style="display: none;">
+                    <a class="nav-link" href="#" id="logout">Log Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SIMON</a>
+                </li>
+            </ul>
         </div>
-      </nav>
+    </nav>
 
-      <!-- MAIN CONTENT -->
-      <div class="container p-4">
-          <div class="row">
-              <div class="col-md-6 offset-md-3">
-                  <ul class="list-group posts">
-                  </ul>
-                  <ul>
+    <!-- MAIN CONTENT -->
+    <div class="container p-4">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <ul class="list-group posts"></ul>
+                <br>
+                <div id="projects"><h5>Proyectos:</h5></div>
 
-                  </ul>
-                  
-                    <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#check" aria-expanded="false" aria-controls="check">
-                        ¿Qué hemos logrado?
-                    </button>
-                    
-                    <ul>
+                <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#check"
+                    aria-expanded="false" aria-controls="check">
+                    ¿Qué hemos logrado?
+                </button>
 
-                    </ul>
+                <ul>
 
-                  <div class="collapse form-group" id="check">
+                </ul>
+
+                <div class="collapse form-group" id="check">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck1" checked="">
                         <label class="custom-control-label" for="customCheck1">Servicios de Autenticación</label>
@@ -71,27 +76,33 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
-                        <label class="custom-control-label" for="customCheck1">Lectura de datos almacenados en Firebase</label>
+                        <label class="custom-control-label" for="customCheck1">Lectura de datos almacenados en
+                            Firebase</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
-                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en Firebase</label>
+                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en
+                            Firebase</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
-                        <label class="custom-control-label" for="customCheck1">Crear, remover y editar datos almacenados</label>
+                        <label class="custom-control-label" for="customCheck1">Crear, remover y editar datos
+                            almacenados</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck3" checked="">
-                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en Firebase</label>
+                        <label class="custom-control-label" for="customCheck1">Escritura de datos y almacenamiento en
+                            Firebase</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
-                        <label class="custom-control-label" for="customCheck2">Lectura de datos geotécnicos y despliegue por jerarquía</label>
+                        <label class="custom-control-label" for="customCheck2">Lectura de datos geotécnicos y despliegue
+                            por jerarquía</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
-                        <label class="custom-control-label" for="customCheck2">Visualización de datos geotécnicos según coordenadas</label>
+                        <label class="custom-control-label" for="customCheck2">Visualización de datos geotécnicos según
+                            coordenadas</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
@@ -103,11 +114,13 @@
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
-                        <label class="custom-control-label" for="customCheck2">Interacción entre usuarios (Compartir proyectos)</label>
+                        <label class="custom-control-label" for="customCheck2">Interacción entre usuarios (Compartir
+                            proyectos)</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
-                        <label class="custom-control-label" for="customCheck2">subida de archivos xlsx, JSON, CSV, etc.</label>
+                        <label class="custom-control-label" for="customCheck2">subida de archivos xlsx, JSON, CSV,
+                            etc.</label>
                     </div>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="customCheck2" disabled="">
@@ -118,41 +131,43 @@
                         <label class="custom-control-label" for="customCheck2"> .... </label>
                     </div>
                 </div>
-              </div>
-          </div>
-      </div>
+            </div>
+        </div>
+    </div>
 
-      <!-- TABLA -->
-      <div class="table-responsive text-nowrap col-md-10 mx-auto">
-      <table class="table">
-        <thead class="thead-dark">
-            <tr id="table-title">
-            </tr>
-        </thead>
-        <tbody>
-            <tr id='table-body'>
-            </tr>
-        </tbody>
+    <!-- TABLA -->
+    <div class="table-responsive text-nowrap col-md-10 mx-auto">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr id="table-title">
+                </tr>
+            </thead>
+            <tbody>
+                <tr id='table-body'>
+                </tr>
+            </tbody>
         </table>
-        </div>
+    </div>
 
-        <!-- DATOS -->
-        <div class="table-responsive text-nowrap col-md-10 mx-auto" id="inicio">
-    
-        </div>
+    <!-- DATOS -->
+    <div class="table-responsive text-nowrap col-md-10 mx-auto" id="inicio">
 
-      <!-- FORMULARIO  -->
-      <div class="container p-4 formul style="display: none;"" > 
+    </div>
+
+    <!-- FORMULARIO  -->
+    <div class="container p-4 formul style=" display: none;"">
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
                         <form id="task-form">
                             <div class="form-group">
-                              <input type="text" id="task-title" class="form-control" placeholder="ID Exploracion" required>
+                                <input type="text" id="task-title" class="form-control" placeholder="ID Exploracion"
+                                    required>
                             </div>
                             <div class="form-group">
-                              <textarea id="task-description" rows="3" class='form-control' placeholder="Descripcion" required></textarea>
+                                <textarea id="task-description" rows="3" class='form-control' placeholder="Descripcion"
+                                    required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary" id="btn-task-form">
                                 Save
@@ -164,69 +179,80 @@
 
             <div class="col-md-6" id="tasks-container"></div>
         </div>
-  
-      </div>
-      <!-- Modal Sign Up-->
-    <div class="modal fade" id="signupModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+    </div>
+    <!-- Modal Sign Up-->
+    <div class="modal fade" id="signupModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">SIGN UP</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">SIGN UP</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="signup-form">
+                        <div class="form-group">
+                            <input type="text" id='signup-email' class="form-control" placeholder="email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id='signup-password' class="form-control" placeholder="Password"
+                                required>
+                        </div>
+                        <div id="warning-msg-signup" class="alert alert-warning" style="display: none;"></div>
+                        <button type="submit" class="btn btn-primary">CONTINUAR</button>
+
+                    </form>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="signup-form">
-                    <div class="form-group">
-                        <input type="text" id='signup-email' class="form-control" placeholder="email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id='signup-password' class="form-control" placeholder="Password" required>
-                    </div>
-                    <div id="warning-msg-signup" class="alert alert-warning" style="display: none;"></div>
-                    <button type="submit" class="btn btn-primary">CONTINUAR</button>
-                    
-                </form>
-            </div>
-        </div>
         </div>
     </div>
 
     <!-- Modal Sign in-->
-    <div class="modal fade" id="signinModal" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="signinModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel">SIGN IN</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">SIGN IN</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="signin-form">
+                        <div class="form-group">
+                            <input type="text" id='signin-email' class="form-control" placeholder="email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" id='signin-password' class="form-control" placeholder="Password"
+                                required>
+                        </div>
+                        <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
+                        <button type="submit" id='signin-button' class="btn btn-secondary btn-block">Login</button>
+                        <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
+                        <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With
+                            Facebook</button>
+                    </form>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="signin-form">
-                    <div class="form-group">
-                        <input type="text" id='signin-email' class="form-control" placeholder="email" required>
-                    </div>
-                    <div class="form-group">
-                        <input type="password" id='signin-password' class="form-control" placeholder="Password" required>
-                    </div>
-                    <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
-                    <button type="submit" id='signin-button' class="btn btn-secondary btn-block">Login</button>
-                    <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
-                    <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With Facebook</button>
-                </form>
-            </div>
-        </div>
         </div>
     </div>
 
     <!-- BOOTSTRAP SCRIPTS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
 
-    
+
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
 
@@ -240,30 +266,32 @@
     <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
 
     <script>
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    var firebaseConfig = {
-        apiKey: "AIzaSyDbBbezuZ1QgRry43lelIjXCL617fFeOD4",
-        authDomain: "proyectoprueba-e9130.firebaseapp.com",
-        databaseURL: "https://proyectoprueba-e9130.firebaseio.com",
-        projectId: "proyectoprueba-e9130",
-        storageBucket: "proyectoprueba-e9130.appspot.com",
-        messagingSenderId: "348235529752",
-        appId: "1:348235529752:web:cd6e58e31ab4cc4fce4d6d",
-        measurementId: "G-YC6KKPKCHW"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth()
-    const db = firebase.firestore()
-    const dbRt = firebase.database() // Database in real-time
-    
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyDbBbezuZ1QgRry43lelIjXCL617fFeOD4",
+            authDomain: "proyectoprueba-e9130.firebaseapp.com",
+            databaseURL: "https://proyectoprueba-e9130.firebaseio.com",
+            projectId: "proyectoprueba-e9130",
+            storageBucket: "proyectoprueba-e9130.appspot.com",
+            messagingSenderId: "348235529752",
+            appId: "1:348235529752:web:cd6e58e31ab4cc4fce4d6d",
+            measurementId: "G-YC6KKPKCHW"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth()
+        const db = firebase.firestore()
+        const dbRt = firebase.database() // Database in real-time
+
     // firebase.analytics();
     </script>
 
     <!-- CUSTOM CODE -->
     <script src="./js/app.js"></script>
+    <script src="./js/showProj.js"></script>
     <!-- <script src="./leaflet-search/src/leaflet-search.js"></script> -->
 
 </body>
+
 </html>
