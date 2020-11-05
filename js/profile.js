@@ -41,7 +41,7 @@ auth.onAuthStateChanged(user => {
         })
         document.getElementById('name').value = user.displayName;
         document.getElementById('mail').value = user.email;
-        if (user.photoURL){
+        if (user.photoURL) {
             document.getElementById('profileImage').src = user.photoURL;
             // console.log(user.photoURL);
             // console.log(user);
@@ -112,29 +112,72 @@ document.getElementById('profile-container').addEventListener('mouseleave', () =
     document.getElementById('changeImage').style.display = 'none';
 })
 
-function updateImage(uploader) {
-    // Resize the image using https://www.therogerlab.com/how-can-i/javascript/resize-an-image.html#resizeImage
-    $('#profileImage').attr('src', window.URL.createObjectURL(uploader.files[0]));
-    let storageRef = storageFb.ref();
-    let imageRef = 'images/'+ auth.currentUser.uid +'.jpg'
-    var userImagesRef = storageRef.child(imageRef);
-    let file = uploader.files[0];
-    userImagesRef.put(file).then(function (snapshot) {
-        console.log('Uploaded  the image!');
-        snapshot.ref.getDownloadURL().then(function (downloadURL) {
-            console.log('File available at', downloadURL);
-            let user = auth.currentUser;
-            user.updateProfile({
-                photoURL: downloadURL,
-            });
-        });
-    });
+function updateImage() {
+    // Create an image
+    var file = document.getElementById('imageUpload').files[0];
+    console.log(file);
+    var img = document.createElement("img");
+    // Create a file reader
+    var reader = new FileReader();
+    // Set the image once loaded into file reader
+    reader.onload = function (e) {
+        console.log(typeof (e.target.result));
 
+        img.src = e.target.result;
+        var canvas = document.createElement("canvas");
+        img.onload = () => {
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            var width = img.width;
+            var height = img.height;
+            let sx = 0;
+            let sy = 0;
+            let sw = width;
+            let sh = height;
+
+            if (width > height) {
+                sx = (width - height) / 2;
+                sy = 0;
+                sh = height;
+                sw = height;
+            } else {
+                sx = 0;
+                sy = (height - width) / 2;
+                sh = width;
+                sw = width;
+            }
+
+            canvas.width = 200;
+            canvas.height = 200;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 200, 200);
+            var dataurl = canvas.toDataURL("image/jpg");
+            document.getElementById('profileImage').src = dataurl;
+            canvas.toBlob((blob) => {
+                console.log(blob);
+                let storageRef = storageFb.ref();
+                let imageRef = 'images/' + auth.currentUser.uid + '.jpg'
+                var userImagesRef = storageRef.child(imageRef);
+                userImagesRef.put(blob).then(function (snapshot) {
+                    console.log('Uploaded  the image!');
+                    snapshot.ref.getDownloadURL().then(function (downloadURL) {
+                        console.log('File available at', downloadURL);
+                        let user = auth.currentUser;
+                        user.updateProfile({
+                            photoURL: downloadURL,
+                        });
+                    });
+                });
+            })
+        }
+    }
+    // Load files into file reader
+    reader.readAsDataURL(file);
 }
 
 $("#imageUpload").change(function () {
     if (this.files && this.files[0] && String(this.files[0].type).match(/image\/.*/)) {
-        updateImage(this);
+        updateImage(document.getElementById('imageUpload').files[0]);
         document.getElementById('alert').lastChild.textContent = 'Foto actualizada con éxito.';
         document.getElementById('alert').className = "alert alert-success";
         document.getElementById('alert').style.display = 'block';
