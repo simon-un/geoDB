@@ -12,12 +12,10 @@ const loginCheck = user => {
         loggedInLinks.forEach(link => {link.style.display = 'block'})
         loggedOutLinks.forEach(link => {link.style.display = 'none'})
         loggedInForms.forEach(container => {container.style.display = 'block'})
-
     } else {
         loggedInLinks.forEach(link => {link.style.display = 'none'})
         loggedOutLinks.forEach(link => {link.style.display = 'block'})
         loggedInForms.forEach(container => {container.style.display = 'none'})
-
     }
 }
 
@@ -115,8 +113,14 @@ logout.addEventListener('click', e => {
     })
 })
 
-//Insertar tareas
+// Clean up the current state variables
+window.onload = () => {
+    sessionStorage.currentProject = '';
+    sessionStorage.currentProjName = '';
+    sessionStorage.currentRol = '';
+}
 
+//Insertar tareas
 const taskform = document.querySelector('#task-form');
 const taskContainer = document.querySelector('#tasks-container');
 var editStatus = false

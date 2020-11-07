@@ -2,6 +2,16 @@
 
 // const { auth } = require("firebase");
 var currentProject = sessionStorage.getItem('currentProject');
+let projectName = sessionStorage.currentProjName;
+let currentRole = sessionStorage.currentRol;
+
+// Set current project's name and role
+if(currentRole){
+    document.getElementById('rol_p').innerHTML = currentRole;
+}
+if(projectName){
+    document.getElementById('proj_p').innerHTML = projectName;
+}
 
 const loggedOutLinks = document.querySelectorAll('.logged-out')
 const loggedInLinks = document.querySelectorAll('.logged-in')
