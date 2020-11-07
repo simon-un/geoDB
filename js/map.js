@@ -1,6 +1,7 @@
 // const { auth } = require("firebase-admin");
 
 // const { auth } = require("firebase");
+var currentProject = sessionStorage.getItem('currentProject');
 
 const loggedOutLinks = document.querySelectorAll('.logged-out')
 const loggedInLinks = document.querySelectorAll('.logged-in')
@@ -171,8 +172,14 @@ function get(object, key, default_value) {
 
 auth.onAuthStateChanged(user => {
     if (user) {
+        userUid = user.uid
         loggedInLinks.forEach(link => {
             link.style.display = 'block'
+        })
+
+        dbRt.ref('PROYECTOS').child(currentProject).on('value', snap => {
+            var obj = snap.val()
+            graphGeoMarkers(obj)
         })
 
         dbRt.ref('COORDS').on('value', (snap) => {
@@ -192,10 +199,10 @@ auth.onAuthStateChanged(user => {
 
         // });
 
-
+        // Grafica todos los marcadores contenidos en COORDSGEOJSON
         dbRt.ref('COORDSGEOJSON').on('value', (snap) => {
             var obj = snap.val();
-            graphGeoMarkers(obj)
+            // graphGeoMarkers(obj)
         })
 
 
@@ -304,75 +311,84 @@ const graphMarkers = (Obj) => {
     })
 }  
 
-group = new L.FeatureGroup();
+var groupGen = new L.FeatureGroup();
+var overlayMaps = {}
+var name
+
 const graphGeoMarkers = (Obj) => {
 
     var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
                                 // un objeto de firebase
+
     Object.keys(Obj).forEach(key => {
-        group.addLayer(L.geoJSON(Obj[key], {
-            onEachFeature: {
-                title: key 
-            },
-            onEachFeature: function (feature, layer) {
-                layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
-                layer.on({
-                    click: (e) => {
-                        if (!infoRequested['marker' + key]) {
-                            infoRequested['marker' + key] = true
-                            dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
-                                var obj = snap.val()
-                                dict = {}
-                                dictLevel = {}
-            
-                                div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
-                                
-                                </div>`
-                                inicio.innerHTML += div
-            
-                                var objMod = {}
-                        
-                                objMod[key] = obj
-                                unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
-                            })
-                        } else {
-                            console.log('Object requested')
-                        }
-
-                        openNav()
-
-                        $('#inicio').toggle()
-                        layer.openPopup()
-
-                        if (!clicked) {
-                            layer.openPopup()
-                            clicked = true
-                            $("#inicio").children().hide();
-                            $('#' + key + 'inicio').show()
-                        } else {
-                            clicked = false
-                        }
-                    },
-                mouseover: e => {
-                    layer.openPopup()
+        var group = new L.FeatureGroup()
+        var ObjPerf = Obj[key]
+        name = key
+        Object.keys(ObjPerf).forEach(key => {
+            group.addLayer(L.geoJSON(ObjPerf[key], {
+                onEachFeature: {
+                    title: key 
                 },
-                mouseout: e => {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                    layer.on({
+                        click: (e) => {
+                            if (!infoRequested['marker' + key]) {
+                                infoRequested['marker' + key] = true
+                                dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                                    var obj = snap.val()
+                                    dict = {}
+                                    dictLevel = {}
+                
+                                    div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+                                    
+                                    </div>`
+                                    inicio.innerHTML += div
+                
+                                    var objMod = {}
+                            
+                                    objMod[key] = obj
+                                    unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+                                })
+                            } else {
+                                console.log('Object requested')
+                            }
+    
+                            openNav()
+    
+                            $('#inicio').toggle()
+                            layer.openPopup()
+    
+                            if (!clicked) {
+                                layer.openPopup()
+                                clicked = true
+                                $("#inicio").children().hide();
+                                $('#' + key + 'inicio').show()
+                            } else {
+                                clicked = false
+                            }
+                        },
+                    mouseover: e => {
+                        layer.openPopup()
+                    },
+                    mouseout: e => {
                         layer.closePopup()
+                    }
+                    });
                 }
-                });
-            }
-        }).addTo(map))
+            }).addTo(map))
+        })
+        groupGen.addLayer(group)
+        overlayMaps[name] = group
+        map.addLayer(group)
     })
+    
+    L.control.layers({}, overlayMaps, {
+        position: 'bottomleft'
+    }).addTo(map);
 }
 
-map.addLayer(group)
-
-var overlayMaps = {
-    "Exploraciones Bogota": group
-};
-L.control.layers({}, overlayMaps, {
-    position: 'topleft'
-}).addTo(map);
+map.addLayer(groupGen)
 
 map.on('click', e => {
     if (clicked) {
@@ -381,17 +397,30 @@ map.on('click', e => {
     }
 })
 
-var controlSearch = new L.Control.Search({
-    position:'topleft',		
-    layer: group,
-    initial: true,
-    zoom: 20,
-    marker: false,
-    firstTipSubmit: true,
-    textErr: 'Exploración no encontrada',
-    textPlaceholder: 'Buscar',
+// General structures filter
+var overLayers = [
+	{
+		group: "Filtro general",
+		layers: [
+			{   
+				active: true,
+				name: "Estructuras",
+                layer: groupGen,
+                
+            }
+        ]
+    }
+]
+
+var panelLayers = new L.Control.PanelLayers({}, overLayers, {
+	compact: true,
+    collapsibleGroups: true,
+    position: 'bottomleft',
 });
 
+map.addControl(panelLayers);
+
+// Icons for markers
 var greenIcon = new L.Icon({
     iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -408,6 +437,18 @@ iconSize: [25, 41],
 iconAnchor: [12, 41],
 popupAnchor: [1, -34],
 shadowSize: [41, 41]
+});
+
+// Search control
+var controlSearch = new L.Control.Search({
+    position:'topleft',		
+    layer: groupGen,
+    initial: true,
+    zoom: 20,
+    marker: false,
+    firstTipSubmit: true,
+    textErr: 'Exploración no encontrada',
+    textPlaceholder: 'Buscar',
 });
 
 controlSearch.on('search:locationfound', e => {
