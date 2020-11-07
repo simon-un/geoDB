@@ -43,11 +43,20 @@ showProjects = (obj) => {
         }
         projects.innerHTML += `
         <div class="project">
-            ${obj[key]['NAME']}
+            <a onclick="projectMap('${key}')" href="map.html">${obj[key]['NAME']}</a>
+            
             <br>
             ID del Proyecto: ${key}
             <br>
             Rol: ${rol}
         </div>`;
+
+        
+
+
     }
+}
+
+var projectMap = (key) => {
+    sessionStorage.setItem('currentProject', key);
 }
