@@ -120,6 +120,12 @@ window.onload = () => {
     sessionStorage.currentRol = '';
 }
 
+loadPublic = () =>{
+    sessionStorage.currentProject = 'PUBLIC';
+    sessionStorage.currentProjName = 'Base de datos pública';
+    sessionStorage.currentRol = 'Visitante';
+}
+
 //Insertar tareas
 const taskform = document.querySelector('#task-form');
 const taskContainer = document.querySelector('#tasks-container');
