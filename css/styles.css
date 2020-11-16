@@ -85,13 +85,14 @@
   .sidebar .closebtn {
     position: absolute;
     width: 20px;
-    padding: 0;
+    height: 100%;
+    padding: 5px 0;
     color: black;
     top: 0;
     right: 0;
     font-size: 20px;
     cursor: pointer;
-    border-left: solid black 1px;
+    border-left: solid #E5E5E5 1px;
     text-align: center;
   } 
 
