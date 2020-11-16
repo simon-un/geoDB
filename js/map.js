@@ -275,7 +275,7 @@ const graphMarkers = (Obj) => {
 
             if (!infoRequested['marker' + key]) {
                 infoRequested['marker' + key] = true
-                dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
                     var obj = snap.val()
                     dict = {}
                     dictLevel = {}
@@ -345,7 +345,7 @@ const graphGeoMarkers = (Obj) => {
                         click: (e) => {
                             if (!infoRequested['marker' + key]) {
                                 infoRequested['marker' + key] = true
-                                dbRt.ref('EXPLORACIONES').child(key).on('value', (snap) => {
+                                dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
                                     var obj = snap.val()
                                     dict = {}
                                     dictLevel = {}

@@ -1,6 +1,6 @@
 import json
 
-with open('public.json', 'r') as f:
+with open('public_raw.json', 'r') as f:
     data = json.load(f)
 
 data = data["PUBLIC"]
@@ -15,10 +15,17 @@ for expl in data:
             "type":"Point"
         },
         "properties":{
-            "title":expl
+            "title":expl,
+            "clase": data[expl]["CLASE"],
+            "nombre": data[expl]["NOMBRE_EXPLORACION"],
+            "profundidad": data[expl]["PROFUNDIDAD_DE_EXPLORACION"],
+            "nivel_freatico": data[expl]["NIVEL_FREATICO(m)"],
+            "fecha": data[expl]["FECHA"],
+            "direccion": data[expl]["DIRECCION"]
         },
+        "layers": data[expl]["ESTRATOS"],
         "type": "Feature"
     }
 
-with open('public_new.json', 'w') as file:
+with open('public_newest.json', 'w') as file:
     json.dump(new_data, file)
