@@ -15,3 +15,14 @@
 #projects{
     text-align: center;
 }
+
+#new-pr{
+    text-align: right;
+    text-decoration: underline;
+    width: auto;
+}
+
+#new-pr:hover{
+    color: rgb(185, 181, 181);
+    cursor: pointer;
+}

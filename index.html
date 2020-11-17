@@ -54,7 +54,7 @@
             <div class="col-md-6 offset-md-3">
                 <ul class="list-group posts"></ul>
                 <br>
-                <div id="projects"><h5>Proyectos:</h5></div>
+                <div id="projects"></div>
 
                 <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#check"
                     aria-expanded="false" aria-controls="check">
@@ -155,7 +155,7 @@
     </div>
 
     <!-- FORMULARIO  -->
-    <div class="container p-4 formul style=" display: none;"">
+    <div class="container p-4 formul" style="display: none;">
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -241,6 +241,35 @@
         </div>
     </div>
 
+    <!-- Modal New Project-->
+    <div class="modal fade" id="newProjectModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" style="height: 100%; max-width: 800px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">REGISTRO NUEVO PROYECTO</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="newPrj-form">
+                        <div class="form-group">
+                            <input type="text" id='prjName' class="form-control" placeholder="Nombre del proyecto" required>
+                        </div>
+                        <div class="form-group">
+                        </div>
+                        <!-- <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
+                        <button type="submit" id='signin-button' class="btn btn-secondary btn-block">Login</button>
+                        <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
+                        <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With
+                            Facebook</button> -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- BOOTSTRAP SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -289,7 +318,7 @@
 
     <!-- CUSTOM CODE -->
     <script src="./js/app.js"></script>
-    <script src="./js/showProj.js"></script>
+    <script src="./js/projectManager.js"></script>
     <!-- <script src="./leaflet-search/src/leaflet-search.js"></script> -->
 
 </body>
