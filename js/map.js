@@ -273,26 +273,26 @@ const graphMarkers = (Obj) => {
 
         window['marker' + key].on('click', e => {
 
-            if (!infoRequested['marker' + key]) {
-                infoRequested['marker' + key] = true
-                dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
-                    var obj = snap.val()
-                    dict = {}
-                    dictLevel = {}
+            // if (!infoRequested['marker' + key]) {
+            //     infoRequested['marker' + key] = true
+            //     dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
+            //         var obj = snap.val()
+            //         dict = {}
+            //         dictLevel = {}
 
-                    div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+            //         div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
                     
-                    </div>`
-                    inicio.innerHTML += div
+            //         </div>`
+            //         inicio.innerHTML += div
 
-                    var objMod = {}
+            //         var objMod = {}
             
-                    objMod[key] = obj
-                    unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
-                })
-            } else {
-                console.log('Object requested')
-            }
+            //         objMod[key] = obj
+            //         unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+            //     })
+            // } else {
+            //     console.log('Object requested')
+            // }
 
 
             openNav()
@@ -324,6 +324,8 @@ const graphMarkers = (Obj) => {
 var groupGen = new L.FeatureGroup();
 var overlayMaps = {}
 var name
+var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
+                                // un objeto de firebase
 const ulStructuresTab = document.querySelector('#ul-structures-tab')
 const ulSondeosTab = document.querySelector('#ul-sondeos-tab')
 
@@ -332,15 +334,60 @@ function activeTab(tab, structureObj){
     ulSondeosTab.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
         ulSondeosTab.innerHTML += `
-        <li><a href="#">${key}</a></li>
+        <li><a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a></li>
     `
+    console.log('akey', 'a'+key)
+    // window['link'+'a'+key] = document.querySelector(`#a${key}`)
+    // window['link'+'a'+key].addEventListener('click', e => {
+    //     console.log('click')
+    // })
+
+    // console.log(eval('link'+'a'+key))
     })
   };
 
-const graphGeoMarkers = (Obj) => {
+function openInfo(tab, key) {
+    $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+    getInfo(key)
+    clicked = true
+    $("#inicio").children().hide();
+    $('#' + key + 'inicio').show()
 
-    var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
-                                // un objeto de firebase
+    console.log('click '+key)
+}
+
+//Getting info
+
+function getInfo(key) {
+    if (!infoRequested['marker' + key]) {
+        clicked = false
+        console.log('pidiendo')
+        infoRequested['marker' + key] = true
+        dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
+            var obj = snap.val()
+            dict = {}
+            dictLevel = {}
+
+            div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+            
+            </div>`
+            inicio.innerHTML += div
+
+            var objMod = {}
+    
+            objMod[key] = obj
+            unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+        })
+    } else {
+        console.log('Object requested')
+    }
+
+    if ($('#inicio').is(":hidden")) {
+        $('#inicio').show(); 
+      }
+}
+
+const graphGeoMarkers = (Obj) => {
 
     Object.keys(Obj).forEach(key => {
         var group = new L.FeatureGroup()
@@ -359,7 +406,7 @@ const graphGeoMarkers = (Obj) => {
         };
         li.appendChild(a)
         ulStructuresTab.appendChild(li)
-        
+
         Object.keys(ObjPerf).forEach(key => {
             group.addLayer(L.geoJSON(ObjPerf[key], {
                 onEachFeature: {
@@ -369,39 +416,26 @@ const graphGeoMarkers = (Obj) => {
                     layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
                     layer.on({
                         click: (e) => {
-                            if (!infoRequested['marker' + key]) {
-                                infoRequested['marker' + key] = true
-                                dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
-                                    var obj = snap.val()
-                                    dict = {}
-                                    dictLevel = {}
-                
-                                    div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
-                                    
-                                    </div>`
-                                    inicio.innerHTML += div
-                
-                                    var objMod = {}
-                            
-                                    objMod[key] = obj
-                                    unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
-                                })
-                            } else {
-                                console.log('Object requested')
-                            }
-    
+                            getInfo(key) 
                             openNav()
-    
-                            $('#inicio').toggle()
                             layer.openPopup()
     
                             if (!clicked) {
                                 layer.openPopup()
                                 clicked = true
-                                $("#inicio").children().hide();
-                                $('#' + key + 'inicio').show()
+                                console.log(clicked)
+
+                                if ($('#inicio').is(":visible")) {
+                                    $("#inicio").children().hide();
+                                    $('#' + key + 'inicio').show()
+                                  } 
                             } else {
                                 clicked = false
+                                if ($('#inicio').is(":visible")) {
+                                    $("#inicio").children().hide();
+                                    $('#' + key + 'inicio').show()
+                                  } 
+                                console.log(clicked)
                             }
                         },
                     mouseover: e => {
