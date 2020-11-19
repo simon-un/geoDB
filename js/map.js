@@ -324,6 +324,18 @@ const graphMarkers = (Obj) => {
 var groupGen = new L.FeatureGroup();
 var overlayMaps = {}
 var name
+const ulStructuresTab = document.querySelector('#ul-structures-tab')
+const ulSondeosTab = document.querySelector('#ul-sondeos-tab')
+
+function activeTab(tab, structureObj){
+    $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+    ulSondeosTab.innerHTML = ''
+    Object.keys(structureObj).forEach(key => {
+        ulSondeosTab.innerHTML += `
+        <li><a href="#">${key}</a></li>
+    `
+    })
+  };
 
 const graphGeoMarkers = (Obj) => {
 
@@ -334,6 +346,20 @@ const graphGeoMarkers = (Obj) => {
         var group = new L.FeatureGroup()
         var ObjPerf = Obj[key]
         name = key
+
+        // Contenido de Sondeos
+        var li = document.createElement('li');
+        var a = document.createElement('a');
+        a.setAttribute('href', '#');
+        a.textContent = name
+        
+        // Attach onclick handler to it (passing it the object)
+        a.onclick = function () { 
+            activeTab('nav-sondeos', Obj[key]) 
+        };
+        li.appendChild(a)
+        ulStructuresTab.appendChild(li)
+        
         Object.keys(ObjPerf).forEach(key => {
             group.addLayer(L.geoJSON(ObjPerf[key], {
                 onEachFeature: {
