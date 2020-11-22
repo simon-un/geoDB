@@ -11,6 +11,7 @@ if(currentRole){
 }
 if(projectName){
     document.getElementById('proj_p').innerHTML = projectName;
+    document.getElementById('pStruct').innerHTML += projectName;
 }
 
 const loggedOutLinks = document.querySelectorAll('.logged-out')
@@ -328,21 +329,33 @@ var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez 
                                 // un objeto de firebase
 const ulStructuresTab = document.querySelector('#ul-structures-tab')
 const ulSondeosTab = document.querySelector('#ul-sondeos-tab')
+const myTbodyStructureNav = document.querySelector('#myTbodyStructureNav')
+const myTbodySondeosNav = document.querySelector('#myTbodySondeosNav')
+const pSondeos = document.querySelector('#pSondeos')
+const myTableSondeosNav = document.querySelector('#myTableSondeosNav')
 
-function activeTab(tab, structureObj){
+function activeTab(tab, structureObj, name){
+
+    myTableSondeosNav.style.display = 'table'
     $('.nav-tabs a[href="#' + tab + '"]').tab('show');
     ulSondeosTab.innerHTML = ''
+    myTbodySondeosNav.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
-        ulSondeosTab.innerHTML += `
-        <li><a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a></li>
-    `
-    console.log('akey', 'a'+key)
-    // window['link'+'a'+key] = document.querySelector(`#a${key}`)
-    // window['link'+'a'+key].addEventListener('click', e => {
-    //     console.log('click')
-    // })
+    //     ulSondeosTab.innerHTML += `
+    //     <li><a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a></li>
+    // `
 
-    // console.log(eval('link'+'a'+key))
+    pSondeos.innerHTML = `<p style="text-align:justify" id="pStruct">
+            Se muestran todos los sondeos relacionados a la estructura ${name} 
+        </p>`
+
+        myTbodySondeosNav.innerHTML += `
+        <tr>
+            <td>
+                <a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a>
+            </td>
+        </tr>
+    `
     })
   };
 
@@ -352,8 +365,6 @@ function openInfo(tab, key) {
     clicked = true
     $("#inicio").children().hide();
     $('#' + key + 'inicio').show()
-
-    console.log('click '+key)
 }
 
 //Getting info
@@ -361,7 +372,6 @@ function openInfo(tab, key) {
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
         clicked = false
-        console.log('pidiendo')
         infoRequested['marker' + key] = true
         dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
             var obj = snap.val()
@@ -395,17 +405,17 @@ const graphGeoMarkers = (Obj) => {
         name = key
 
         // Contenido de Sondeos
-        var li = document.createElement('li');
+        var tr = document.createElement('tr');
+        var td = document.createElement('td');
         var a = document.createElement('a');
         a.setAttribute('href', '#');
         a.textContent = name
-        
-        // Attach onclick handler to it (passing it the object)
+
         a.onclick = function () { 
-            activeTab('nav-sondeos', Obj[key]) 
+            activeTab('nav-sondeos', Obj[key], key) 
         };
-        li.appendChild(a)
-        ulStructuresTab.appendChild(li)
+        tr.appendChild(td).appendChild(a)
+        myTbodyStructureNav.appendChild(tr)
 
         Object.keys(ObjPerf).forEach(key => {
             group.addLayer(L.geoJSON(ObjPerf[key], {
@@ -489,6 +499,27 @@ var panelLayers = new L.Control.PanelLayers({}, overLayers, {
 });
 
 map.addControl(panelLayers);
+
+// Structures nav filter
+$(document).ready(function(){
+    $("#myInputStructureNav").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTbodyStructureNav tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+// Sondeos nav filter
+$(document).ready(function(){
+    $("#myInputSondeosNav").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTbodySondeosNav tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
 
 // Icons for markers
 var greenIcon = new L.Icon({
