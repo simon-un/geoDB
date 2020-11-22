@@ -333,17 +333,16 @@ const myTbodyStructureNav = document.querySelector('#myTbodyStructureNav')
 const myTbodySondeosNav = document.querySelector('#myTbodySondeosNav')
 const pSondeos = document.querySelector('#pSondeos')
 const myTableSondeosNav = document.querySelector('#myTableSondeosNav')
+const myFormSondeosNav = document.querySelector('#myFormSondeosNav')
+const myFormStructureNav = document.querySelector('#myFormStructureNav')
+
 
 function activeTab(tab, structureObj, name){
 
     myTableSondeosNav.style.display = 'table'
     $('.nav-tabs a[href="#' + tab + '"]').tab('show');
-    ulSondeosTab.innerHTML = ''
     myTbodySondeosNav.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
-    //     ulSondeosTab.innerHTML += `
-    //     <li><a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a></li>
-    // `
 
     pSondeos.innerHTML = `<p style="text-align:justify" id="pStruct">
             Se muestran todos los sondeos relacionados a la estructura ${name} 
@@ -351,20 +350,24 @@ function activeTab(tab, structureObj, name){
 
         myTbodySondeosNav.innerHTML += `
         <tr>
-            <td>
+            <td colspan="2">
                 <a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a>
             </td>
         </tr>
     `
+
     })
   };
 
 function openInfo(tab, key) {
+    controlSearch.searchText(key)
     $('.nav-tabs a[href="#' + tab + '"]').tab('show');
     getInfo(key)
     clicked = true
     $("#inicio").children().hide();
     $('#' + key + 'inicio').show()
+    myFormSondeosNav.reset();
+    $("#myInputSondeosNav").keyup()
 }
 
 //Getting info
@@ -404,14 +407,17 @@ const graphGeoMarkers = (Obj) => {
         var ObjPerf = Obj[key]
         name = key
 
-        // Contenido de Sondeos
+        // Contenido de Estructuras
         var tr = document.createElement('tr');
         var td = document.createElement('td');
+        td.setAttribute("colspan", "2");
         var a = document.createElement('a');
         a.setAttribute('href', '#');
         a.textContent = name
 
-        a.onclick = function () { 
+        a.onclick = function () {
+            myFormStructureNav.reset()
+            $("#myInputStructureNav").keyup()
             activeTab('nav-sondeos', Obj[key], key) 
         };
         tr.appendChild(td).appendChild(a)
@@ -512,11 +518,15 @@ $(document).ready(function(){
 
 // Sondeos nav filter
 $(document).ready(function(){
-    $("#myInputSondeosNav").on("keyup", function() {
+    $("#myInputSondeosNav").on("keyup", function(e) {
       var value = $(this).val().toLowerCase();
       $("#myTbodySondeosNav tr").filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
       });
+      
+      $("#myTbodySondeosNav tr").on('click', e => {
+          controlSearch.searchText(e.target.text)
+      })
     });
   });
 
@@ -553,6 +563,7 @@ var controlSearch = new L.Control.Search({
 });
 
 controlSearch.on('search:locationfound', e => {
+
     e.layer.setIcon(greenIcon)
     e.layer.openPopup()
 })
