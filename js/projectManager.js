@@ -2,7 +2,12 @@ auth.onAuthStateChanged(user => {
     if (user) {
         const projects = document.getElementById('projects');
         projects.style.display = 'block';
-        projects.innerHTML = `<h5>Proyectos:</h5>`;
+        projects.innerHTML = `
+            <h5>Proyectos:</h5>
+            <div style="width:100%; margin-bottom:5px;">
+            <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
+            </div>
+            <br>`;
         dbRt.ref('USERS/' + user.uid + '/PROY').on('value', (snap) => {
             var obj = snap.val();
             if (obj) {
@@ -56,4 +61,8 @@ var projectMap = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
+}
+
+const newProject = () =>{
+    console.log('New Project');
 }
