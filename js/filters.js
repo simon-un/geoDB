@@ -1,5 +1,13 @@
 var markerFilterStatus = {}
 
+// Get function
+function get(object, key, default_value) {
+    if (typeof object[key] == "undefined") {
+        object[key] = default_value
+    }
+    return object
+}
+
 // slider profundidad
 
 // Finding depth min-max values 
@@ -11,6 +19,7 @@ const groupGenTreatmentProf = () => {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
                 valueProf = l.feature.properties['PROFUNDIDAD_DE_EXPLORACION']
+                get(markerFilterStatus, l.feature.properties.title, [1])
                 if (valueProf < minProf || minProf === null) minProf = valueProf;
                 if (valueProf > maxProf || maxProf === null) maxProf = valueProf;
             })
@@ -43,15 +52,17 @@ noUiSlider.create(profundidadSlider, {
             layer.eachLayer(l => {
                 valueProf = l.feature.properties['PROFUNDIDAD_DE_EXPLORACION']
                 if (valueProf >= e[0] && valueProf <= e[1]) {
-                    l.addTo(map)
+                    markerFilterStatus[l.feature.properties.title][0] = 1
+                    if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
+                        l.addTo(map)
+                    }
                 } else {
+                    markerFilterStatus[l.feature.properties.title][0] = 0
                     map.removeLayer(l)
                 }
             })
         })
-
     })
-
 });
 
 var profundidadInputMin = document.getElementById('profundidadInputMin');
@@ -118,8 +129,12 @@ noUiSlider.create(nivelFreaticoSlider, {
             layer.eachLayer(l => {
                 valueNivel = l.feature.properties['NIVEL_FREATICO(m)']
                 if (valueNivel >= e[0] && valueNivel <= e[1]) {
-                    l.addTo(map)
+                    markerFilterStatus[l.feature.properties.title][1] = 1
+                    if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
+                        l.addTo(map)
+                    }
                 } else {
+                    markerFilterStatus[l.feature.properties.title][1] = 0
                     map.removeLayer(l)
                 }
             })
