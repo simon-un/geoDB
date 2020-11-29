@@ -6,10 +6,10 @@ let projectName = sessionStorage.currentProjName;
 let currentRole = sessionStorage.currentRol;
 
 // Set current project's name and role
-if(currentRole){
+if (currentRole) {
     document.getElementById('rol_p').innerHTML = currentRole;
 }
-if(projectName){
+if (projectName) {
     document.getElementById('proj_p').innerHTML = projectName;
     document.getElementById('pStruct').innerHTML += projectName;
 }
@@ -188,15 +188,18 @@ auth.onAuthStateChanged(user => {
             link.style.display = 'block'
         })
 
-        dbRt.ref('PROYECTOS').child(currentProject).on('value', snap => {
+        dbRt.ref('PROYECTOS').child(currentProject).on('value', async snap => {
             var obj = snap.val()
-            graphGeoMarkers(obj)
+            await graphGeoMarkers(obj)
+            await groupGenTreatmentProf() // Find it in filters.js file
+            await groupGenTreatmentNivel() // Find it in filters.js file
+
         })
 
         dbRt.ref('COORDS').on('value', (snap) => {
             var obj = snap.val(); //equivalente a Dictionary en pyhon
 
-        // Por el momento se trabaja con geoJSON pero NO descartar
+            // Por el momento se trabaja con geoJSON pero NO descartar
 
         });
         document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
@@ -265,12 +268,12 @@ const graphMarkers = (Obj) => {
 
         window['marker' + key] = L.marker([Obj[key]['Norte'], Obj[key]['Este']]).addTo(map)
 
-        window['clicked'+'marker'+key] = false
+        window['clicked' + 'marker' + key] = false
         window['marker' + key].bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
         // list.push(['marker'+key]) // Utilizar para agrupar exploraciones
 
         var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
-                                // un objeto de firebase
+        // un objeto de firebase
 
         window['marker' + key].on('click', e => {
 
@@ -282,12 +285,12 @@ const graphMarkers = (Obj) => {
             //         dictLevel = {}
 
             //         div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
-                    
+
             //         </div>`
             //         inicio.innerHTML += div
 
             //         var objMod = {}
-            
+
             //         objMod[key] = obj
             //         unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
             //     })
@@ -320,13 +323,13 @@ const graphMarkers = (Obj) => {
         })
         // list.push(eval('marker'+key))
     })
-}  
+}
 
 var groupGen = new L.FeatureGroup();
 var overlayMaps = {}
 var name
 var infoRequested = {} // Objeto que evita solicitar informacion mas de una vez para
-                                // un objeto de firebase
+// un objeto de firebase
 const ulStructuresTab = document.querySelector('#ul-structures-tab')
 const ulSondeosTab = document.querySelector('#ul-sondeos-tab')
 const myTbodyStructureNav = document.querySelector('#myTbodyStructureNav')
@@ -337,14 +340,14 @@ const myFormSondeosNav = document.querySelector('#myFormSondeosNav')
 const myFormStructureNav = document.querySelector('#myFormStructureNav')
 
 
-function activeTab(tab, structureObj, name){
+function activeTab(tab, structureObj, name) {
 
     myTableSondeosNav.style.display = 'table'
     $('.nav-tabs a[href="#' + tab + '"]').tab('show');
     myTbodySondeosNav.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
 
-    pSondeos.innerHTML = `<p style="text-align:justify" id="pStruct">
+        pSondeos.innerHTML = `<p style="text-align:justify" id="pStruct">
             Se muestran todos los sondeos relacionados a la estructura ${name} 
         </p>`
 
@@ -357,7 +360,7 @@ function activeTab(tab, structureObj, name){
     `
 
     })
-  };
+};
 
 function openInfo(tab, key) {
     controlSearch.searchText(key)
@@ -387,17 +390,17 @@ function getInfo(key) {
             inicio.innerHTML += div
 
             var objMod = {}
-    
+
             objMod[key] = obj
-            unpack(objMod, Object.values(obj).filter( v => typeof v === 'object').length, '', false, key+'inicio', 0, dict, '', 8, false)
+            unpack(objMod, Object.values(obj).filter(v => typeof v === 'object').length, '', false, key + 'inicio', 0, dict, '', 8, false)
         })
     } else {
         console.log('Object requested')
     }
 
     if ($('#inicio').is(":hidden")) {
-        $('#inicio').show(); 
-      }
+        $('#inicio').show();
+    }
 }
 
 const graphGeoMarkers = (Obj) => {
@@ -418,7 +421,7 @@ const graphGeoMarkers = (Obj) => {
         a.onclick = function () {
             myFormStructureNav.reset()
             $("#myInputStructureNav").keyup()
-            activeTab('nav-sondeos', Obj[key], key) 
+            activeTab('nav-sondeos', Obj[key], key)
         };
         tr.appendChild(td).appendChild(a)
         myTbodyStructureNav.appendChild(tr)
@@ -426,16 +429,16 @@ const graphGeoMarkers = (Obj) => {
         Object.keys(ObjPerf).forEach(key => {
             group.addLayer(L.geoJSON(ObjPerf[key], {
                 onEachFeature: {
-                    title: key 
+                    title: key
                 },
                 onEachFeature: function (feature, layer) {
                     layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
                     layer.on({
                         click: (e) => {
-                            getInfo(key) 
+                            getInfo(key)
                             openNav()
                             layer.openPopup()
-    
+
                             if (!clicked) {
                                 layer.openPopup()
                                 clicked = true
@@ -444,22 +447,22 @@ const graphGeoMarkers = (Obj) => {
                                 if ($('#inicio').is(":visible")) {
                                     $("#inicio").children().hide();
                                     $('#' + key + 'inicio').show()
-                                  } 
+                                }
                             } else {
                                 clicked = false
                                 if ($('#inicio').is(":visible")) {
                                     $("#inicio").children().hide();
                                     $('#' + key + 'inicio').show()
-                                  } 
+                                }
                                 console.log(clicked)
                             }
                         },
-                    mouseover: e => {
-                        layer.openPopup()
-                    },
-                    mouseout: e => {
-                        layer.closePopup()
-                    }
+                        mouseover: e => {
+                            layer.openPopup()
+                        },
+                        mouseout: e => {
+                            layer.closePopup()
+                        }
                     });
                 }
             }).addTo(map))
@@ -468,13 +471,22 @@ const graphGeoMarkers = (Obj) => {
         overlayMaps[name] = group
         map.addLayer(group)
     })
-    
+
     L.control.layers({}, overlayMaps, {
         position: 'bottomleft'
     }).addTo(map);
 }
 
 map.addLayer(groupGen)
+
+// const structActive = document.getElementById('structActive')
+// map.on('overlayadd', e => {
+//     structActive.innerHTML += `<li> ${e.name} </li>`
+// })
+
+// map.on('overlayremove', e => {
+//     console.log(e)
+// })
 
 map.on('click', e => {
     if (clicked) {
@@ -484,22 +496,18 @@ map.on('click', e => {
 })
 
 // General structures filter
-var overLayers = [
-	{
-		group: "Filtro general",
-		layers: [
-			{   
-				active: true,
-				name: "Estructuras",
-                layer: groupGen,
-                
-            }
-        ]
-    }
-]
+var overLayers = [{
+    group: "Filtro general",
+    layers: [{
+        active: true,
+        name: "Estructuras",
+        layer: groupGen,
+
+    }]
+}]
 
 var panelLayers = new L.Control.PanelLayers({}, overLayers, {
-	compact: true,
+    compact: true,
     collapsibleGroups: true,
     position: 'bottomleft',
 });
@@ -507,28 +515,28 @@ var panelLayers = new L.Control.PanelLayers({}, overLayers, {
 map.addControl(panelLayers);
 
 // Structures nav filter
-$(document).ready(function(){
-    $("#myInputStructureNav").on("keyup", function() {
-      var value = $(this).val().toLowerCase();
-      $("#myTbodyStructureNav tr").filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      });
+$(document).ready(function () {
+    $("#myInputStructureNav").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#myTbodyStructureNav tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
     });
-  });
+});
 
 // Sondeos nav filter
-$(document).ready(function(){
-    $("#myInputSondeosNav").on("keyup", function(e) {
-      var value = $(this).val().toLowerCase();
-      $("#myTbodySondeosNav tr").filter(function() {
-        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-      });
-      
-      $("#myTbodySondeosNav tr").on('click', e => {
-          controlSearch.searchText(e.target.text)
-      })
+$(document).ready(function () {
+    $("#myInputSondeosNav").on("keyup", function (e) {
+        var value = $(this).val().toLowerCase();
+        $("#myTbodySondeosNav tr").filter(function () {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+
+        $("#myTbodySondeosNav tr").on('click', e => {
+            controlSearch.searchText(e.target.text)
+        })
     });
-  });
+});
 
 
 // Icons for markers
@@ -539,20 +547,20 @@ var greenIcon = new L.Icon({
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
     shadowSize: [41, 41]
-  });
+});
 
 var blueIcon = new L.Icon({
-iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-iconSize: [25, 41],
-iconAnchor: [12, 41],
-popupAnchor: [1, -34],
-shadowSize: [41, 41]
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
 });
 
 // Search control
 var controlSearch = new L.Control.Search({
-    position:'topleft',		
+    position: 'topleft',
     layer: groupGen,
     initial: true,
     zoom: 20,
