@@ -18,7 +18,7 @@ const groupGenTreatmentProf = () => {
     groupGen.eachLayer(group => {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
-                valueProf = l.feature.properties['PROFUNDIDAD_DE_EXPLORACION']
+                valueProf = l.feature.properties['profundidad']
                 get(markerFilterStatus, l.feature.properties.title, [1])
                 if (valueProf < minProf || minProf === null) minProf = valueProf;
                 if (valueProf > maxProf || maxProf === null) maxProf = valueProf;
@@ -50,7 +50,7 @@ noUiSlider.create(profundidadSlider, {
     groupGen.eachLayer(function (group) {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
-                valueProf = l.feature.properties['PROFUNDIDAD_DE_EXPLORACION']
+                valueProf = l.feature.properties['profundidad']
                 if (valueProf >= e[0] && valueProf <= e[1]) {
                     markerFilterStatus[l.feature.properties.title][0] = 1
                     if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
@@ -96,7 +96,7 @@ const groupGenTreatmentNivel = () => {
     groupGen.eachLayer(group => {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
-                var valueNivel = l.feature.properties['NIVEL_FREATICO(m)']
+                var valueNivel = l.feature.properties['nivel_freatico']
                 if (valueNivel < minNivel || minNivel === null) minNivel = valueNivel;
                 if (valueNivel > maxNivel || maxNivel === null) maxNivel = valueNivel;
             })
@@ -127,7 +127,7 @@ noUiSlider.create(nivelFreaticoSlider, {
     groupGen.eachLayer(function (group) {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
-                valueNivel = l.feature.properties['NIVEL_FREATICO(m)']
+                valueNivel = l.feature.properties['nivel_freatico']
                 if (valueNivel >= e[0] && valueNivel <= e[1]) {
                     markerFilterStatus[l.feature.properties.title][1] = 1
                     if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
@@ -162,4 +162,25 @@ nivelInputMin.addEventListener('change', function () {
 
 nivelInputMax.addEventListener('change', function () {
     nivelFreaticoSlider.noUiSlider.set([null, this.value]);
+});
+
+// Multiple selection filters
+
+$('select').selectpicker();
+
+const filterSelected = document.getElementById('filterActive')
+$('.selectpicker').change(function () {
+    var selectedItem = $('.selectpicker').val();
+    filterSelected.innerHTML = ''
+    if (selectedItem == '') {
+        filterSelected.innerHTML = `
+            <li>Ninguno</li>
+        `
+    } else {
+        selectedItem.forEach(value => {
+            filterSelected.innerHTML += `
+            <li>${value}</li>
+        `
+        })
+    }
 });
