@@ -191,8 +191,9 @@ auth.onAuthStateChanged(user => {
         dbRt.ref('PROYECTOS').child(currentProject).on('value', async snap => {
             var obj = snap.val()
             await graphGeoMarkers(obj)
-            await groupGenTreatmentProf() // Find it in filters.js file
-            await groupGenTreatmentNivel() // Find it in filters.js file
+            await groupGenFilters() // Find it in filters.js file
+            // await groupGenTreatmentProf() // Find it in filters.js file
+            // await groupGenTreatmentNivel() // Find it in filters.js file
 
         })
 
