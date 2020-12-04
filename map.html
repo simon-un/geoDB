@@ -179,38 +179,20 @@
 
         <div class="tab-pane fade" id="nav-filtros" role="tabpanel" aria-labelledby="nav-profile-tab">
           <div id="div-filtros-tab" style="max-width: 100%; height: auto; margin:auto; padding: 40px">
+            <div class="form-group text-center">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="customCheck1" checked="false">
+                <label class="custom-control-label" for="customCheck1">Mostrar todos los sondeos</label>
+              </div>
+            </div>
 
             <div class="col-md-12 text-center">
-            <select data-style="btn-outline-secondary" class="selectpicker" multiple data-live-search="true" data-selected-text-format="count">
-              <option>Mustard</option>
-              <option>Ketchup</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Mustard</option>
-              <option>Ketchup</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Mustard</option>
-              <option>Ketchup</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
-              <option>Relish</option>
+            <select data-style="btn-outline-secondary" id="select" class="selectpicker" multiple data-live-search="true" data-selected-text-format="count">
 
             </select>
           </div>
 
-            <div class="col-md-12">
+            <div class="col-md-12" style="display: none">
               <ul class="list-group">
                 <li style="text-align:center" class='list-group-item '>
                   <p style="text-align:justify">Filtros Activos:</p>
@@ -221,16 +203,6 @@
               </ul>
             </div>
 
-            <div class="col-md-12">
-              <ul class="list-group">
-                <li style="text-align:center" class='list-group-item '>
-                  <p style="text-align:justify">Estructuras activas:</p>
-                  <ul class="list-group" id='structActive'>
-
-                  </ul>
-                </li>
-              </ul>
-            </div>
 
             <p></p>
 

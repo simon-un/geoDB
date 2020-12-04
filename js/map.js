@@ -192,6 +192,8 @@ auth.onAuthStateChanged(user => {
             var obj = snap.val()
             await graphGeoMarkers(obj)
             await groupGenFilters() // Find it in filters.js file
+            await enableAllLayers()
+            await activateGenFilter()
             // await groupGenTreatmentProf() // Find it in filters.js file
             // await groupGenTreatmentNivel() // Find it in filters.js file
 

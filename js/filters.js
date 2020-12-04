@@ -9,7 +9,63 @@ function get(object, key, default_value) {
 }
 
 var filterTags = {}
+var filterTagsUncompleted = {}
+var defaultValues = {}
 var divFilters = document.getElementById('div-filtros-tab')
+const customCheck1 = document.getElementById('customCheck1')
+
+function enableAllLayers() {
+    groupGen.eachLayer(group => {
+        group.eachLayer(layer => {
+            layer.eachLayer(l => {
+                l.addTo(map)
+            })
+        })
+    })
+}
+
+function activateGenFilter() {
+    customCheck1.addEventListener('click', e => {
+        groupGen.eachLayer(group => {
+            group.eachLayer(layer => {
+                layer.eachLayer(l => {
+                    if (customCheck1.checked) {
+                        l.addTo(map)
+                    } else {
+                        map.removeLayer(l)
+                    }
+                })
+            })
+        })
+
+        if (customCheck1.checked) {
+            Object.keys(filterTags).forEach(key => {
+                // window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
+            })
+        }
+
+        Object.keys(filterTagsUncompleted).forEach(key => {
+            groupGen.eachLayer(group => {
+                group.eachLayer(layer => {
+                    layer.eachLayer(l => {
+                        markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
+                    })
+                })
+            })
+            if (document.getElementById(key).style.display == 'block' && customCheck1.checked) {
+                window[key + 'Slider'].setAttribute('disabled', true);
+            } else if (document.getElementById(key).style.display == 'block' && !customCheck1.checked) {
+                window[key + 'Slider'].removeAttribute('disabled');
+                window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
+            }
+
+            // if (document.getElementById(key).style.display == 'none' && customCheck1.checked) {
+            //     customCheck1.click()
+            //     customCheck1.click()
+            // }
+        })
+    })
+}
 
 const groupGenFilters = () => {
     var i = 0
@@ -17,75 +73,117 @@ const groupGenFilters = () => {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
                 var features = l.feature.properties
-                // var id = l.feature.properties['title']
                 Object.keys(features).forEach(feature => {
                     if (typeof features[feature] === 'number' && filterTags[feature] == null) {
                         get(filterTags, feature, i)
-                        i+=1
+                        i += 1
                     }
                 })
             })
         })
     })
-    
-    // var objeto = {profundidad: 0, nivel_freatico: 1}
+
     Object.keys(filterTags).forEach(key => {
         // divFilters.innerHTML += `
-        //                         <div>
-        //                             <div class="form-check form-check-inline">
-        //                                 <p></p>
-        //                                 <p></p>
-        //                                 <label class="form-check-label" for="inlineCheckbox3">${key}</label>
-        //                             </div>
-        //                             <div id="${key}Slider"></div>
-        //                             <div class="form-check form-check-inline">
-        //                                 <p></p>
-        //                                 <input id="${key}InputMin" type="number">
-        //                                 <label class="form-check-label" for="inlineCheckbox1">Min (m)</label>
-        //                             </div>
-        //                             <div class="form-check form-check-inline">
-        //                                 <p></p>
-        //                                 <input id="${key}InputMax" type="number">
-        //                                 <label class="form-check-label" for="inlineCheckbox1">Max (m)</label>
-        //                             </div>
-        //                         </div>`
-        
+        // <div>
+        //     <div class="form-check form-check-inline">
+        //         <p></p>
+        //         <p></p>
+        //         <label class="form-check-label" for="inlineCheckbox3">${key}</label>
+        //     </div>
+        //     <div id="${key}Slider"></div>
+        //     <div class="form-check form-check-inline">
+        //         <p></p>
+        //         <input id="${key}InputMin" type="number">
+        //         <label class="form-check-label" for="inlineCheckbox1">Min (m)</label>
+        //     </div>
+        //     <div class="form-check form-check-inline">
+        //         <p></p>
+        //         <input id="${key}InputMax" type="number">
+        //         <label class="form-check-label" for="inlineCheckbox1">Max (m)</label>
+        //     </div>
+        // </div>`
 
         var div = document.createElement('div')
+        div.id = key
+        div.style.display = 'none'
+
+        var div1 = document.createElement('div')
+        div1.setAttribute('class', 'form-check form-check-inline')
+        var p1 = document.createElement('p')
+        var label1 = document.createElement('label')
+        label1.setAttribute('class', 'form-check-label')
+        label1.setAttribute('for', 'inlineCheckbox1')
+        label1.textContent = key
+        div1.appendChild(p1)
+        div1.appendChild(p1)
+        div1.appendChild(label1)
+
         var divSlider = document.createElement('div')
-        divSlider.setAttribute('id', key+'Slider')
+        divSlider.setAttribute('id', key + 'Slider')
+
         var div2 = document.createElement('div')
         div2.setAttribute('class', 'form-check form-check-inline')
-        var input1 = document.createElement('input')
-        input1.setAttribute('id', key+'InputMin')
-        input1.setAttribute('type', 'number')
+        var p2 = document.createElement('p')
         var input2 = document.createElement('input')
-        input2.setAttribute('id', key+'InputMax')
+        input2.setAttribute('id', key + 'InputMin')
         input2.setAttribute('type', 'number')
+        var label2 = document.createElement('label')
+        label2.setAttribute('class', 'form-check-label')
+        label2.setAttribute('for', 'inlineCheckbox1')
+        label2.textContent = 'Min'
+        div2.appendChild(p2)
+        div2.appendChild(input2)
+        div2.appendChild(label2)
 
+        var div3 = document.createElement('div')
+        div3.setAttribute('class', 'form-check form-check-inline')
+        var p3 = document.createElement('p')
+        var input3 = document.createElement('input')
+        input3.setAttribute('id', key + 'InputMax')
+        input3.setAttribute('type', 'number')
+        var label3 = document.createElement('label')
+        label3.setAttribute('class', 'form-check-label')
+        label3.setAttribute('for', 'inlineCheckbox1')
+        label3.textContent = 'Max'
+        div3.appendChild(p3)
+        div3.appendChild(input3)
+        div3.appendChild(label3)
+
+        div.appendChild(div1)
         div.appendChild(divSlider)
-        div.appendChild(div2).appendChild(input1)
-        div.appendChild(div2).appendChild(input2)
+        div.appendChild(div2)
+        div.appendChild(div3)
+
         divFilters.appendChild(div)
 
-
-        // var valueProf
-        window['min'+key] = null
-        window['max'+key] = null
-        window[key+'Slider'] = document.getElementById(key+'Slider');
+        // Finding min, max for each layer
+        window['min' + key] = null
+        window['max' + key] = null
+        window[key + 'Slider'] = document.getElementById(key + 'Slider');
 
         groupGen.eachLayer(group => {
             group.eachLayer(layer => {
                 layer.eachLayer(l => {
-                    window['value'+key] = l.feature.properties[key]
+                    window['value' + key] = l.feature.properties[key]
                     get(markerFilterStatus, l.feature.properties.title, [1])
-                    if (window['value'+key] < window['min'+key] || window['min'+key] === null && typeof window['value'+key] === 'number') window['min'+key] = window['value'+key];
-                    if (window['value'+key] > window['max'+key] || window['max'+key] === null && typeof window['value'+key] === 'number') window['max'+key] = window['value'+key];
+                    if (window['value' + key] < window['min' + key] || window['min' + key] === null && typeof window['value' + key] === 'number') {
+                        window['min' + key] = window['value' + key]
+                    };
+                    if (window['value' + key] > window['max' + key] || window['max' + key] === null && typeof window['value' + key] === 'number') {
+                        window['max' + key] = window['value' + key]
+                    };
+                    if (typeof window['value' + key] != 'number') { // Checking if filter has uncomplete values
+                        get(filterTagsUncompleted, key, false) // false if disabled
+                    }
                 })
             })
         })
 
-        noUiSlider.create(window[key+'Slider'], {
+        defaultValues[key] = [window['min' + key], window['max' + key]]
+
+        // Creating noUiSlider
+        noUiSlider.create(window[key + 'Slider'], {
             start: [0, 0.0001],
             connect: true,
             range: {
@@ -111,6 +209,7 @@ const groupGenFilters = () => {
             })
         });
 
+        // Creating handle-values interaction
         window[key + 'InputMin'] = document.getElementById(key + 'InputMin');
         window[key + 'InputMax'] = document.getElementById(key + 'InputMax');
 
@@ -133,199 +232,86 @@ const groupGenFilters = () => {
             window[key + 'Slider'].noUiSlider.set([null, this.value]);
         });
 
-        if (window['min'+key] == window['max'+key]) {
-            window['max'+key] = window['max'+key] + 0.0001
+        // Dealing with same min - max values, and no number values
+        if (window['min' + key] == window['max' + key]) {
+            window['max' + key] = window['max' + key] + 0.0001
         }
-        
-        if (typeof window['min'+key] === 'number' && typeof window['max'+key] === 'number') {
-            window[key+'Slider'].noUiSlider.updateOptions({
-                start: [window['min'+key], window['max'+key]],
+
+        if (typeof window['min' + key] === 'number' && typeof window['max' + key] === 'number') {
+            window[key + 'Slider'].noUiSlider.updateOptions({
+                start: [window['min' + key], window['max' + key]],
                 'range': {
-                    'min': window['min'+key],
-                    'max': window['max'+key]
+                    'min': window['min' + key],
+                    'max': window['max' + key]
                 }
             })
-        } else {
-            window[key+'Slider'].setAttribute('disabled', true)
         }
     })
 
-    // console.log(document.documentElement.innerHTML)
+    // Adding data to select picker for enable-disable filters
+    addDataToSelectpicker()
+
 }
 
-
-// slider profundidad
-
-// Finding depth min-max values 
-// var valueProf
-// var minProf = null
-// var maxProf = null
-// var profundidadSlider = document.getElementById('profundidadSlider');
-
-// const groupGenTreatmentProf = () => {
-//     groupGen.eachLayer(group => {
-//         group.eachLayer(layer => {
-//             layer.eachLayer(l => {
-//                 valueProf = l.feature.properties['profundidad']
-//                 get(markerFilterStatus, l.feature.properties.title, [1])
-//                 if (valueProf < minProf || minProf === null) minProf = valueProf;
-//                 if (valueProf > maxProf || maxProf === null) maxProf = valueProf;
-//             })
-//         })
-//     })
-//     if (minProf == maxProf) {
-//         maxProf = maxProf + 0.0001
-//     }
-//     profundidadSlider.noUiSlider.updateOptions({
-//         start: [minProf, maxProf],
-//         'range': {
-//             'min': minProf,
-//             'max': maxProf
-//         }
-//     })
-// }
-
-// noUiSlider.create(profundidadSlider, {
-//     start: [0, 0.0001],
-//     connect: true,
-//     range: {
-//         'min': 0,
-//         'max': 0.0001
-//     }
-// }).on('update', e => {
-//     groupGen.eachLayer(function (group) {
-//         group.eachLayer(layer => {
-//             layer.eachLayer(l => {
-//                 valueProf = l.feature.properties['profundidad']
-//                 if (valueProf >= e[0] && valueProf <= e[1]) {
-//                     markerFilterStatus[l.feature.properties.title][0] = 1
-//                     if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
-//                         l.addTo(map)
-//                     }
-//                 } else {
-//                     markerFilterStatus[l.feature.properties.title][0] = 0
-//                     map.removeLayer(l)
-//                 }
-//             })
-//         })
-//     })
-// });
-
-// var profundidadInputMin = document.getElementById('profundidadInputMin');
-// var profundidadInputMax = document.getElementById('profundidadInputMax');
-
-// profundidadSlider.noUiSlider.on('update', function (values, handle) {
-
-//     var value = values[handle];
-
-//     if (handle) {
-//         profundidadInputMax.value = value;
-//     } else {
-//         profundidadInputMin.value = value;
-//     }
-// });
-
-// profundidadInputMin.addEventListener('change', function () {
-//     profundidadSlider.noUiSlider.set([this.value, null]);
-// });
-
-// profundidadInputMax.addEventListener('change', function () {
-//     profundidadSlider.noUiSlider.set([null, this.value]);
-// });
-
-// // slider nivel freatico
-// // Finding depth min-max values 
-// var valueNivel
-// var minNivel = null
-// var maxNivel = null
-// var nivelFreaticoSlider = document.getElementById('nivelFreaticoSlider');
-// const groupGenTreatmentNivel = () => {
-//     groupGen.eachLayer(group => {
-//         group.eachLayer(layer => {
-//             layer.eachLayer(l => {
-//                 var valueNivel = l.feature.properties['nivel_freatico']
-//                 if (valueNivel < minNivel || minNivel === null) minNivel = valueNivel;
-//                 if (valueNivel > maxNivel || maxNivel === null) maxNivel = valueNivel;
-//             })
-//         })
-//     })
-//     if (minNivel == maxNivel) {
-//         maxNivel = maxNivel + 0.0001
-//     }
-//     nivelFreaticoSlider.noUiSlider.updateOptions({
-//         start: [minNivel, maxNivel],
-//         'range': {
-//             'min': minNivel,
-//             'max': maxNivel
-//         }
-//     })
-// }
-
-// noUiSlider.create(nivelFreaticoSlider, {
-//     start: [0, 0.0001],
-//     connect: true,
-//     range: {
-//         'min': 0,
-//         'max': 0.0001
-//     }
-// }).on('update', e => {
-//     groupGen.eachLayer(function (group) {
-//         group.eachLayer(layer => {
-//             layer.eachLayer(l => {
-//                 valueNivel = l.feature.properties['nivel_freatico']
-//                 if (valueNivel >= e[0] && valueNivel <= e[1]) {
-//                     markerFilterStatus[l.feature.properties.title][1] = 1
-//                     if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
-//                         l.addTo(map)
-//                     }
-//                 } else {
-//                     markerFilterStatus[l.feature.properties.title][1] = 0
-//                     map.removeLayer(l)
-//                 }
-//             })
-//         })
-//     })
-// });
-
-// var nivelInputMin = document.getElementById('nivelInputMin');
-// var nivelInputMax = document.getElementById('nivelInputMax');
-
-// nivelFreaticoSlider.noUiSlider.on('update', function (values, handle) {
-
-//     var value = values[handle];
-
-//     if (handle) {
-//         nivelInputMax.value = value;
-//     } else {
-//         nivelInputMin.value = value;
-//     }
-// });
-
-// nivelInputMin.addEventListener('change', function () {
-//     nivelFreaticoSlider.noUiSlider.set([this.value, null]);
-// });
-
-// nivelInputMax.addEventListener('change', function () {
-//     nivelFreaticoSlider.noUiSlider.set([null, this.value]);
-// });
-
 // Multiple selection filters
+function addDataToSelectpicker() {
+    $('select').selectpicker();
 
-$('select').selectpicker();
+    const filterSelected = document.getElementById('filterActive')
+    const selectpicker = document.getElementById('select')
+    var filterTagsList = []
 
-const filterSelected = document.getElementById('filterActive')
-$('.selectpicker').change(function () {
-    var selectedItem = $('.selectpicker').val();
-    filterSelected.innerHTML = ''
-    if (selectedItem == '') {
-        filterSelected.innerHTML = `
+    Object.keys(filterTags).forEach(key => {
+        selectpicker.innerHTML += `<option>${key}</option>`
+        filterTagsList.push(key)
+    })
+
+    $('.selectpicker').selectpicker('refresh');
+
+    $('.selectpicker').change(function () {
+        var selectedItem = $('.selectpicker').val();
+
+        let difference = filterTagsList
+            .filter(x => !selectedItem.includes(x))
+            .concat(selectedItem.filter(x => !filterTagsList.includes(x)));
+        difference.forEach(dif => {
+            document.getElementById(dif).style.display = 'none'
+            window[dif + 'Slider'].noUiSlider.set(defaultValues[dif][0], defaultValues[dif][1])
+        })
+        filterSelected.innerHTML = ''
+        if (selectedItem == '') {
+            filterSelected.innerHTML = `
             <li>Ninguno</li>
         `
-    } else {
-        selectedItem.forEach(value => {
-            filterSelected.innerHTML += `
+            if (!customCheck1.checked) {
+                customCheck1.click()
+                customCheck1.checked = true
+            } else {
+                customCheck1.click()
+                customCheck1.click()
+            }
+
+        } else {
+            selectedItem.forEach(value => {
+                console.log(selectedItem)
+                filterSelected.innerHTML += `
             <li>${value}</li>
         `
+                document.getElementById(value).style.display = 'block'
+                if (Object.keys(filterTagsUncompleted).includes(value)) {
+                    customCheck1.checked = false
+                } else {
+                    customCheck1.click()
+                }
+                window[value + 'Slider'].noUiSlider.set(defaultValues[value][0], defaultValues[value][1])
+                
+            })
+        }
+
+        Object.keys(filterTagsUncompleted).forEach(key => {
+            if (document.getElementById(key).style.display == 'none' && !customCheck1.checked) {
+                customCheck1.click()
+            }
         })
-    }
-});
+    });
+}
