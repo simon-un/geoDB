@@ -25,45 +25,9 @@ function enableAllLayers() {
 }
 
 function activateGenFilter() {
+
     customCheck1.addEventListener('click', e => {
-        groupGen.eachLayer(group => {
-            group.eachLayer(layer => {
-                layer.eachLayer(l => {
-                    if (customCheck1.checked) {
-                        l.addTo(map)
-                    } else {
-                        map.removeLayer(l)
-                    }
-                })
-            })
-        })
-
-        if (customCheck1.checked) {
-            Object.keys(filterTags).forEach(key => {
-                // window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
-            })
-        }
-
-        Object.keys(filterTagsUncompleted).forEach(key => {
-            groupGen.eachLayer(group => {
-                group.eachLayer(layer => {
-                    layer.eachLayer(l => {
-                        markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
-                    })
-                })
-            })
-            if (document.getElementById(key).style.display == 'block' && customCheck1.checked) {
-                window[key + 'Slider'].setAttribute('disabled', true);
-            } else if (document.getElementById(key).style.display == 'block' && !customCheck1.checked) {
-                window[key + 'Slider'].removeAttribute('disabled');
-                window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
-            }
-
-            // if (document.getElementById(key).style.display == 'none' && customCheck1.checked) {
-            //     customCheck1.click()
-            //     customCheck1.click()
-            // }
-        })
+        filtersEvents('activateGenFilter', [], [])
     })
 }
 
@@ -216,6 +180,11 @@ const groupGenFilters = () => {
         window[key + 'Slider'].noUiSlider.on('update', function (values, handle) {
 
             var value = values[handle];
+            // console.log('#########################')
+            // console.log(window[key + 'Slider'].noUiSlider.get())
+            // console.log($('.selectpicker').val())
+
+            filtersEvents('noUiSliderUpdate', [], [])
 
             if (handle) {
                 window[key + 'InputMax'].value = value;
@@ -226,10 +195,12 @@ const groupGenFilters = () => {
 
         window[key + 'InputMin'].addEventListener('change', function () {
             window[key + 'Slider'].noUiSlider.set([this.value, null]);
+            filtersEvents('noUiSliderUpdate', [], [])
         });
 
         window[key + 'InputMax'].addEventListener('change', function () {
             window[key + 'Slider'].noUiSlider.set([null, this.value]);
+            filtersEvents('noUiSliderUpdate', [], [])
         });
 
         // Dealing with same min - max values, and no number values
@@ -269,44 +240,8 @@ function addDataToSelectpicker() {
     $('.selectpicker').selectpicker('refresh');
 
     $('.selectpicker').change(function () {
-        var selectedItem = $('.selectpicker').val();
 
-        let difference = filterTagsList
-            .filter(x => !selectedItem.includes(x))
-            .concat(selectedItem.filter(x => !filterTagsList.includes(x)));
-        difference.forEach(dif => {
-            document.getElementById(dif).style.display = 'none'
-            window[dif + 'Slider'].noUiSlider.set(defaultValues[dif][0], defaultValues[dif][1])
-        })
-        filterSelected.innerHTML = ''
-        if (selectedItem == '') {
-            filterSelected.innerHTML = `
-            <li>Ninguno</li>
-        `
-            if (!customCheck1.checked) {
-                customCheck1.click()
-                customCheck1.checked = true
-            } else {
-                customCheck1.click()
-                customCheck1.click()
-            }
-
-        } else {
-            selectedItem.forEach(value => {
-                console.log(selectedItem)
-                filterSelected.innerHTML += `
-            <li>${value}</li>
-        `
-                document.getElementById(value).style.display = 'block'
-                if (Object.keys(filterTagsUncompleted).includes(value)) {
-                    customCheck1.checked = false
-                } else {
-                    customCheck1.click()
-                }
-                window[value + 'Slider'].noUiSlider.set(defaultValues[value][0], defaultValues[value][1])
-                
-            })
-        }
+        filtersEvents('addDataToSelectpicker', filterSelected, filterTagsList)
 
         Object.keys(filterTagsUncompleted).forEach(key => {
             if (document.getElementById(key).style.display == 'none' && !customCheck1.checked) {
