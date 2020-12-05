@@ -2,6 +2,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
     switch (eventName) {
 
         case 'activateGenFilter':
+
             groupGen.eachLayer(group => {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {
@@ -13,16 +14,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                     })
                 })
             })
-            
-            // let difference3 = $('.selectpicker').val().filter(x => !Object.keys(filterTagsUncompleted).includes(x));
-            // if (customCheck1.checked) {
-            //     console.log(difference3)
-            //     difference3.forEach(key => {
-            //         window[key + 'Slider'].noUiSlider.updateOptions({
-            //             start: [defaultValues[key][0], defaultValues[key][1]],
-            //         })
-            //     })
-            // }
 
             Object.keys(filterTagsUncompleted).forEach(key => {
                 groupGen.eachLayer(group => {
@@ -33,6 +24,13 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                     })
                 })
                 if (document.getElementById(key).style.display == 'block' && customCheck1.checked) {
+                    let difference3 = $('.selectpicker').val().filter(x => !Object.keys(filterTagsUncompleted).includes(x));
+                    difference3.forEach(key => {
+                            window[key + 'Slider'].noUiSlider.updateOptions({
+                                start: [defaultValues[key][0], defaultValues[key][1]],
+                            })
+                        })
+                    customCheck1.checked = true
                     window[key + 'Slider'].setAttribute('disabled', true);
                 } else if (document.getElementById(key).style.display == 'block' && !customCheck1.checked) {
                     window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
@@ -64,6 +62,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                 filterSelected.innerHTML = `
                 <li>Ninguno</li>
             `
+                document.getElementById('filterReset').style.display = 'none'
                 // Cuando nada este seleccionado, se mostraran todas las capas en el mapa
                 if (!customCheck1.checked) {
                     customCheck1.click()
@@ -78,7 +77,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                     filterSelected.innerHTML += `
                 <li>${value}</li>
             `
-
+                    document.getElementById('filterReset').style.display = 'block'
                     // Se muestran las capas de los filtros que esten seleccionados
                     document.getElementById(value).style.display = 'block'
 
@@ -123,8 +122,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
 const filterReset = document.getElementById('filterReset')
 
 filterReset.addEventListener('click', e => {
-    console.log('click')
-    console.log($('.selectpicker').val())
     $('.selectpicker').val().forEach(key => {
         window[key + 'Slider'].removeAttribute('disabled');
         window[key + 'Slider'].noUiSlider.updateOptions({
