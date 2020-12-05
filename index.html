@@ -245,6 +245,7 @@
     <div class="modal fade" id="newProjectModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog" style="height: 100%; max-width: 800px;">
+            <!-- This is how to modify a modal's width -->
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">REGISTRO NUEVO PROYECTO</h5>
@@ -253,13 +254,25 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="newPrj-form">
-                        <div class="form-group">
-                            <input type="text" id='prjName' class="form-control" placeholder="Nombre del proyecto" required>
-                        </div>
-                        <div class="form-group">
-                        </div>
-                        <!-- <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
+                    <div class="form-group">
+                        <form id="newPrj-form">
+                            <div class="col-lg-12">
+                                <label class="col-lg-3 control-label">Nombre:</label>
+                                <input type="text" id='prjName' class="form-control" placeholder="Nombre del proyecto"
+                                    required>
+                            </div>
+                            <br>
+                            <div class="col-lg-6">
+                                <label class="col-lg-6 control-label">ID del proyecto:</label>
+                                <input type="text" id='prjId' class="form-control" readonly>
+                                <button type="button" class="btn btn-secondary" id="getUIDBtn"
+                                    data-toggle="tooltip" data-placement="left" title="Abrir propiedades"
+                                    onclick="getUniqueId()">
+                                    <img src="./images/update.png" alt="" />
+                                </button>
+                            </div>
+                    </div>
+                    <!-- <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
                         <button type="submit" id='signin-button' class="btn btn-secondary btn-block">Login</button>
                         <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
                         <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With
