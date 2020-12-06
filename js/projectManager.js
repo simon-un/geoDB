@@ -65,4 +65,19 @@ var projectMap = (key, rol, name) => {
 
 const newProject = () =>{
     console.log('New Project');
+    getUniqueId();
+}
+
+function getUniqueId() {
+    document.getElementById("prjId").value = String(Math.floor(Math.random() * Date.now()));
+}
+
+createProject = () =>{
+    let prjName = document.getElementById("prjName").value;
+    let prjId = document.getElementById("prjId").value;
+    dbRt.ref('USERS/'+auth.currentUser.uid+'/PROY/'+prjId).set({
+        FECHA_UNION: String(new Date()),
+        NAME: prjName,
+        ROL: "admin"
+    });
 }

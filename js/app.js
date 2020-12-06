@@ -402,13 +402,6 @@ function uniqueID() {
     return Math.floor(Math.random() * Date.now())
 }
 
-function getUniqueId() {
-    console.log("Hola");
-    document.getElementById("prjId").isContentEditable = true;
-    document.getElementById("prjId").innerText = String(Math.floor(Math.random() * Date.now()));
-    document.getElementById("prjId").isContentEditable = false;
-}
-
 function get(object, key, default_value) {
     if (typeof object[key] == "undefined") {
         object[key] = default_value
