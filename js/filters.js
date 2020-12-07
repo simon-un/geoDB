@@ -36,13 +36,17 @@ const groupGenFilters = () => {
     groupGen.eachLayer(group => {
         group.eachLayer(layer => {
             layer.eachLayer(l => {
-                var features = l.feature.properties
-                Object.keys(features).forEach(feature => {
-                    if (typeof features[feature] === 'number' && filterTags[feature] == null) {
-                        get(filterTags, feature, i)
-                        i += 1
-                    }
-                })
+                if (l.feature.properties.title.match(/reservedGeometry/)) {
+                    // Do nothing
+                } else {
+                    var features = l.feature.properties
+                    Object.keys(features).forEach(feature => {
+                        if (typeof features[feature] === 'number' && filterTags[feature] == null) {
+                            get(filterTags, feature, i)
+                            i += 1
+                        }
+                    })
+                }
             })
         })
     })
@@ -129,16 +133,20 @@ const groupGenFilters = () => {
         groupGen.eachLayer(group => {
             group.eachLayer(layer => {
                 layer.eachLayer(l => {
-                    window['value' + key] = l.feature.properties[key]
-                    get(markerFilterStatus, l.feature.properties.title, [1])
-                    if (window['value' + key] < window['min' + key] || window['min' + key] === null && typeof window['value' + key] === 'number') {
-                        window['min' + key] = window['value' + key]
-                    };
-                    if (window['value' + key] > window['max' + key] || window['max' + key] === null && typeof window['value' + key] === 'number') {
-                        window['max' + key] = window['value' + key]
-                    };
-                    if (typeof window['value' + key] != 'number') { // Checking if filter has uncomplete values
-                        get(filterTagsUncompleted, key, false) // false if disabled
+                    if (l.feature.properties.title.match(/reservedGeometry/)) {
+                        // Do nothing
+                    } else {
+                        window['value' + key] = l.feature.properties[key]
+                        get(markerFilterStatus, l.feature.properties.title, [1])
+                        if (window['value' + key] < window['min' + key] || window['min' + key] === null && typeof window['value' + key] === 'number') {
+                            window['min' + key] = window['value' + key]
+                        };
+                        if (window['value' + key] > window['max' + key] || window['max' + key] === null && typeof window['value' + key] === 'number') {
+                            window['max' + key] = window['value' + key]
+                        };
+                        if (typeof window['value' + key] != 'number') { // Checking if filter has uncomplete values
+                            get(filterTagsUncompleted, key, false) // false if disabled
+                        }
                     }
                 })
             })
@@ -158,15 +166,19 @@ const groupGenFilters = () => {
             groupGen.eachLayer(function (group) {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {
-                        valueProf = l.feature.properties[key]
-                        if (valueProf >= e[0] && valueProf <= e[1]) {
-                            markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
-                            if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
-                                l.addTo(map)
-                            }
+                        if (l.feature.properties.title.match(/reservedGeometry/)) {
+                            // Do nothing
                         } else {
-                            markerFilterStatus[l.feature.properties.title][filterTags[key]] = 0
-                            map.removeLayer(l)
+                            valueProf = l.feature.properties[key]
+                            if (valueProf >= e[0] && valueProf <= e[1]) {
+                                markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
+                                if (!markerFilterStatus[l.feature.properties.title].includes(0)) {
+                                    l.addTo(map)
+                                }
+                            } else {
+                                markerFilterStatus[l.feature.properties.title][filterTags[key]] = 0
+                                map.removeLayer(l)
+                            }
                         }
                     })
                 })

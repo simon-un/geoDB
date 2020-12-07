@@ -19,7 +19,11 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                 groupGen.eachLayer(group => {
                     group.eachLayer(layer => {
                         layer.eachLayer(l => {
-                            markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
+                            if (l.feature.properties.title.match(/reservedGeometry/)) {
+                                // Do nothing
+                            } else {
+                                markerFilterStatus[l.feature.properties.title][filterTags[key]] = 1
+                            }
                         })
                     })
                 })
