@@ -2,20 +2,32 @@ function extractStratigraphicData(object) {
     console.log(object.properties.title)
     var list = object.layers
     var listDepth = []
+    var min = null
+    var max = null
     console.log(list)
     Object.keys(list).forEach(key => {
         listDepth.push({
-            "top": -list[key]['TRAMO_DESDE(m)'],
-            "bottom": -list[key]['TRAMO_HASTA(m)']
+            "top": list[key]['TRAMO_DESDE(m)'],
+            "bottom": list[key]['TRAMO_HASTA(m)']
         })
-        // console.log(list[key]['TRAMO_DESDE(m)'])
-        // console.log(list[key]['TRAMO_HASTA(m)'])
+        // Min value
+        if (min === null || list[key]['TRAMO_DESDE(m)'] < min) {
+            min = list[key]['TRAMO_DESDE(m)']
+        } else if (list[key]['TRAMO_HASTA(m)'] < min) {
+            min = list[key]['TRAMO_DESDE(m)']
+        }
+        // Max value
+        if (max === null || list[key]['TRAMO_HASTA(m)'] > max) {
+            max = list[key]['TRAMO_HASTA(m)']
+        } else if (list[key]['TRAMO_DESDE(m)'] > max) {
+            max = list[key]['TRAMO_DESDE(m)']
+        }
     })
     nest = [{"key":object.properties.title, "values":listDepth}]
-    drawStratigraphicColumns(nest)
+    drawStratigraphicColumns(nest, min, max)
 }
 
-function drawStratigraphicColumns(nest) {
+function drawStratigraphicColumns(nest, min, max) {
     console.log('adentro')
 
     var svg = d3.select("#svg"),
@@ -42,7 +54,7 @@ function drawStratigraphicColumns(nest) {
             .padding(0.5);
 
         var y = d3.scaleLinear()
-            .domain([-100, 0])
+            .domain([max, min])
             .range([height, 0]);
 
         // Create a group for each stack.
