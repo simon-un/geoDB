@@ -377,6 +377,7 @@ function openInfo(tab, key) {
 }
 
 //Getting info
+var cacheInfo = {}
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
@@ -384,6 +385,9 @@ function getInfo(key) {
         infoRequested['marker' + key] = true
         dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
             var obj = snap.val()
+            // get(cacheInfo, key, obj)
+            extractStratigraphicData(obj)
+
             dict = {}
             dictLevel = {}
 
@@ -461,6 +465,7 @@ const graphGeoMarkers = (Obj) => {
                         layer.on({
                             click: (e) => {
                                 getInfo(key)
+
                                 openNav()
                                 layer.openPopup()
 
