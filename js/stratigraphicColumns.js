@@ -1,10 +1,8 @@
 function extractStratigraphicData(object) {
-    console.log(object.properties.title)
     var list = object.layers
     var listDepth = []
     var min = null
     var max = null
-    console.log(list)
     Object.keys(list).forEach(key => {
         listDepth.push({
             "top": list[key]['TRAMO_DESDE(m)'],
@@ -28,7 +26,7 @@ function extractStratigraphicData(object) {
 }
 
 function drawStratigraphicColumns(nest, min, max) {
-    console.log('adentro')
+    document.getElementById('svg').innerHTML = ''
 
     var svg = d3.select("#svg"),
         margin = {

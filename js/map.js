@@ -385,7 +385,7 @@ function getInfo(key) {
         infoRequested['marker' + key] = true
         dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
             var obj = snap.val()
-            // get(cacheInfo, key, obj)
+            cacheInfo[key] = obj
             extractStratigraphicData(obj)
 
             dict = {}
@@ -403,6 +403,7 @@ function getInfo(key) {
         })
     } else {
         console.log('Object requested')
+        extractStratigraphicData(cacheInfo[key])
     }
 
     if ($('#inicio').is(":hidden")) {
