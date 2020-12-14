@@ -38,6 +38,7 @@ signupForm.addEventListener('submit', (e) => {
             auth.currentUser.updateProfile({
                 displayName: String(auth.currentUser.email).match(/(.*)@.*/)[1],
             });
+            dbRt.ref('USERS/'+auth.currentUser.uid+'/PROY/').set({});
         })
         .catch(error => {
             // https://firebase.google.com/docs/reference/js/firebase.auth.Error

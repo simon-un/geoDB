@@ -66,6 +66,10 @@ var projectMap = (key, rol, name) => {
 const newProject = () =>{
     console.log('New Project');
     getUniqueId();
+    dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
+        let users = snapshot.val();
+    })
+    
 }
 
 function getUniqueId() {
