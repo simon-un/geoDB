@@ -21,7 +21,13 @@ function extractStratigraphicData(object) {
             max = list[key]['TRAMO_DESDE(m)']
         }
     })
-    nest = [{"key":object.properties.title, "values":listDepth}]
+    var texts = []
+        for (var i=1; i <= listDepth.length ; i++) {
+            texts.push({"text": `Texto${i}`})
+        }
+        console.log('t', texts)
+    nest = [{"key":object.properties.title, "values":listDepth, "texts":texts }]
+    console.log(nest)
     drawStratigraphicColumns(nest, min, max)
 }
 
@@ -79,6 +85,32 @@ function drawStratigraphicColumns(nest, min, max) {
             .attr("height", function (d) {
                 return Math.abs(y(d.top) - y(d.bottom));
             });
+
+        // var texts = []
+        // for (var i=1; i <= nest[0]["values"].length ; i++) {
+        //     texts.push(`Texto${i}`)
+        // }
+        // console.log(texts)
+
+        // Create text for each element.
+        stacks.selectAll(".elementText")
+            .data(function (d) {
+                return d.values;
+            })
+            .enter().append("text")
+            .attr("class", "elementText")
+            .attr("x", 0)
+            .attr("y", function (d) {
+                return y(d.top);
+            })
+
+        stacks.selectAll(".elementText")
+            .data(function (d) {
+                return d.texts;
+            })
+            .text(function (d) {
+                return d.text;
+            })
 
         g.append("g")
             .attr("class", "x axis")
