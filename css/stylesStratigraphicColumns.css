@@ -53,3 +53,8 @@ text {
     stroke: grey;
     stroke-width: 0.5;
 }
+
+.element:hover {
+    stroke:rgb(26, 184, 97);
+    stroke-width: 2;
+}

@@ -77,6 +77,7 @@ function drawStratigraphicColumns(nest, min, max) {
             })
             .enter().append("rect")
             .attr("class", "element")
+            .attr("cursor", "pointer")
             .attr("x", 0)
             .attr("y", function (d) {
                 return y(d.top);
@@ -85,6 +86,20 @@ function drawStratigraphicColumns(nest, min, max) {
             .attr("height", function (d) {
                 return Math.abs(y(d.top) - y(d.bottom));
             });
+
+// <button type="button" class="btn btn-secondary" title="" data-container="body" 
+      // data-toggle="popover" data-placement="bottom" 
+      // data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus." 
+      // data-original-title="Popover Title">Bottom</button>
+        stacks.append("button")
+            .attr("type", "button")
+            .attr("class", "btn btn-secondary")
+            .attr("title", "")
+            .attr("data-container", "body")
+            .attr("data-toggle", "popover")
+            .attr("data-placement", "bottom" )
+            .attr("data-content", "Vivamus sagittis lacus vel augue laoreet rutrum faucibus.")
+            .attr("data-original-title", "Popover Title")
 
         // var texts = []
         // for (var i=1; i <= nest[0]["values"].length ; i++) {
