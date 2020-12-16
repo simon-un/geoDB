@@ -39,6 +39,13 @@
     integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg=="
     crossorigin="anonymous" />
 
+    <!-- d3.js  -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/6.3.0/d3.min.js"
+        integrity="sha512-wKo55+1oH5DGJ19ScVUHTtcZiqJuSnknSs8CgzzEm1lNftJRDXN/kWpF9Kx+vPam8HBeg53OxS0MYd0+Iz9cjQ=="
+        crossorigin="anonymous"></script> -->
+        <script src="https://unpkg.com/d3@4/build/d3.min.js"></script>
+        <link rel="stylesheet" href="./css/stylesStratigraphicColumns.css">
+
 </head>
 
 <body>
@@ -94,11 +101,13 @@
       <div id="mapid" style="z-index: 1;"></div>
     </div>
 
-    <div id="mySidebar" class="sidebar">
+    <div id="mySidebar" class="sidebar" style="height: 100%;">
       <nav class="sticky-top">
         <div class="nav nav-tabs" role="tablist">
           <a class="nav-item nav-link active" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab"
             aria-controls="nav-info" aria-selected="true">Información</a>
+          <a class="nav-item nav-link" id="nav-stratCol-tab" data-toggle="tab" href="#nav-stratCol" role="tab"
+            aria-controls="nav-stratCol" aria-selected="false">Columna estratigráfica</a>
           <a class="nav-item nav-link" id="nav-structures-tab" data-toggle="tab" href="#nav-structures" role="tab"
             aria-controls="nav-structures" aria-selected="false">Estructuras</a>
           <a class="nav-item nav-link" id="nav-sondeos-tab" data-toggle="tab" href="#nav-sondeos" role="tab"
@@ -108,12 +117,21 @@
           <div class="closebtn" onclick="closeNav()">&times;</div>
         </div>
       </nav>
-      <div class="tab-content" id="nav-tabContent">
+      <div class="tab-content" id="nav-tabContent" style="height: 100%;">
         <div class="tab-pane fade show active" id="nav-info" role="tabpanel" aria-labelledby="nav-profile-tab">
           <div class="table-responsive text-nowrap col-md-12 mx-auto" id="inicio" style="display: none">
 
           </div>
         </div>
+
+        <div class="tab-pane fade" id="nav-stratCol" role="tabpanel" aria-labelledby="nav-home-tab" style="height: 100%">
+          <div id="div-stratCol-tab" style="position: relative; width: 100%; height: 1000px; overflow-y: scroll;">
+            <svg id="svg" width="400" height="500">
+              
+            </svg>
+          </div>
+        </div>
+
         <div class="tab-pane fade" id="nav-structures" role="tabpanel" aria-labelledby="nav-home-tab">
           <div id="div-structures-tab" style="max-width: 100%; height: auto; margin:auto; padding: 40px">
             <div class="container" style="width: 100%;">
@@ -187,37 +205,38 @@
             </div>
 
             <div class="col-md-12 text-center">
-            <select data-style="btn-outline-secondary" id="select" class="selectpicker" multiple data-live-search="true" data-selected-text-format="count">
+              <select data-style="btn-outline-secondary" id="select" class="selectpicker" multiple
+                data-live-search="true" data-selected-text-format="count">
 
-            </select>
-          </div>
+              </select>
+            </div>
 
             <div class="col-md-12" style="display: none">
               <ul class="list-group">
                 <li style="text-align:center" class='list-group-item '>
                   <p style="text-align:justify">Filtros Activos:</p>
-                    <ul class="list-group" id='filterActive'>
-                      <li>Ninguno</li>
-                    </ul>
+                  <ul class="list-group" id='filterActive'>
+                    <li>Ninguno</li>
+                  </ul>
                 </li>
               </ul>
             </div>
             <p></p>
 
             <div id='divFilters'>
-              
+
             </div>
 
-          <ul id="ul-filtros-tab">
+            <ul id="ul-filtros-tab">
 
-          </ul>
-        </div>
-        <div class="col-md-12 text-right" >
-          <button id="filterReset" class='btn-info' style="display: none">Reset</button>
+            </ul>
+          </div>
+          <div class="col-md-12 text-right">
+            <button id="filterReset" class='btn-info' style="display: none">Reset</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </div>
 
   <!-- BOOTSTRAP SCRIPTS -->
@@ -277,6 +296,7 @@
   <script src="./js/map.js"></script>
   <script src="./js/filters.js"></script>
   <script src="./js/filtersEvents.js"></script>
+  <script src="./js/stratigraphicColumns.js"></script>
 
   <!-- Bootstrap-select  -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js" integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg==" crossorigin="anonymous"></script> -->
