@@ -378,12 +378,15 @@ function openInfo(tab, key) {
 
 //Getting info
 var cacheInfo = {}
+var structureAsValue = {} // Se toman las estructuras como valores,
+                          // y las exploraciones como llaves
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
         clicked = false
         infoRequested['marker' + key] = true
-        dbRt.ref('PROYECTOS/PUBLIC/BOGOTA').child(key).on('value', (snap) => {
+        // + currentProject + '/' + 
+        dbRt.ref('PROYECTOS/' + currentProject + '/' + structureAsValue[key]).child(key).on('value', (snap) => {
             var obj = snap.val()
             cacheInfo[key] = obj
             extractStratigraphicData(obj)
@@ -412,9 +415,11 @@ function getInfo(key) {
 }
 
 var i = 0
+
 const graphGeoMarkers = (Obj) => {
 
     Object.keys(Obj).forEach(key => {
+        var structureName = key
         var group = new L.FeatureGroup()
         var ObjPerf = Obj[key]
         name = key
@@ -457,6 +462,7 @@ const graphGeoMarkers = (Obj) => {
 
             } else {
 
+                get(structureAsValue, key, structureName)
                 group.addLayer(L.geoJSON(ObjPerf[key], {
                     onEachFeature: {
                         title: key
@@ -659,7 +665,6 @@ const graphGeoMarkers = (Obj) => {
             // }
 
         })
-
 
         groupGen.addLayer(group)
         overlayMaps[name] = group
