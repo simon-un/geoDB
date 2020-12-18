@@ -350,7 +350,7 @@ function activeTab(tab, structureObj, name) {
     myTbodySondeosNav.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
 
-        pSondeos.innerHTML = `<p style="text-align:justify" id="pStruct">
+        pSondeos.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStruct">
             Se muestran todos los sondeos relacionados a la estructura ${name} 
         </p>`
 

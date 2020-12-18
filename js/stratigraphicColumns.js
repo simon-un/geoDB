@@ -1,9 +1,17 @@
 function extractStratigraphicData(object) {
+    console.log(object)
     var list = object.layers
     var listDepth = []
     var min = null
     var max = null
     var texts = []
+    const pStratCol = document.getElementById('pStratCol')
+    pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
+            Perfil estratigráfico del sondeo: ${object.properties.title}
+        </p>
+        <p style="text-align:justify; color:green" id="pStratCol">
+            Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
+        </p>`
     Object.keys(list).forEach(key => {
         listDepth.push({
             "top": list[key]['TRAMO_DESDE(m)'],
@@ -72,6 +80,25 @@ function drawStratigraphicColumns(nest, min, max) {
             return translate(x(d.key), 0);
         });
 
+        // var text = stacks.append("text")
+        // .attr("class", "stratText")
+        // .attr("x", 150)
+        // .attr("y", 50)
+        // .text('Seleccione');
+
+        // const repeatTransition = () => {
+        //     text
+        //             .transition().duration(500)
+        //             .style("font-size", "0.875rem")
+        //                 // .attr('transform', `translate(0, ${-30})`)
+        //             .transition().duration(500)
+        //                 // .attr('transform', `translate(0, ${30})`)
+        //                 .style("font-size", "0.975rem")
+        //             .on('end', repeatTransition)
+        //     }
+            
+        // repeatTransition()
+
     var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([0, 10])
@@ -88,7 +115,7 @@ function drawStratigraphicColumns(nest, min, max) {
 
 
     // Create a rectangle for each element.
-    stacks.selectAll(".element")
+    var rects = stacks.selectAll(".element")
         .data(function (d) {
             return d.values;
         })
