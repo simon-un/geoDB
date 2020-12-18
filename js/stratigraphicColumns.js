@@ -1,10 +1,20 @@
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
 function extractStratigraphicData(object) {
-    console.log(object)
-    var list = object.layers
+    
+    var layersList = object.layers
     var listDepth = []
     var min = null
     var max = null
     var texts = []
+    var colors = {}
     const pStratCol = document.getElementById('pStratCol')
     pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
             Perfil estratigráfico del sondeo: ${object.properties.title}
@@ -13,39 +23,44 @@ function extractStratigraphicData(object) {
             Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
             <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
         </p>`
-    Object.keys(list).forEach(key => {
+    Object.keys(layersList).forEach(key => {
         listDepth.push({
-            "top": list[key]['TRAMO_DESDE(m)'],
-            "bottom": list[key]['TRAMO_HASTA(m)']
+            "top": layersList[key]['TRAMO_DESDE(m)'],
+            "bottom": layersList[key]['TRAMO_HASTA(m)']
         })
+
+        // Colors Object
+        get(colors, layersList[key]['USCS'], getRandomColor())
+
         // Min value
-        if (min === null || list[key]['TRAMO_DESDE(m)'] < min) {
-            min = list[key]['TRAMO_DESDE(m)']
-        } else if (list[key]['TRAMO_HASTA(m)'] < min) {
-            min = list[key]['TRAMO_DESDE(m)']
+        if (min === null || layersList[key]['TRAMO_DESDE(m)'] < min) {
+            min = layersList[key]['TRAMO_DESDE(m)']
+        } else if (layersList[key]['TRAMO_HASTA(m)'] < min) {
+            min = layersList[key]['TRAMO_DESDE(m)']
         }
         // Max value
-        if (max === null || list[key]['TRAMO_HASTA(m)'] > max) {
-            max = list[key]['TRAMO_HASTA(m)']
-        } else if (list[key]['TRAMO_DESDE(m)'] > max) {
-            max = list[key]['TRAMO_DESDE(m)']
+        if (max === null || layersList[key]['TRAMO_HASTA(m)'] > max) {
+            max = layersList[key]['TRAMO_HASTA(m)']
+        } else if (layersList[key]['TRAMO_DESDE(m)'] > max) {
+            max = layersList[key]['TRAMO_DESDE(m)']
         }
 
         texts.push({
-            "text": list[key]
+            "text": layersList[key]
         })
     })
 
+    console.log('colors', colors)
     nest = [{
         "key": object.properties.title,
         "values": listDepth,
         "texts": texts
     }]
 
-    drawStratigraphicColumns(nest, min, max)
+    drawStratigraphicColumns(nest, min, max, colors)
 }
 
-function drawStratigraphicColumns(nest, min, max) {
+function drawStratigraphicColumns(nest, min, max, colors) {
     document.getElementById('svg').innerHTML = ''
 
     var svg = d3.select("#svg"),
@@ -118,6 +133,7 @@ function drawStratigraphicColumns(nest, min, max) {
     // Create a rectangle for each element.
     var rects = stacks.selectAll(".element")
         .data(function (d) {
+            console.log(d)
             return d.values;
         })
         .enter().append("rect")
@@ -131,6 +147,15 @@ function drawStratigraphicColumns(nest, min, max) {
         .attr("height", function (d) {
             return Math.abs(y(d.top) - y(d.bottom));
         })
+
+    rects
+        .data(function (d) {
+            return d.texts;
+        })
+        .attr("fill", function (d) {
+            return colors[d.text["USCS"]]
+        })
+        .attr("opacity", "0.4")
 
     stacks.selectAll(".element")
         .data(function (d) {

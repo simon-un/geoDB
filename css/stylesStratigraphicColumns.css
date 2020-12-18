@@ -43,14 +43,14 @@ text {
 } */
 
 .element {
-    fill: lightgrey;
-    stroke: grey;
+    /* fill: lightgrey; */
+    /* stroke: grey; */
     shape-rendering: crispEdges;
 }
 
 .stack rect {
-    fill: white;
-    stroke: grey;
+    /* fill: white; */
+    stroke: black;
     stroke-width: 0.5;
 }
 
