@@ -43,13 +43,41 @@ text {
 } */
 
 .element {
-    fill: lightgrey;
-    stroke: grey;
+    /* fill: lightgrey; */
+    /* stroke: grey; */
     shape-rendering: crispEdges;
 }
 
 .stack rect {
-    fill: white;
-    stroke: grey;
+    /* fill: white; */
+    stroke: black;
     stroke-width: 0.5;
 }
+
+.element:hover {
+    stroke:rgb(23, 177, 248);
+    stroke-width: 3;
+    fill:  rgba(188, 226, 248, 0.8);
+}
+
+.d3-tip {
+    z-index: 2;
+    line-height: 1;
+    /* font-weight: bold; */
+    padding: 12px;
+    background: rgba(245, 245, 245, 0.8);
+    color: rgba(7, 50, 53, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgb(0, 0, 0);
+  }
+  
+  /* Style northward tooltips differently */
+  .d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+  }
+
+  .stratText {
+      z-index: 2;
+  }

@@ -1,37 +1,66 @@
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
 function extractStratigraphicData(object) {
-    var list = object.layers
+    
+    var layersList = object.layers
     var listDepth = []
     var min = null
     var max = null
-    Object.keys(list).forEach(key => {
+    var texts = []
+    var colors = {}
+    const pStratCol = document.getElementById('pStratCol')
+    pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
+            Perfil estratigráfico del sondeo: ${object.properties.title}
+        </p>
+        <p style="text-align:justify; color:green" id="pStratCol">
+            Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
+            <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
+        </p>`
+    Object.keys(layersList).forEach(key => {
         listDepth.push({
-            "top": list[key]['TRAMO_DESDE(m)'],
-            "bottom": list[key]['TRAMO_HASTA(m)']
+            "top": layersList[key]['TRAMO_DESDE(m)'],
+            "bottom": layersList[key]['TRAMO_HASTA(m)']
         })
+
+        // Colors Object
+        get(colors, layersList[key]['USCS'], getRandomColor())
+
         // Min value
-        if (min === null || list[key]['TRAMO_DESDE(m)'] < min) {
-            min = list[key]['TRAMO_DESDE(m)']
-        } else if (list[key]['TRAMO_HASTA(m)'] < min) {
-            min = list[key]['TRAMO_DESDE(m)']
+        if (min === null || layersList[key]['TRAMO_DESDE(m)'] < min) {
+            min = layersList[key]['TRAMO_DESDE(m)']
+        } else if (layersList[key]['TRAMO_HASTA(m)'] < min) {
+            min = layersList[key]['TRAMO_DESDE(m)']
         }
         // Max value
-        if (max === null || list[key]['TRAMO_HASTA(m)'] > max) {
-            max = list[key]['TRAMO_HASTA(m)']
-        } else if (list[key]['TRAMO_DESDE(m)'] > max) {
-            max = list[key]['TRAMO_DESDE(m)']
+        if (max === null || layersList[key]['TRAMO_HASTA(m)'] > max) {
+            max = layersList[key]['TRAMO_HASTA(m)']
+        } else if (layersList[key]['TRAMO_DESDE(m)'] > max) {
+            max = layersList[key]['TRAMO_DESDE(m)']
         }
+
+        texts.push({
+            "text": layersList[key]
+        })
     })
-    var texts = []
-        for (var i=1; i <= listDepth.length ; i++) {
-            texts.push({"text": `Texto${i}`})
-        }
-        console.log('t', texts)
-    nest = [{"key":object.properties.title, "values":listDepth, "texts":texts }]
-    console.log(nest)
-    drawStratigraphicColumns(nest, min, max)
+
+    console.log('colors', colors)
+    nest = [{
+        "key": object.properties.title,
+        "values": listDepth,
+        "texts": texts
+    }]
+
+    drawStratigraphicColumns(nest, min, max, colors)
 }
 
-function drawStratigraphicColumns(nest, min, max) {
+function drawStratigraphicColumns(nest, min, max, colors) {
     document.getElementById('svg').innerHTML = ''
 
     var svg = d3.select("#svg"),
@@ -47,80 +76,124 @@ function drawStratigraphicColumns(nest, min, max) {
     var g = svg.append("g")
         .attr("transform", translate(margin.left, margin.top));
 
-    // d3.csv("./js/data.csv", row, function (error, data) {
-        
+    var x = d3.scaleBand()
+        .domain(nest.map(function (d) {
+            return d.key;
+        }))
+        .range([0, width])
+        .padding(0.5);
 
-        var x = d3.scaleBand()
-            .domain(nest.map(function (d) {
-                return d.key;
-            }))
-            .range([0, width])
-            .padding(0.5);
+    var y = d3.scaleLinear()
+        .domain([max, min])
+        .range([height, 0]);
 
-        var y = d3.scaleLinear()
-            .domain([max, min])
-            .range([height, 0]);
+    // Create a group for each stack.
+    var stacks = g.append("g").selectAll(".stack")
+        .data(nest)
+        .enter().append("g")
+        .attr("class", "stack")
+        .attr("transform", function (d) {
+            return translate(x(d.key), 0);
+        });
 
-        // Create a group for each stack.
-        var stacks = g.append("g").selectAll(".stack")
-            .data(nest)
-            .enter().append("g")
-            .attr("class", "stack")
-            .attr("transform", function (d) {
-                return translate(x(d.key), 0);
+        // var text = stacks.append("text")
+        // .attr("class", "stratText")
+        // .attr("x", 150)
+        // .attr("y", 50)
+        // .text('Seleccione');
+
+        // const repeatTransition = () => {
+        //     text
+        //             .transition().duration(500)
+        //             .style("font-size", "0.875rem")
+        //                 // .attr('transform', `translate(0, ${-30})`)
+        //             .transition().duration(500)
+        //                 // .attr('transform', `translate(0, ${30})`)
+        //                 .style("font-size", "0.975rem")
+        //             .on('end', repeatTransition)
+        //     }
+            
+        // repeatTransition()
+
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([0, 10])
+        .direction('e')
+        .html(function (d) {
+            var html = ''
+            Object.keys(d.text).forEach(key => {
+                html += `<strong>${key}:</strong> <span style='color:#118f8b'>${d.text[key]}</span><br>`
             });
+            return html
+        })
 
-        // Create a rectangle for each element.
-        stacks.selectAll(".element")
-            .data(function (d) {
-                return d.values;
-            })
-            .enter().append("rect")
-            .attr("class", "element")
-            .attr("x", 0)
-            .attr("y", function (d) {
-                return y(d.top);
-            })
-            .attr("width", x.bandwidth())
-            .attr("height", function (d) {
-                return Math.abs(y(d.top) - y(d.bottom));
-            });
+    svg.call(tip)
 
-        // var texts = []
-        // for (var i=1; i <= nest[0]["values"].length ; i++) {
-        //     texts.push(`Texto${i}`)
-        // }
-        // console.log(texts)
 
-        // Create text for each element.
-        stacks.selectAll(".elementText")
-            .data(function (d) {
-                return d.values;
-            })
-            .enter().append("text")
-            .attr("class", "elementText")
-            .attr("x", 0)
-            .attr("y", function (d) {
-                return y(d.top);
-            })
+    // Create a rectangle for each element.
+    var rects = stacks.selectAll(".element")
+        .data(function (d) {
+            console.log(d)
+            return d.values;
+        })
+        .enter().append("rect")
+        .attr("class", "element")
+        .attr("cursor", "pointer")
+        .attr("x", 0)
+        .attr("y", function (d) {
+            return y(d.top);
+        })
+        .attr("width", x.bandwidth())
+        .attr("height", function (d) {
+            return Math.abs(y(d.top) - y(d.bottom));
+        })
 
-        stacks.selectAll(".elementText")
-            .data(function (d) {
-                return d.texts;
-            })
-            .text(function (d) {
-                return d.text;
-            })
+    rects
+        .data(function (d) {
+            return d.texts;
+        })
+        .attr("fill", function (d) {
+            return colors[d.text["USCS"]]
+        })
+        .attr("opacity", "0.4")
 
-        g.append("g")
-            .attr("class", "x axis")
-            .attr("transform", translate(0, height))
-            .call(d3.axisBottom(x));
+    stacks.selectAll(".element")
+        .data(function (d) {
+            return d.texts;
+        })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
-        g.append("g")
-            .attr("class", "y axis")
-            .call(d3.axisLeft(y));
-    // });
+    stacks.append("button")
+        .attr("type", "button")
+        .attr("class", "btn btn-secondary")
+        .attr("title", "")
+        .attr("data-container", "body")
+        .attr("data-toggle", "popover")
+        .attr("data-placement", "bottom")
+        .attr("data-content", "Vivamus sagittis lacus vel augue laoreet rutrum faucibus.")
+        .attr("data-original-title", "Popover Title")
+
+    // Create text for each element.
+    stacks.selectAll(".elementText")
+        .data(function (d) {
+            return d.values;
+        })
+        .enter().append("text")
+        .attr("class", "elementText")
+        .attr("x", 0)
+        .attr("y", function (d) {
+            return y(d.top);
+        })
+
+    g.append("g")
+        .attr("class", "x axis")
+        .attr("transform", translate(0, height))
+        .call(d3.axisBottom(x));
+
+    g.append("g")
+        .attr("class", "y axis")
+        .call(d3.axisLeft(y));
 
     function row(d) {
         d.md = +d.md;
