@@ -11,6 +11,7 @@ function extractStratigraphicData(object) {
         </p>
         <p style="text-align:justify; color:green" id="pStratCol">
             Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
+            <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
         </p>`
     Object.keys(list).forEach(key => {
         listDepth.push({
