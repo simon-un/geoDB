@@ -26,3 +26,28 @@
     color: rgb(185, 181, 181);
     cursor: pointer;
 }
+
+.personOpt{
+    background-color: #F7F7F9;
+    margin-left: 20px;
+    z-index: 10;
+}
+
+.personOpt:hover{
+    background-color: white;
+    cursor: pointer;
+}
+
+.table th{
+    padding: 10px;
+    text-align: center;
+}
+.table td{
+    padding: 0px;
+    text-align: center;
+    vertical-align: middle;
+ }
+
+ .table{
+     width: 100%;
+ }

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/index.css">
     <script src="leaflet-search-master\src\leaflet-search.js"></script>
     <link rel="stylesheet" href="leaflet-search-master\src\leaflet-search.css" />
+
 </head>
 
 <body>
@@ -60,7 +61,6 @@
                     aria-expanded="false" aria-controls="check">
                     ¿Qué hemos logrado?
                 </button>
-
                 <ul>
 
                 </ul>
@@ -276,7 +276,9 @@
                         <br>
                         <div class="col-lg-12">
                             <label class="col-lg-9 control-label">Añadir personas al proyecto:</label>
-                            <input type="text" id='person' class="form-control" placeholder="Buscar persona...">
+                            <input type="text" id='person' class="form-control" placeholder="Buscar persona..." onkeyup="filterFunction()" onfocus="displayMenu()">
+                        </div>
+                        <div class="col-lg-9" id="peopleList" style="display: none;">                      
                         </div>
                         <br>
                         <div class="col-lg-12">
@@ -286,14 +288,10 @@
                                         <th scope="col">Nombre</th>
                                         <th scope="col">Correo</th>
                                         <th scope="col">Rol</th>
+                                        <th scope="col">-</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                    </tr>
+                                <tbody id="peopleTable">
                                 </tbody>
                             </table>
                         </div>
