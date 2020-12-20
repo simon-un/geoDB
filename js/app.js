@@ -39,6 +39,12 @@ signupForm.addEventListener('submit', (e) => {
                 displayName: String(auth.currentUser.email).match(/(.*)@.*/)[1],
             });
             dbRt.ref('USERS/'+auth.currentUser.uid+'/PROY/').set({});
+            dbRt.ref('/PUBLIC_USERS/emails').once('value').then((snapshot) => {
+                let users = snapshot.val();
+                dbRt.ref('PUBLIC_USERS/emails/'+String(users.length)).set(String(email));
+                dbRt.ref('PUBLIC_USERS/ids/'+String(users.length)).set(String(auth.currentUser.uid));
+                dbRt.ref('PUBLIC_USERS/names/'+String(users.length)).set(String(auth.currentUser.email).match(/(.*)@.*/)[1]);
+            })
         })
         .catch(error => {
             // https://firebase.google.com/docs/reference/js/firebase.auth.Error

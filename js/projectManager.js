@@ -165,6 +165,7 @@ createProject = () => {
             });
         }
     });
+    window.location.href = "index.html"; // Watch this line and delete if data is not updating in slow connections
 }
 
 displayMenu = () => {
