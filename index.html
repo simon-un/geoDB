@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/index.css">
     <script src="leaflet-search-master\src\leaflet-search.js"></script>
     <link rel="stylesheet" href="leaflet-search-master\src\leaflet-search.css" />
+
 </head>
 
 <body>
@@ -60,7 +61,6 @@
                     aria-expanded="false" aria-controls="check">
                     ¿Qué hemos logrado?
                 </button>
-
                 <ul>
 
                 </ul>
@@ -256,22 +256,48 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <!-- <form id="newPrj-form"> -->
-                            <div class="col-lg-12">
-                                <label class="col-lg-3 control-label">Nombre:</label>
-                                <input type="text" id='prjName' class="form-control" placeholder="Nombre del proyecto"
-                                    required>
-                            </div>
-                            <br>
-                            <div class="col-lg-6">
-                                <label class="col-lg-6 control-label">ID del proyecto:</label>
-                                <input type="text" id='prjId' class="form-control" readonly>
+                        <div class="col-lg-12">
+                            <label class="col-lg-3 control-label">Nombre:</label>
+                            <input type="text" id='prjName' class="form-control" placeholder="Nombre del proyecto"
+                                required>
+                        </div>
+                        <br>
+                        <div class="col-lg-6">
+                            <label class="col-lg-6 control-label">ID del proyecto:</label>
+                            <form class="form-inline">
+                                <input type="text" id='prjId' class="form-control" style="background-color: #F7F7F9;"
+                                    readonly>
                                 <button type="button" class="btn btn-secondary" id="getUIDBtn" data-toggle="tooltip"
                                     data-placement="left" title="Generar ID" onclick="getUniqueId()">
                                     <img src="./images/update.png" alt="" />
                                 </button>
-                            </div>
+                            </form>
+                        </div>
+                        <br>
+                        <div class="col-lg-12">
+                            <label class="col-lg-9 control-label">Añadir personas al proyecto:</label>
+                            <input type="text" id='person' class="form-control" placeholder="Buscar persona..." onkeyup="filterFunction()" onfocus="displayMenu()">
+                        </div>
+                        <div class="col-lg-9" id="peopleList" style="display: none;">                      
+                        </div>
+                        <br>
+                        <div class="col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Correo</th>
+                                        <th scope="col">Rol</th>
+                                        <th scope="col">-</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="peopleTable">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <button type="submit" id='create-project' class="btn btn-primary btn-block" onclick="createProject()">Crear Proyecto</button>
+                    <button type="submit" id='create-project' class="btn btn-primary btn-block"
+                        onclick="createProject()">Crear Proyecto</button>
                     <!-- <div id="warning-msg-signin" class="alert alert-warning" style="display: none;"></div>
                         <button type="button" class="btn btn-info btn-block" id="googleLogin">Login With Google</button>
                         <button type="button" class="btn btn-primary btn-block" id="facebookLogin">Login With
