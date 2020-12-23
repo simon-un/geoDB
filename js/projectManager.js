@@ -53,7 +53,9 @@ showProjects = (obj) => {
         }
         projects.innerHTML += `
         <div class="project">
-            <a onclick="projectMap('${key}', '${rol}', '${obj[key]['NAME']}')" href="map.html">${obj[key]['NAME']}</a>
+            <a onclick="projectInfo('${key}', '${rol}', '${obj[key]['NAME']}')" href="map.html">${obj[key]['NAME']}</a>
+            <br>
+            <a onclick="projectInfo('${key}', '${rol}', '${obj[key]['NAME']}')" href="sheet.html">Editar información</a>
             <br>
             ID del Proyecto: ${key}
             <br>
@@ -116,7 +118,7 @@ rejectProj = (key) => {
     window.location.href = "index.html";
 }
 
-var projectMap = (key, rol, name) => {
+var projectInfo = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
