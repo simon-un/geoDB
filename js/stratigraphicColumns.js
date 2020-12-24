@@ -2,14 +2,15 @@ function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+        color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+}
 
 function extractStratigraphicData(object) {
-    
+
     var layersList = object.layers
+    console.log('lay', layersList)
     var listDepth = []
     var min = null
     var max = null
@@ -50,7 +51,6 @@ function extractStratigraphicData(object) {
         })
     })
 
-    console.log('colors', colors)
     nest = [{
         "key": object.properties.title,
         "values": listDepth,
@@ -96,24 +96,6 @@ function drawStratigraphicColumns(nest, min, max, colors) {
             return translate(x(d.key), 0);
         });
 
-        // var text = stacks.append("text")
-        // .attr("class", "stratText")
-        // .attr("x", 150)
-        // .attr("y", 50)
-        // .text('Seleccione');
-
-        // const repeatTransition = () => {
-        //     text
-        //             .transition().duration(500)
-        //             .style("font-size", "0.875rem")
-        //                 // .attr('transform', `translate(0, ${-30})`)
-        //             .transition().duration(500)
-        //                 // .attr('transform', `translate(0, ${30})`)
-        //                 .style("font-size", "0.975rem")
-        //             .on('end', repeatTransition)
-        //     }
-            
-        // repeatTransition()
 
     var tip = d3.tip()
         .attr('class', 'd3-tip')
@@ -133,7 +115,6 @@ function drawStratigraphicColumns(nest, min, max, colors) {
     // Create a rectangle for each element.
     var rects = stacks.selectAll(".element")
         .data(function (d) {
-            console.log(d)
             return d.values;
         })
         .enter().append("rect")
@@ -156,6 +137,7 @@ function drawStratigraphicColumns(nest, min, max, colors) {
             return colors[d.text["USCS"]]
         })
         .attr("opacity", "0.4")
+        .on("click", getStratumInfo)
 
     stacks.selectAll(".element")
         .data(function (d) {
@@ -204,4 +186,18 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         return "translate(" + x + "," + y + ")";
     }
 
+}
+
+function getStratumInfo(e) {
+    if (e.text['MUESTRAS']) {
+        var muestras = e.text['MUESTRAS']
+        Object.keys(muestras).forEach(key => {
+            console.log(key)
+            console.log(muestras[key])
+        })
+            window.open( 
+                "stratumInfo.html", "_blank"); 
+    } else {
+        console.log('El estrato no contiene muestras')
+    }
 }
