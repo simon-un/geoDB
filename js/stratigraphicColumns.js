@@ -22,7 +22,46 @@ function extractStratigraphicData(object) {
         <p style="text-align:justify; color:green" id="pStratCol">
             Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
             <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
+        </p>
+        <p style="text-align:justify; color:green">
+            Click sobre un estrato para mostrar información de muestras
         </p>`
+
+    var buttonSondeo = document.createElement('button')
+    buttonSondeo.className = "btn btn-info"
+    buttonSondeo.id = "buttonSondeo"
+    buttonSondeo.textContent = "Mostrar tabla con todas las muestras"
+
+    pStratCol.appendChild(buttonSondeo)
+
+    // Query of all "sondeo" info
+    buttonSondeo.addEventListener('click', e => {
+
+        // Aqui se hace todo el tratamiento para enviar el objeto como si fuera un estrato
+        var stratums = object.layers
+        var muestras = {}
+        var textObjAsD3 = {} // Simula el objeto text usado en d3 para la info de los estratos
+        Object.keys(stratums).forEach(stratum => {
+            if (stratums[stratum]['MUESTRAS']) {
+                Object.keys(stratums[stratum]['MUESTRAS']).forEach(muestra => {
+                    get(muestras, muestra, stratums[stratum]['MUESTRAS'][muestra])
+                })
+            }
+        })
+
+        var sondeoProperties = object.properties
+        Object.keys(sondeoProperties).forEach(key => {
+            get(textObjAsD3, key, sondeoProperties[key])
+        })
+        
+        textObjAsD3['MUESTRAS'] = muestras
+
+        sessionStorage.setItem('sondeoObject', JSON.stringify({"text": textObjAsD3}));
+        sessionStorage.setItem('isStratum', false)
+        window.open( 
+            "stratumInfo.html", "_blank"); 
+    })
+
     Object.keys(layersList).forEach(key => {
         listDepth.push({
             "top": layersList[key]['TRAMO_DESDE(m)'],
@@ -79,8 +118,8 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         .domain(nest.map(function (d) {
             return d.key;
         }))
-        .range([0, width])
-        .padding(0.5);
+        .range([0, width / 2])
+        .padding(0.1);
 
     var y = d3.scaleLinear()
         .domain([max, min])
@@ -189,9 +228,11 @@ function drawStratigraphicColumns(nest, min, max, colors) {
 
 function openStratumInfo(e) {
     if (e.text['MUESTRAS']) {
-    sessionStorage.setItem('stratumObject', JSON.stringify(e));
-    window.open( 
-        "stratumInfo.html", "_blank"); 
+        sessionStorage.setItem('stratumObject', JSON.stringify(e));
+        sessionStorage.setItem('isStratum', true)
+
+        window.open(
+            "stratumInfo.html", "_blank");
     } else {
         window.alert('El estrato no contiene muestras')
     }

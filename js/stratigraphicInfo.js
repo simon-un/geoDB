@@ -1,23 +1,53 @@
+var isStratum = sessionStorage.getItem('isStratum')
+
+function get(object, key, default_value) {
+    if (typeof object[key] == "undefined") {
+        object[key] = default_value
+    }
+    return object
+}
+
 $(document).ready(function () {
     var stratObj
     var tableHeadObj
-    var stratumObj = JSON.parse(sessionStorage.getItem('stratumObject'))
-    var columns = []
 
-    function get(object, key, default_value) {
-        if (typeof object[key] == "undefined") {
-            object[key] = default_value
-        }
-        return object
+    if (isStratum == "true") { // En memoria queda guardado como "true" y no true
+
+        var Obj = JSON.parse(sessionStorage.getItem('stratumObject'))
+
+        // Setting page and div title
+        var stratumName = Obj.text['ID_ESTRATO']
+
+        const pageTitle = document.getElementById('pageTitle')
+        pageTitle.textContent = `Estrato ${stratumName}`
+
+        const stratumTitle = document.getElementById('stratumTitle')
+        stratumTitle.textContent = `Id del estrato: ${stratumName}`
+
+    } else { // Si no cumple isStratum significa que todo el sondeo fue solicitado
+
+        var Obj = JSON.parse(sessionStorage.getItem('sondeoObject'))
+
+        // Setting page and div title
+        var sondeoName = Obj.text['title']
+
+        const pageTitle = document.getElementById('pageTitle')
+        pageTitle.textContent = `Sondeo ${sondeoName}`
+
+        const stratumTitle = document.getElementById('stratumTitle')
+        stratumTitle.textContent = `Id del Sondeo: ${sondeoName}`
+
     }
+    
+
 
     function getStratumInfo() {
 
         stratObj = {}
         tableHeadObj = {}
 
-        var muestras = stratumObj.text['MUESTRAS']
-        var divTable = document.getElementById('divTable')
+        var muestras = Obj.text['MUESTRAS']
+        const divTable = document.getElementById('divTable')
 
         var table = document.createElement('table')
         table.setAttribute('class', 'table table-striped table-bordered')
@@ -43,12 +73,12 @@ $(document).ready(function () {
         })
         thead.appendChild(tr)
 
-        //
+        // Crea los elementos td y tr para adicionarlos al cuerpo de la tabla
         Object.keys(muestras).forEach(key => {
             var trBody = document.createElement('tr')
             Object.keys(tableHeadObj).forEach(header => {
                 var td = document.createElement('td')
-                td.textContent = stratumObj.text['MUESTRAS'][key][header]
+                td.textContent = Obj.text['MUESTRAS'][key][header]
                 trBody.appendChild(td)
             })
             tbody.appendChild(trBody)
@@ -68,14 +98,14 @@ $(document).ready(function () {
             scrollY: "300px",
             scrollX: true,
             scrollCollapse: true,
-            lengthChange: false,
+            lengthChange: true,
             buttons: ['copy', 'excel', 'csv', 'pdf', 'colvis'],
             language: {
                 "processing": "Procesando...",
                 "lengthMenu": "Mostrar _MENU_ registros",
                 "zeroRecords": "No se encontraron resultados",
                 "emptyTable": "Ningún dato disponible en esta tabla",
-                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "info": "Mostrando _START_ - _END_, de _TOTAL_ registros totales",
                 "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
                 "infoFiltered": "(filtrado de un total de _MAX_ registros)",
                 "search": "Buscar:",
