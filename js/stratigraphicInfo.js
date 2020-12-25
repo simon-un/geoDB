@@ -2,7 +2,15 @@ $(document).ready(function () {
     var stratObj
     var tableHeadObj
     var stratumObj = JSON.parse(sessionStorage.getItem('stratumObject'))
-    var columns = []
+
+    // Setting page and div title
+    var stratumName = stratumObj.text['ID_ESTRATO']
+
+    const pageTitle = document.getElementById('pageTitle')
+    pageTitle.textContent = `Estrato ${stratumName}`
+
+    const stratumTitle = document.getElementById('stratumTitle')
+    stratumTitle.textContent = `Id del estrato: ${stratumName}`
 
     function get(object, key, default_value) {
         if (typeof object[key] == "undefined") {
@@ -17,7 +25,7 @@ $(document).ready(function () {
         tableHeadObj = {}
 
         var muestras = stratumObj.text['MUESTRAS']
-        var divTable = document.getElementById('divTable')
+        const divTable = document.getElementById('divTable')
 
         var table = document.createElement('table')
         table.setAttribute('class', 'table table-striped table-bordered')
@@ -75,7 +83,7 @@ $(document).ready(function () {
                 "lengthMenu": "Mostrar _MENU_ registros",
                 "zeroRecords": "No se encontraron resultados",
                 "emptyTable": "Ningún dato disponible en esta tabla",
-                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "info": "Mostrando del _START_ al _END_, de _TOTAL_ registros totales",
                 "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
                 "infoFiltered": "(filtrado de un total de _MAX_ registros)",
                 "search": "Buscar:",

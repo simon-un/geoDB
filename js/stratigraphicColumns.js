@@ -22,6 +22,9 @@ function extractStratigraphicData(object) {
         <p style="text-align:justify; color:green" id="pStratCol">
             Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
             <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
+        </p>
+        <p style="text-align:justify; color:green">
+            Click sobre un estrato para mostrar información de muestras
         </p>`
     Object.keys(layersList).forEach(key => {
         listDepth.push({
@@ -79,8 +82,8 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         .domain(nest.map(function (d) {
             return d.key;
         }))
-        .range([0, width])
-        .padding(0.5);
+        .range([0, width/2])
+        .padding(0.1);
 
     var y = d3.scaleLinear()
         .domain([max, min])
