@@ -672,7 +672,7 @@ const graphGeoMarkers = (Obj) => {
     })
 
     L.control.layers({}, overlayMaps, {
-        position: 'bottomleft'
+        position: 'topright'
     }).addTo(map);
 }
 
@@ -708,7 +708,7 @@ var overLayers = [{
 var panelLayers = new L.Control.PanelLayers({}, overLayers, {
     compact: true,
     collapsibleGroups: true,
-    position: 'bottomleft',
+    position: 'topright',
 });
 
 map.addControl(panelLayers);

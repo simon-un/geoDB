@@ -58,6 +58,7 @@ text {
     stroke:rgb(23, 177, 248);
     stroke-width: 3;
     fill:  rgba(188, 226, 248, 0.8);
+    opacity: 1;
 }
 
 .d3-tip {
