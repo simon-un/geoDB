@@ -82,3 +82,20 @@ text {
   .stratText {
       z-index: 2;
   }
+
+  .btn-info {
+    font-size: 13px;
+    color: rgba(8, 111, 143, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(8, 111, 143, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+  }
+  
+  .btn-info:hover {
+    color: #FFF;
+    background: rgba(91, 192, 222, 0.75);
+    border: 2px solid rgba(91, 192, 222, 0.75);
+  }
