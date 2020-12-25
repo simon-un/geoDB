@@ -98,7 +98,7 @@ $(document).ready(function () {
             scrollY: "300px",
             scrollX: true,
             scrollCollapse: true,
-            lengthChange: false,
+            lengthChange: true,
             buttons: ['copy', 'excel', 'csv', 'pdf', 'colvis'],
             language: {
                 "processing": "Procesando...",
