@@ -10,7 +10,6 @@ function getRandomColor() {
 function extractStratigraphicData(object) {
 
     var layersList = object.layers
-    console.log('lay', layersList)
     var listDepth = []
     var min = null
     var max = null
@@ -137,7 +136,7 @@ function drawStratigraphicColumns(nest, min, max, colors) {
             return colors[d.text["USCS"]]
         })
         .attr("opacity", "0.4")
-        .on("click", getStratumInfo)
+        .on("click", openStratumInfo) // Find it on stratigraphicColumns.js
 
     stacks.selectAll(".element")
         .data(function (d) {
@@ -188,16 +187,12 @@ function drawStratigraphicColumns(nest, min, max, colors) {
 
 }
 
-function getStratumInfo(e) {
+function openStratumInfo(e) {
     if (e.text['MUESTRAS']) {
-        var muestras = e.text['MUESTRAS']
-        Object.keys(muestras).forEach(key => {
-            console.log(key)
-            console.log(muestras[key])
-        })
-            window.open( 
-                "stratumInfo.html", "_blank"); 
+    sessionStorage.setItem('stratumObject', JSON.stringify(e));
+    window.open( 
+        "stratumInfo.html", "_blank"); 
     } else {
-        console.log('El estrato no contiene muestras')
+        window.alert('El estrato no contiene muestras')
     }
 }
