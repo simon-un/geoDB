@@ -142,7 +142,11 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         .html(function (d) {
             var html = ''
             Object.keys(d.text).forEach(key => {
-                html += `<strong>${key}:</strong> <span style='color:#118f8b'>${d.text[key]}</span><br>`
+                if (key == 'MUESTRAS') {
+                    html += `<strong>${key}:</strong> <span style='color:#f54b42'>Click sobre el estrato para ver</span><br>`
+                } else {
+                    html += `<strong>${key}:</strong> <span style='color:#118f8b'>${d.text[key]}</span><br>`
+                }
             });
             return html
         })
