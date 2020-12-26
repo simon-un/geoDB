@@ -113,7 +113,8 @@ $(document).ready(function () {
         var table = $('#' + element).DataTable({
             orderCellsTop: true,
             fixedHeader: true,
-            scrollY: "300px",
+            // scrollY: window.innerHeight * .80,
+            scrollY: '80vh',
             scrollX: true,
             scrollCollapse: true,
             lengthChange: true,
