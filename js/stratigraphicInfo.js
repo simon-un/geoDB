@@ -38,7 +38,7 @@ $(document).ready(function () {
         stratumTitle.textContent = `Id del Sondeo: ${sondeoName}`
 
     }
-    
+
 
 
     function getStratumInfo() {
@@ -94,11 +94,30 @@ $(document).ready(function () {
 
 
     function createTable(element) {
+        // Setup - add a text input to each footer cell
+        $(`#${element} thead tr`).clone(true).appendTo(`#${element} thead`);
+        $(`#${element} thead tr:eq(1) th`).each(function (i) {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Buscar ' + title + '" />');
+
+            $('input', this).on('keyup change', function () {
+                if (table.column(i).search() !== this.value) {
+                    table
+                        .column(i)
+                        .search(this.value)
+                        .draw();
+                }
+            });
+        });
+
         var table = $('#' + element).DataTable({
+            orderCellsTop: true,
+            fixedHeader: true,
             scrollY: "300px",
             scrollX: true,
             scrollCollapse: true,
             lengthChange: true,
+            pageLength: 50,
             buttons: ['copy', 'excel', 'csv', 'pdf', 'colvis'],
             language: {
                 "processing": "Procesando...",
