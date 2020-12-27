@@ -1,0 +1,26 @@
+  .navbar {
+    height: auto !important;
+  }
+
+  #maininfo {
+    background-color: grey;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #full-wrapper {
+    flex-grow: 1;
+  }
+
+  #mapid {
+    position: relative;
+    width: 100%;
+  }

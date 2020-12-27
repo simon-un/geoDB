@@ -205,7 +205,9 @@ auth.onAuthStateChanged(user => {
             // Por el momento se trabaja con geoJSON pero NO descartar
 
         });
-        document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+
+        // document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+        document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
 
         // dbRt.ref('COORDS').on('value', (snap) => { 
         //     var obj = snap.val(); //equivalente a Dictionary en pyhon
@@ -237,11 +239,13 @@ const optionsBtn = document.getElementById('sidebar-button');
 const mainfo = document.getElementById('maininfo');
 
 navbar.style.height = String(navbar.getBoundingClientRect().height / 2) + 'px';
-mainfo.style.height = String(navbar.getBoundingClientRect().height) + 'px';
-mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
+// mainfo.style.height = String(navbar.getBoundingClientRect().height) + 'px';
+// mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
+mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
+
 
 window.addEventListener('resize', (evt) => {
-    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height) + 'px';
+    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
     if (window.innerWidth < 1300) {
         document.getElementById('welcome-message').style.display = 'none';
     } else {
@@ -672,7 +676,7 @@ const graphGeoMarkers = (Obj) => {
     })
 
     L.control.layers({}, overlayMaps, {
-        position: 'topright'
+        position: 'bottomleft'
     }).addTo(map);
 }
 
@@ -708,7 +712,7 @@ var overLayers = [{
 var panelLayers = new L.Control.PanelLayers({}, overLayers, {
     compact: true,
     collapsibleGroups: true,
-    position: 'topright',
+    position: 'bottomleft',
 });
 
 map.addControl(panelLayers);
