@@ -22,7 +22,14 @@ $(document).ready(function () {
         pageTitle.textContent = `Estrato ${stratumName}`
 
         const stratumTitle = document.getElementById('stratumTitle')
-        stratumTitle.textContent = `Id del estrato: ${stratumName}`
+        stratumTitle.textContent = `ID DEL ESTRATO: ${stratumName}`
+
+        // Setting divs info
+        const spanTableInfo = document.getElementById('spanTableInfo')
+        spanTableInfo.textContent = `Info. general del estrato: ${stratumName}`
+
+        const spanTable = document.getElementById('spanTable')
+        spanTable.textContent = `Info. de muestras del estrato: ${stratumName}`
 
     } else { // Si no cumple isStratum significa que todo el sondeo fue solicitado
 
@@ -35,10 +42,35 @@ $(document).ready(function () {
         pageTitle.textContent = `Sondeo ${sondeoName}`
 
         const stratumTitle = document.getElementById('stratumTitle')
-        stratumTitle.textContent = `Id del Sondeo: ${sondeoName}`
+        stratumTitle.textContent = `ID DE PERFORACION: ${sondeoName}`
 
+        // Setting divs info
+        const spanTableInfo = document.getElementById('spanTableInfo')
+        spanTableInfo.textContent = `Info. general del sondeo: ${sondeoName}`
+
+        const spanTable = document.getElementById('spanTable')
+        spanTable.textContent = `Info. de muestras del sondeo: ${sondeoName}`
     }
 
+    function getStratumGeneralInfo() {
+
+        var info = Obj.text
+        const divTableInfoText = document.getElementById('divTableInfoText')
+
+        Object.keys(info).forEach(key => {
+            if (key == 'MUESTRAS') {
+                // do nothing
+            } else {
+                divTableInfoText.innerHTML += `
+                    <p class="text-info" style="display: inline"> ${key}: </p>
+                    <p style="display: inline">${info[key]}</p>
+                    <br>
+                `
+            }
+        })
+    }
+
+    getStratumGeneralInfo()
 
 
     function getStratumInfo() {

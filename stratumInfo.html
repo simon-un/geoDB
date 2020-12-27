@@ -7,7 +7,7 @@
     <title id="pageTitle">Estrato</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    
+
 
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"> -->
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css"> -->
@@ -16,10 +16,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
     <!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"> -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
-	<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.bootstrap4.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
-    
-   
+
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/index.css">
@@ -61,12 +61,26 @@
 
     <!-- TITLE -->
     <div id="divTableTitle" class="mx-auto" style="width: 96%">
-        <h3 id="stratumTitle" style="justify-content: center; text-align: center;"></h3>
+        <span id="stratumTitle" style="font-size:large; float:left" class="badge badge-info"></span>
+        <!-- <h3 id="stratumTitle" style="justify-content: center; text-align: center;"></h3> -->
     </div>
-    
+
 
     <!-- TABLE -->
-    <div id="divTable" class="mx-auto " style="width: 96%; height: 100%"></div>
+    <div id="divTableInfo" class="mx-auto panel panel-default" style="width: 96%; height: 100%">
+        <span id="spanTableInfo" class="badge badge-dark" style="font-size:small"></span>
+        <p></p>
+        <div id="divTableInfoText" style="margin-left:10%">
+
+            <p></p>
+        </div>
+    </div>
+    <p></p>
+    <div id="divTable" class="mx-auto " style="width: 96%; height: 100%">
+        <span id="spanTable" class="badge badge-dark" style="font-size:small"></span>
+        <p></p>
+    </div>
+    <p></p>
 
     <!-- BOOTSTRAP SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -78,7 +92,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
     </script>
-    
+
     <!-- <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/b-1.6.5/b-html5-1.6.5/datatables.min.js"></script> -->
@@ -131,7 +145,7 @@
         // firebase.analytics();
     </script>
 
-         <script src="./js/stratigraphicInfo.js"></script>
+    <script src="./js/stratigraphicInfo.js"></script>
 
 </body>
 
