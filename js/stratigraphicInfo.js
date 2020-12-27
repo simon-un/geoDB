@@ -22,7 +22,14 @@ $(document).ready(function () {
         pageTitle.textContent = `Estrato ${stratumName}`
 
         const stratumTitle = document.getElementById('stratumTitle')
-        stratumTitle.textContent = `Id del estrato: ${stratumName}`
+        stratumTitle.textContent = `ID DEL ESTRATO: ${stratumName}`
+
+        // Setting divs info
+        const spanTableInfo = document.getElementById('spanTableInfo')
+        spanTableInfo.textContent = `Info. general del estrato: ${stratumName}`
+
+        const spanTable = document.getElementById('spanTable')
+        spanTable.textContent = `Info. de muestras del estrato: ${stratumName}`
 
     } else { // Si no cumple isStratum significa que todo el sondeo fue solicitado
 
@@ -35,10 +42,35 @@ $(document).ready(function () {
         pageTitle.textContent = `Sondeo ${sondeoName}`
 
         const stratumTitle = document.getElementById('stratumTitle')
-        stratumTitle.textContent = `Id del Sondeo: ${sondeoName}`
+        stratumTitle.textContent = `ID DE PERFORACION: ${sondeoName}`
 
+        // Setting divs info
+        const spanTableInfo = document.getElementById('spanTableInfo')
+        spanTableInfo.textContent = `Info. general del sondeo: ${sondeoName}`
+
+        const spanTable = document.getElementById('spanTable')
+        spanTable.textContent = `Info. de muestras del sondeo: ${sondeoName}`
     }
-    
+
+    function getStratumGeneralInfo() {
+
+        var info = Obj.text
+        const divTableInfoText = document.getElementById('divTableInfoText')
+
+        Object.keys(info).forEach(key => {
+            if (key == 'MUESTRAS') {
+                // do nothing
+            } else {
+                divTableInfoText.innerHTML += `
+                    <p class="text-info" style="display: inline"> ${key}: </p>
+                    <p style="display: inline">${info[key]}</p>
+                    <br>
+                `
+            }
+        })
+    }
+
+    getStratumGeneralInfo()
 
 
     function getStratumInfo() {
@@ -94,11 +126,31 @@ $(document).ready(function () {
 
 
     function createTable(element) {
+        // Setup - add a text input to each footer cell
+        $(`#${element} thead tr`).clone(true).appendTo(`#${element} thead`);
+        $(`#${element} thead tr:eq(1) th`).each(function (i) {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Buscar ' + title + '" />');
+
+            $('input', this).on('keyup change', function () {
+                if (table.column(i).search() !== this.value) {
+                    table
+                        .column(i)
+                        .search(this.value)
+                        .draw();
+                }
+            });
+        });
+
         var table = $('#' + element).DataTable({
-            scrollY: "300px",
+            orderCellsTop: true,
+            fixedHeader: true,
+            // scrollY: window.innerHeight * .80,
+            scrollY: '80vh',
             scrollX: true,
             scrollCollapse: true,
             lengthChange: true,
+            pageLength: 50,
             buttons: ['copy', 'excel', 'csv', 'pdf', 'colvis'],
             language: {
                 "processing": "Procesando...",
