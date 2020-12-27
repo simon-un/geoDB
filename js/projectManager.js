@@ -55,11 +55,17 @@ showProjects = (obj) => {
         <div class="project">
             <a onclick="projectInfo('${key}', '${rol}', '${obj[key]['NAME']}')" href="map.html">${obj[key]['NAME']}</a>
             <br>
-            <a onclick="projectInfo('${key}', '${rol}', '${obj[key]['NAME']}')" href="sheet.html">Editar información</a>
-            <br>
             ID del Proyecto: ${key}
             <br>
             Rol: ${rol}
+            <br>
+            <div style="text-align:right; margin-bottom:5px; margin-right:5px">
+                <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
+                    data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
+                    <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
+                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj()"/>
+                </button>
+            </div>
         </div>`;
     }
 }
@@ -174,10 +180,6 @@ displayMenu = () => {
     document.getElementById("peopleList").style.display = "block";
 }
 
-// document.getElementById("prjName").addEventListener("focusin", () => {
-//     document.getElementById("peopleList").style.display = "none";
-// })
-
 filterFunction = () => {
     let person = document.getElementById("person").value;
     let list = document.getElementById("peopleList");
@@ -234,4 +236,8 @@ deletePerson = (idRow) => {
             document.getElementById("peopleTable").removeChild(row)
         }
     });
+}
+
+editProj = () =>{
+    document.getElementById('prjName_edit').value = "Nombre del proyecto"
 }

@@ -306,6 +306,57 @@
         </div>
     </div>
 
+
+    <!-- Modal Edit Project-->
+    <div class="modal fade" id="editProjectModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" style="height: 100%; max-width: 800px;">
+            <!-- This is how to modify a modal's width -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">EDICIÓN DEL PROYECTO</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <!-- <form id="newPrj-form"> -->
+                        <div class="col-lg-12">
+                            <label class="col-lg-3 control-label">Nombre:</label>
+                            <input type="text" id='prjName_edit' class="form-control" placeholder="Nombre del proyecto"
+                                required>
+                        </div>
+                        <br>
+                        <div class="col-lg-12">
+                            <label class="col-lg-9 control-label">Administrar participantes:</label>
+                            <input type="text" id='person' class="form-control" placeholder="Buscar persona (ingresar la dirección de correo)..." onkeyup="filterFunction()" onfocus="displayMenu()">
+                        </div>
+                        <div class="col-lg-9" id="peopleList" style="display: none;">                      
+                        </div>
+                        <br>
+                        <div class="col-lg-12">
+                            <table class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Correo</th>
+                                        <th scope="col">Rol</th>
+                                        <th scope="col">-</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="peopleTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <button type="submit" id='create-project' class="btn btn-primary btn-block"
+                        onclick="createProject()">Crear Proyecto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- BOOTSTRAP SCRIPTS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
