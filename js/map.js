@@ -243,14 +243,14 @@ navbar.style.height = String(navbar.getBoundingClientRect().height / 2) + 'px';
 // mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
 mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
 
+// Working on the side panel
+const sidePanel = document.getElementById("mySidebar");
+sidePanel.style.height = mapdiv.style.height;
+
 
 window.addEventListener('resize', (evt) => {
     mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
-    if (window.innerWidth < 1300) {
-        document.getElementById('welcome-message').style.display = 'none';
-    } else {
-        document.getElementById('welcome-message').style.display = 'inline';
-    }
+    sidePanel.style.height = mapdiv.style.height;
 })
 
 alertnotif.addEventListener('click', () => {
@@ -800,9 +800,6 @@ mapdiv.addEventListener('click', () => {
     // optionsBtn.style.display = "block";
 })
 
-// Working on the side panel
-const sidePanel = document.getElementById("mySidebar");
-sidePanel.style.height = mapdiv.style.height;
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function openNav() {
