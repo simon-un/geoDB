@@ -6,11 +6,6 @@
     background-color: grey;
   }
 
-  html,
-  body {
-    height: 100%;
-  }
-
   body {
     display: flex;
     flex-direction: column;
@@ -24,13 +19,3 @@
     position: relative;
     width: 100%;
   }
-
-  /* @media (max-width: 700px) {
-    #mySidebar {
-      width: 100%;
-    }
-
-    #map-div {
-      margin-right: 100%;
-    }
-  } */
