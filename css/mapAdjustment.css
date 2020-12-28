@@ -19,3 +19,12 @@
     position: relative;
     width: 100%;
   }
+
+  #zoomAllButton {
+    position: absolute;
+    top: 130px;
+    left: 10px;
+    z-index: 1;
+    border-color: rgb(196, 196, 196);
+    background-color: white;
+  }

@@ -687,6 +687,12 @@ map.addLayer(groupGen)
 // Show map and markers boundaries
 function fitBounds() {
     map.fitBounds(groupGen.getBounds())
+
+    const zoomAllButton = document.getElementById('zoomAllButton')
+
+    zoomAllButton.addEventListener('click', e => {
+        map.fitBounds(groupGen.getBounds())
+    })
 }
 
 map.on('click', e => {
