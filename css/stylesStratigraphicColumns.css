@@ -96,6 +96,6 @@ text {
   
   .btn-info:hover {
     color: #FFF;
-    background: rgba(91, 192, 222, 0.75);
-    border: 2px solid rgba(91, 192, 222, 0.75);
+    background: rgba(31, 105, 128, 0.75);
+    border: 2px solid rgba(15, 82, 102, 0.75);
   }
