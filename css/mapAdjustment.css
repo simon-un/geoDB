@@ -1,0 +1,36 @@
+  .navbar {
+    height: auto !important;
+  }
+
+  #maininfo {
+    background-color: grey;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #full-wrapper {
+    flex-grow: 1;
+  }
+
+  #mapid {
+    position: relative;
+    width: 100%;
+  }
+
+  /* @media (max-width: 700px) {
+    #mySidebar {
+      width: 100%;
+    }
+
+    #map-div {
+      margin-right: 100%;
+    }
+  } */

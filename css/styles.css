@@ -49,12 +49,6 @@
     margin-top: 2.1px;
 }
 
-#mapid{
-    position: relative;
-    height:100%;
-    width: 100%;
-}
-
 /* The sidebar menu */
 .sidebar {
     height: 0; /* 100% Full-height */
@@ -103,5 +97,5 @@
   }
 
   .nav {
-    background-color: #ced5d6;
+    background-color: #cac9c9;
   }

@@ -9,6 +9,7 @@
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
   <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/mapAdjustment.css">
 
   <!-- Leaflet scripts -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
@@ -79,23 +80,22 @@
     </div>
   </nav>
   <div id="maininfo">
-    <p id="welcome-message" style="float: left;font-weight: bold;">Hola</p>
-    <p style="float: right;" id="rol_p">Sin definir</p>
-    <p style="float: right;background-color: #cac5c5;border-top: solid black 1px;font-weight: bold;">Rol: </p>
-    <p style="float: right;padding-right: 20px;" id="proj_p">Sin definir</p>
-    <p style="float: right;background-color: #cac5c5;border-top: solid black 1px;font-weight: bold;">Proyecto: </p>
+      <span class="badge badge-pill badge-secondary" id="rol_p" style="float: right; font-size: small">Sin definir</span>
+      <span class="badge badge-pill badge-dark" style="float: right; font-size: small">ROL:</span>
+        <span class="badge badge-pill badge-dark" style="float: left; font-size: small">PROYECTO:</span>
+        <span class="badge badge-pill badge-secondary" id="proj_p" style="float: left; font-size: small">Sin definir</span>
   </div>
 
   <!-- MAIN CONTENT -->
   <div id="full-wrapper">
-    <div class="wrapper" id="map-div">
+    <div class="wrapper" id="map-div" style="position: relative; outline: none;">
       <button type="button" class="btn btn-secondary" id="sidebar-button" data-toggle="tooltip" data-placement="left"
-        title="Abrir propiedades" onclick="openNav()">
+        title="Abrir propiedades" onclick="openNav()" style="margin-top: 15px">
         <img src="./images/list.png" alt="" />
       </button>
 
-      <div class="alert alert-primary" role="alert" id="alert-notif" style="z-index: 2; padding: 5px 10px;">
-        <p id="alertMsgP" style="display:inline; margin: 0;">Bienvenido al mapa!</p>
+      <div class="alert alert-primary" role="alert" id="alert-notif" style="z-index: 2; padding: 5px 10px; margin-top: 10px; width: 70%">
+        <p id="alertMsgP" style="display:inline; margin-top: 10%;"></p>
         <p style="display:inline; float: right; margin: 0;">(Click para esconder)</p>
       </div>
       <div id="mapid" style="z-index: 1;"></div>

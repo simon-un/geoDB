@@ -205,7 +205,9 @@ auth.onAuthStateChanged(user => {
             // Por el momento se trabaja con geoJSON pero NO descartar
 
         });
-        document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+
+        // document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
+        document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
 
         // dbRt.ref('COORDS').on('value', (snap) => { 
         //     var obj = snap.val(); //equivalente a Dictionary en pyhon
@@ -237,16 +239,18 @@ const optionsBtn = document.getElementById('sidebar-button');
 const mainfo = document.getElementById('maininfo');
 
 navbar.style.height = String(navbar.getBoundingClientRect().height / 2) + 'px';
-mainfo.style.height = String(navbar.getBoundingClientRect().height) + 'px';
-mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
+// mainfo.style.height = String(navbar.getBoundingClientRect().height) + 'px';
+// mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height * 2) + 'px';
+mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
+
+// Working on the side panel
+const sidePanel = document.getElementById("mySidebar");
+sidePanel.style.height = mapdiv.style.height;
+
 
 window.addEventListener('resize', (evt) => {
-    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height) + 'px';
-    if (window.innerWidth < 1300) {
-        document.getElementById('welcome-message').style.display = 'none';
-    } else {
-        document.getElementById('welcome-message').style.display = 'inline';
-    }
+    mapdiv.style.height = String(window.innerHeight - navbar.getBoundingClientRect().height - mainfo.offsetHeight) + 'px';
+    sidePanel.style.height = mapdiv.style.height;
 })
 
 alertnotif.addEventListener('click', () => {
@@ -672,7 +676,7 @@ const graphGeoMarkers = (Obj) => {
     })
 
     L.control.layers({}, overlayMaps, {
-        position: 'topright'
+        position: 'bottomleft'
     }).addTo(map);
 }
 
@@ -708,7 +712,7 @@ var overLayers = [{
 var panelLayers = new L.Control.PanelLayers({}, overLayers, {
     compact: true,
     collapsibleGroups: true,
-    position: 'topright',
+    position: 'bottomleft',
 });
 
 map.addControl(panelLayers);
@@ -791,19 +795,22 @@ showMsg = (msg, className = 'alert alert-primary') => {
     alertnotif.style.display = 'block';
 }
 
-mapdiv.addEventListener('click', () => {
-    showMsg("Hizo click en el mapa", 'alert alert-info')
-    // optionsBtn.style.display = "block";
-})
-
-// Working on the side panel
-const sidePanel = document.getElementById("mySidebar");
-sidePanel.style.height = mapdiv.style.height;
+// mapdiv.addEventListener('click', () => {
+//     showMsg("Hizo click en el mapa", 'alert alert-info')
+//     // optionsBtn.style.display = "block";
+// })
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function openNav() {
-    document.getElementById("mySidebar").style.width = "50%";
-    document.getElementById("map-div").style.marginRight = "50%";
+    if (window.innerWidth <= 700) {
+        var percentage = "95%"
+        alertnotif.style.display = 'none'
+    } else {
+        var percentage = "50%"
+    }
+    
+    document.getElementById("mySidebar").style.width = percentage;
+    document.getElementById("map-div").style.marginRight = percentage;
     optionsBtn.style.display = "none";
 }
 
