@@ -194,6 +194,8 @@ auth.onAuthStateChanged(user => {
             await groupGenFilters() // Find it in filters.js file
             await enableAllLayers()
             await activateGenFilter()
+            await fitBounds()
+
             // await groupGenTreatmentProf() // Find it in filters.js file
             // await groupGenTreatmentNivel() // Find it in filters.js file
 
@@ -257,7 +259,7 @@ alertnotif.addEventListener('click', () => {
     alertnotif.style.display = 'none';
 })
 
-const map = L.map('mapid').setView([4.6384979, -74.082547], 12);
+const map = L.map('mapid').setView([4.6384979, -74.082547], 5);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -682,14 +684,16 @@ const graphGeoMarkers = (Obj) => {
 
 map.addLayer(groupGen)
 
-// const structActive = document.getElementById('structActive')
-// map.on('overlayadd', e => {
-//     structActive.innerHTML += `<li> ${e.name} </li>`
-// })
+// Show map and markers boundaries
+function fitBounds() {
+    map.fitBounds(groupGen.getBounds())
 
-// map.on('overlayremove', e => {
-//     console.log(e)
-// })
+    const zoomAllButton = document.getElementById('zoomAllButton')
+
+    zoomAllButton.addEventListener('click', e => {
+        map.fitBounds(groupGen.getBounds())
+    })
+}
 
 map.on('click', e => {
     if (clicked) {
