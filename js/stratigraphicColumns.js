@@ -119,13 +119,21 @@ function extractStratigraphicData(object) {
     })
 
     // list and objects to make rects USCS info
-    var indexInfo = [{"texts": [], "coords": []}]
+    var indexInfo = [{
+        "texts": [],
+        "coords": []
+    }]
     var top = 0
     var bottom = 5
     Object.keys(colors).forEach(color => {
         [top, bottom] = getIndexCoordinates(top, bottom)
-        indexInfo[0].texts.push({"text":color}) 
-        indexInfo[0].coords.push({"top": top, "bottom": bottom})
+        indexInfo[0].texts.push({
+            "text": color
+        })
+        indexInfo[0].coords.push({
+            "top": top,
+            "bottom": bottom
+        })
     })
 
     nest = [{
@@ -141,7 +149,7 @@ function drawStratigraphicColumns(nest, min, max, colors, indexInfo) {
     document.getElementById('svg').innerHTML = ''
 
     // 500px corresponde a la altura del svg
-    const factor = (max - min) * 5 / 500 
+    const factor = (max - min) * 5 / 500
 
     var svg = d3.select("#svg"),
         margin = {
@@ -178,14 +186,13 @@ function drawStratigraphicColumns(nest, min, max, colors, indexInfo) {
             return translate(x(d.key), 0);
         });
 
-
-    // Si no es dispositivo movil muestra info, al hacer hover
-    if (!mobileCheck()) {
-
-        var tip = d3.tip()
+    var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([0, 10])
         .direction('e')
+
+    // Si no es dispositivo movil muestra info, al hacer hover
+    if (!mobileCheck()) {
 
         tip.html(function (d) {
 
@@ -274,7 +281,7 @@ function drawStratigraphicColumns(nest, min, max, colors, indexInfo) {
         .attr("class", "elementText")
         .attr("x", 10)
         .attr("y", function (d) {
-            return y(d.top) * factor + 15 ;
+            return y(d.top) * factor + 15;
         })
 
     stackIndex.selectAll(".elementText")
