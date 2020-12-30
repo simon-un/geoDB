@@ -16,6 +16,12 @@ function getRandomColor() {
     return color;
 }
 
+function getIndexCoordinates(indexCoorTop, indexCoorBottom) {
+    indexCoorTop += 5
+    indexCoorBottom += 5
+    return [indexCoorTop, indexCoorBottom]
+}
+
 function extractStratigraphicData(object) {
 
     var layersList = object.layers
@@ -25,16 +31,28 @@ function extractStratigraphicData(object) {
     var texts = []
     var colors = {}
     const pStratCol = document.getElementById('pStratCol')
-    pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
-            Perfil estratigráfico del sondeo: ${object.properties.title}
-        </p>
-        <p style="text-align:justify; color:green" id="pStratCol">
-            Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
-            <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
-        </p>
-        <p style="text-align:justify; color:green">
-            Click sobre un estrato para mostrar información de muestras
-        </p>`
+
+    if (!mobileCheck()) {
+        pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
+                Perfil estratigráfico del sondeo: ${object.properties.title}
+            </p>
+            <p style="text-align:justify; color:green" id="pStratCol">
+                Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
+                <img src="images/infoStrat.png" style="display:inline;" width="150" height="60">
+            </p>
+            <p style="text-align:justify; color:green">
+                Click sobre un estrato para mostrar información de muestras
+            </p>`
+    } else {
+        pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
+                Perfil estratigráfico del sondeo: ${object.properties.title}
+            </p>
+            <p style="text-align:justify; color:green">
+                Click sobre un estrato para mostrar información de muestras
+            </p>`
+    }
+
+    document.getElementById('spanSvg').textContent = object.properties.title
 
     var buttonSondeo = document.createElement('button')
     buttonSondeo.className = "btn btn-info"
@@ -100,17 +118,30 @@ function extractStratigraphicData(object) {
         })
     })
 
+    // list and objects to make rects USCS info
+    var indexInfo = [{"texts": [], "coords": []}]
+    var top = 0
+    var bottom = 5
+    Object.keys(colors).forEach(color => {
+        [top, bottom] = getIndexCoordinates(top, bottom)
+        indexInfo[0].texts.push({"text":color}) 
+        indexInfo[0].coords.push({"top": top, "bottom": bottom})
+    })
+
     nest = [{
         "key": object.properties.title,
         "values": listDepth,
         "texts": texts
     }]
 
-    drawStratigraphicColumns(nest, min, max, colors)
+    drawStratigraphicColumns(nest, min, max, colors, indexInfo)
 }
 
-function drawStratigraphicColumns(nest, min, max, colors) {
+function drawStratigraphicColumns(nest, min, max, colors, indexInfo) {
     document.getElementById('svg').innerHTML = ''
+
+    // 500px corresponde a la altura del svg
+    const factor = (max - min) * 5 / 500 
 
     var svg = d3.select("#svg"),
         margin = {
@@ -124,6 +155,8 @@ function drawStratigraphicColumns(nest, min, max, colors) {
 
     var g = svg.append("g")
         .attr("transform", translate(margin.left, margin.top));
+
+    var svgIndex = d3.select("#svgIndex")
 
     var x = d3.scaleBand()
         .domain(nest.map(function (d) {
@@ -146,13 +179,14 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         });
 
 
-    var tip = d3.tip()
+    // Si no es dispositivo movil muestra info, al hacer hover
+    if (!mobileCheck()) {
+
+        var tip = d3.tip()
         .attr('class', 'd3-tip')
         .offset([0, 10])
         .direction('e')
 
-    // Si no es dispositivo movil muestra info, al hacer hover
-    if (!mobileCheck()) {
         tip.html(function (d) {
 
             var html = ''
@@ -165,9 +199,9 @@ function drawStratigraphicColumns(nest, min, max, colors) {
             })
             return html
         })
-    }
 
-    svg.call(tip)
+        svg.call(tip)
+    }
 
 
     // Create a rectangle for each element.
@@ -197,6 +231,60 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         .attr("opacity", "0.4")
         .on("click", openStratumInfo) // Find it on stratigraphicColumns.js
 
+    // create new group for indexes
+    var stackIndex = g.append("g").selectAll(".stackIndex")
+        .data(indexInfo)
+        .enter().append("g")
+        .attr("class", "stackIndex")
+        .attr("transform", function (d) {
+            return translate(165, 0);
+        });
+
+    // Create a rectangle for each element.
+    var rectsIndex = stackIndex.selectAll(".elementIndex")
+        .data(function (d) {
+            return d.coords;
+        })
+        .enter().append("rect")
+        .attr("class", "elementIndex")
+        .attr("x", 0)
+        .attr("y", function (d) {
+            return y(d.top * factor);
+        })
+        .attr("width", 60)
+        .attr("height", function (d) {
+            return Math.abs((y(d.top) - y(d.bottom)) * factor);
+        })
+
+    rectsIndex
+        .data(function (d) {
+            return d.texts;
+        })
+        .attr("fill", function (d) {
+            return colors[d.text]
+        })
+        .attr("opacity", "0.4")
+
+    // Create text for each element.
+    stackIndex.selectAll(".elementText")
+        .data(function (d) {
+            return d.coords;
+        })
+        .enter().append("text")
+        .attr("class", "elementText")
+        .attr("x", 10)
+        .attr("y", function (d) {
+            return y(d.top) * factor + 15 ;
+        })
+
+    stackIndex.selectAll(".elementText")
+        .data(function (d) {
+            return d.texts;
+        })
+        .text(function (d) {
+            return d.text;
+        })
+
     stacks.selectAll(".element")
         .data(function (d) {
             return d.texts;
@@ -213,18 +301,6 @@ function drawStratigraphicColumns(nest, min, max, colors) {
         .attr("data-placement", "bottom")
         .attr("data-content", "Vivamus sagittis lacus vel augue laoreet rutrum faucibus.")
         .attr("data-original-title", "Popover Title")
-
-    // Create text for each element.
-    stacks.selectAll(".elementText")
-        .data(function (d) {
-            return d.values;
-        })
-        .enter().append("text")
-        .attr("class", "elementText")
-        .attr("x", 0)
-        .attr("y", function (d) {
-            return y(d.top);
-        })
 
     g.append("g")
         .attr("class", "x axis")

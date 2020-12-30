@@ -54,6 +54,12 @@ text {
     stroke-width: 0.5;
 }
 
+.stackIndex rect {
+    /* fill: white; */
+    stroke: black;
+    stroke-width: 0.5;
+}
+
 .element:hover {
     stroke:rgb(23, 177, 248);
     stroke-width: 3;
@@ -66,7 +72,7 @@ text {
     line-height: 1;
     /* font-weight: bold; */
     padding: 12px;
-    background: rgba(245, 245, 245, 0.8);
+    background: rgba(245, 245, 245, 0.9);
     color: rgba(7, 50, 53, 0.8);
     border-radius: 10px;
     border: 1px solid rgb(0, 0, 0);
