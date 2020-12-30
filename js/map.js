@@ -322,10 +322,8 @@ const graphMarkers = (Obj) => {
                 clicked = false
             }
         }).on('mouseover', e => {
-            console.log('mouse over')
             window['marker' + key].openPopup()
         }).on('mouseout', e => {
-            console.log('Fueraa')
             if (!window['clicked' + 'marker' + key]) {
                 window['marker' + key].closePopup()
             }
@@ -481,11 +479,12 @@ const graphGeoMarkers = (Obj) => {
 
                                 openNav()
                                 layer.openPopup()
+                                document.getElementById('divSvg').style.display = "block";
 
                                 if (!clicked) {
                                     layer.openPopup()
                                     clicked = true
-                                    console.log(clicked)
+                                    // console.log(clicked)
 
                                     if ($('#inicio').is(":visible")) {
                                         $("#inicio").children().hide();
@@ -497,7 +496,7 @@ const graphGeoMarkers = (Obj) => {
                                         $("#inicio").children().hide();
                                         $('#' + key + 'inicio').show()
                                     }
-                                    console.log(clicked)
+                                    // console.log(clicked)
                                 }
                             },
                             mouseover: e => {
