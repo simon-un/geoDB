@@ -8,7 +8,7 @@ auth.onAuthStateChanged(user => {
             <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
             </div>
             <br>`;
-        
+
         dbRt.ref('WAITING_LIST/' + user.uid).on('value', (snap) => {
             var projects_waiting = snap.val();
             if (projects_waiting) {
@@ -63,7 +63,7 @@ showProjects = (obj) => {
                 <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
                     data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
                     <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
-                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj()"/>
+                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${key}')"/>
                 </button>
             </div>
         </div>`;
@@ -107,16 +107,22 @@ showProjectsWaiting = (obj) => {
 }
 
 acceptProj = (key, name, date, rol) => {
-    console.log(key);
+
+    // Add info of the project to USERS/ID_USER/PROY/ID_PROJ
     dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + key).set({
         FECHA_UNION: date,
         NAME: name,
         ROL: rol
     });
 
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + key + '/USERS/' + auth.currentUser.uid).set({
+        FECHA_UNION: date,
+        ROL: rol
+    });
 
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
-    window.location.href = "index.html";
+    // window.location.href = "index.html";
 }
 
 rejectProj = (key) => {
@@ -131,7 +137,8 @@ var projectInfo = (key, rol, name) => {
 }
 
 const newProject = () => {
-    console.log('New Project');
+    document.getElementById("peopleTable").innerHTML = "";
+    document.getElementById("prjName").value = "";
     getUniqueId();
     dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
         let users = snapshot.val();
@@ -158,11 +165,24 @@ createProject = () => {
     let prjName = document.getElementById("prjName").value;
     let prjId = document.getElementById("prjId").value;
     let participants = document.getElementById("peopleTable").childNodes;
+    let date = String(new Date());
     dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + prjId).set({
-        FECHA_UNION: String(new Date()),
+        FECHA_UNION: date,
         NAME: prjName,
         ROL: "admin"
     });
+
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + prjId).set({
+        NAME: prjName
+    });
+
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + prjId + '/USERS/' + auth.currentUser.uid).set({
+        FECHA_UNION: date,
+        ROL: "admin"
+    });
+
     participants.forEach((person) => {
         if (person.id) {
             let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
@@ -173,16 +193,16 @@ createProject = () => {
             });
         }
     });
-    window.location.href = "index.html"; // Watch this line and delete if data is not updating in slow connections
+    // window.location.href = "index.html"; // Watch this line and delete if data is not updating in slow connections
 }
 
-displayMenu = () => {
-    document.getElementById("peopleList").style.display = "block";
+displayMenu = (edit) => {
+    document.getElementById("peopleList"+edit).style.display = "block";
 }
 
-filterFunction = () => {
-    let person = document.getElementById("person").value;
-    let list = document.getElementById("peopleList");
+filterFunction = (edit) => {
+    let person = document.getElementById("person"+edit).value;
+    let list = document.getElementById("peopleList"+edit);
     if (person != "" && person != "@" && person != ".") {
         let users = JSON.parse(localStorage.users);
         names = users["names"];
@@ -193,7 +213,7 @@ filterFunction = () => {
             const user = users[i];
             if (String(user).includes(String(person))) {
                 list.innerHTML += `
-                <div class="personOpt" onclick="addPerson('${user}','${names[i]}','${ids[i]}')">
+                <div class="personOpt" onclick="addPerson('${user}','${names[i]}','${ids[i]}','${edit}')">
                     ${user}
                 </div>`;
             }
@@ -203,8 +223,8 @@ filterFunction = () => {
     }
 }
 
-addPerson = (user, name, id) => {
-    document.getElementById("peopleTable").innerHTML += `
+addPerson = (user, name, id, edit) => {
+    document.getElementById("peopleTable"+edit).innerHTML += `
     <tr id="${id}">
         <td scope="row">${name}</td>
         <td>${user}</td>
@@ -221,7 +241,7 @@ addPerson = (user, name, id) => {
       </td>
       <td>
       <div class="input-group-append">
-      <button class="btn btn-outline-secondary" style="height:30px; padding:0px; margin: auto; background-color:#fab2b2; color:black" type="button" onclick="deletePerson('${id}')">Eliminar</button>
+      <button class="btn btn-outline-secondary" style="height:30px; padding:0px; margin: auto; background-color:#fab2b2; color:black" type="button" onclick="deletePerson('${id}','${'peopleTable'+edit}')">Eliminar</button>
       </div>
       </td>
     </tr>
@@ -230,14 +250,97 @@ addPerson = (user, name, id) => {
     document.getElementById("person").value = "";
 }
 
-deletePerson = (idRow) => {
-    document.getElementById("peopleTable").childNodes.forEach(row => {
+deletePerson = (idRow, tableID) => {
+    document.getElementById(tableID).childNodes.forEach(row => {
         if (row.id == idRow) {
-            document.getElementById("peopleTable").removeChild(row)
+            document.getElementById(tableID).removeChild(row)
         }
     });
 }
 
-editProj = () =>{
-    document.getElementById('prjName_edit').value = "Nombre del proyecto"
+editProj = (key) => {
+
+    document.getElementById("peopleTable_edit").innerHTML = "";
+    localStorage.prjIdEdit = JSON.stringify(key);
+    dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
+        let users = snapshot.val();
+        localStorage.users = JSON.stringify(users);
+        let names = users["names"];
+        let ids = users["ids"];
+        users = users["emails"];
+        let list = document.getElementById("peopleList_edit");
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            // Go back and watch this line
+            list.innerHTML += `
+            <div class="personOpt" onclick="addPerson('${user}','${names[i]}','${ids[i]}','"_edit"')> 
+                ${user}
+            </div>`
+        }
+    })
+    let users_public = JSON.parse(localStorage.users);
+
+    dbRt.ref('/PROYECTOS/' + key).once('value').then((snapshot) => {
+        let prjInfo = snapshot.val();
+        document.getElementById('prjName_edit').value = prjInfo['NAME'];
+        let users = prjInfo['USERS'];
+
+        for (var userId in users) {
+            document.getElementById("peopleTable_edit").innerHTML += `
+                <tr id="${userId}">
+                    <td scope="row">${users_public["names"][users_public["ids"].indexOf(userId)]}</td>
+                    <td>${users_public["emails"][users_public["ids"].indexOf(userId)]}</td>
+                    <td>
+                    <div class="input-group">
+                    <select class="custom-select" id="${userId + 'rol'}">
+                    <option value="admin">Administrador</option>
+                    <option value="designer">Diseñador</option>
+                    <option value="explorer">Explorador</option>
+                    <option value="labguy">Laboratorista</option>
+                    </select>
+                </div>
+                </td>
+                <td>
+                <div class="input-group-append">
+                <button class="btn btn-outline-secondary" style="height:30px; padding:0px; margin: auto; background-color:#fab2b2; color:black" type="button" onclick="deletePerson('${userId}','peopleTable_edit')">Eliminar</button>
+                </div>
+                </td>
+                </tr>
+                `;
+            document.getElementById("peopleList_edit").innerHTML = "";
+            document.getElementById("person_edit").value = "";
+        }
+
+        for (var userId in users) {
+        document.getElementById(userId + 'rol').value = users[userId]['ROL'];
+        }
+    })
+}
+
+editProject = () =>{
+    let id = JSON.parse(localStorage.prjIdEdit);
+    let prjName = document.getElementById("prjName_edit").value;
+    let participants = document.getElementById("peopleTable_edit").childNodes;
+    dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + id).update({
+        NAME: prjName
+    });
+
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + id).set({
+        NAME: prjName
+    });
+
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + id + '/USERS/').remove();
+
+    participants.forEach((person) => {
+        if (person.id) {
+            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
+            dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+                FECHA_UNION: String(new Date()),
+                NAME: prjName,
+                ROL: rol
+            });
+        }
+    });
 }
