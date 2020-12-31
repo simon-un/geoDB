@@ -16,7 +16,7 @@ function queryAndOrganizeInfo() {
         var muestrasAtr = muestras[key]
         Object.keys(muestrasAtr).forEach(atrTitle => {
             if (typeof muestrasAtr[atrTitle] === 'number') {
-                get(graphNumberTitle, atrTitle, true) 
+                get(graphNumberTitle, atrTitle, true)
             }
         })
     })
@@ -26,17 +26,56 @@ function queryAndOrganizeInfo() {
     Object.keys(graphNumberTitle).forEach(title => {
         nestList[0][title] = []
         Object.keys(muestras).forEach(key => {
-            nestList[0][title].push({"value": muestras[key][title]})
+            nestList[0][title].push({
+                "value": muestras[key][title]
+            })
         })
     })
 
     console.log(nestList)
+    addDataToSelectpickerGraphs(nestList)
 
 }
 
 queryAndOrganizeInfo()
 
-function organizeObj () {
+// Multiple selection filters
+function addDataToSelectpickerGraphs(nestList) {
+    $('select').selectpicker();
+
+    const filterSelectedGraphs = document.getElementById('filterActiveGraphs')
+    const selectpickerGraphs = document.getElementById('selectGraphs')
+    var filterTagsListGraphs = []
+
+    Object.keys(nestList[0]).forEach(key => {
+        selectpickerGraphs.innerHTML += `<option>${key}</option>`
+        filterTagsListGraphs.push(key)
+    })
+
+    $('.selectpicker').selectpicker('refresh');
+
+    $('.selectpicker').change(function () {
+        // Muestra los items seleccionados
+        var selectedItemGraphs = $('.selectpicker').val();
+
+        // Muestra los items que no han sido seleccionados
+        let difference = filterTagsListGraphs
+                .filter(x => !selectedItemGraphs.includes(x))
+                .concat(selectedItemGraphs.filter(x => !filterTagsListGraphs.includes(x)));
+    })
+    // $('.selectpicker').change(function () {
+
+    //     filtersEvents('addDataToSelectpicker', filterSelected, filterTagsList)
+
+    //     Object.keys(filterTagsUncompleted).forEach(key => {
+    //         if (document.getElementById(key).style.display == 'none' && !customCheck1.checked) {
+    //             customCheck1.click()
+    //         }
+    //     })
+    // });
+}
+
+function organizeObj() {
     var object = JSON.parse(sessionStorage.getItem('sondeoObject'))
     console.log(object)
     var layersList = object.layers
@@ -47,7 +86,7 @@ function organizeObj () {
     var colors = {}
     // const title = object.properties.title
 
-    
+
     Object.keys(layersList).forEach(key => {
         listDepth.push({
             "top": layersList[key]['TRAMO_DESDE(m)'],
@@ -120,10 +159,10 @@ function organizeObj () {
 }
 
 function graphColumns(nest, min, max, colors, indexInfo) {
-const graphHtmlTitle = document.getElementById('graphHtmlTitle')
-graphHtmlTitle.textContent = Obj.text.title
+    const graphHtmlTitle = document.getElementById('graphHtmlTitle')
+    graphHtmlTitle.textContent = Obj.text.title
 
-document.getElementById('svgGraphs').innerHTML = ''
+    document.getElementById('svgGraphs').innerHTML = ''
 
     // 500px corresponde a la altura del svg
 
@@ -143,7 +182,7 @@ document.getElementById('svgGraphs').innerHTML = ''
     // var svgIndex = d3.select("#svgIndex")
 
     var x = d3.scaleBand()
-        .domain([0,100])
+        .domain([0, 100])
         // .domain(nest.map(function (d) {
         //     return d.key;
         // }))
