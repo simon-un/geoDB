@@ -1,3 +1,6 @@
+var graphsCache = {}
+var divGraphs = document.getElementById('divGraphs')
+
 function get(object, key, default_value) {
     if (typeof object[key] == "undefined") {
         object[key] = default_value
@@ -22,25 +25,31 @@ function queryAndOrganizeInfo() {
     })
 
     var nestList = [{}]
-    //
+    // Create list with d3 format
     Object.keys(graphNumberTitle).forEach(title => {
         nestList[0][title] = []
         Object.keys(muestras).forEach(key => {
             nestList[0][title].push({
+                "depth": muestras[key]['PROFUNDIDAD_MEDIA(m)'],
                 "value": muestras[key][title]
             })
         })
     })
 
-    console.log(nestList)
-    addDataToSelectpickerGraphs(nestList)
+    // Organize list ascending
+    Object.keys(nestList[0]).forEach(key => {
+        nestList[0][key].sort(function(x, y){
+            return d3.ascending(x.depth, y.depth);
+         })
+    })
 
+    return nestList
 }
 
-queryAndOrganizeInfo()
+
 
 // Multiple selection filters
-function addDataToSelectpickerGraphs(nestList) {
+function addDataToSelectpickerGraphs (nestList) {
     $('select').selectpicker();
 
     const filterSelectedGraphs = document.getElementById('filterActiveGraphs')
@@ -55,120 +64,113 @@ function addDataToSelectpickerGraphs(nestList) {
     $('.selectpicker').selectpicker('refresh');
 
     $('.selectpicker').change(function () {
-        // Muestra los items seleccionados
+
+        // Shows selected items
         var selectedItemGraphs = $('.selectpicker').val();
 
         // Muestra los items que no han sido seleccionados
         let difference = filterTagsListGraphs
                 .filter(x => !selectedItemGraphs.includes(x))
                 .concat(selectedItemGraphs.filter(x => !filterTagsListGraphs.includes(x)));
+
+        difference.forEach(notSelectedKey => {
+            if (graphsCache[notSelectedKey]) {
+                document.getElementById(`div${notSelectedKey}`).style.display = 'none'
+            }
+        })
+
+        // 
+        selectedItemGraphs.forEach(selectedKey => {
+            if (graphsCache[selectedKey]) {
+                document.getElementById(`div${selectedKey}`).style.display = 'block'
+            } else {
+                graphsCache[selectedKey] = true
+                createDomElement(selectedKey)
+                var [min, max, minX, maxX] = organizeObj(nestList, selectedKey)
+                makeGraph(nestList, min, max, minX, maxX, selectedKey)
+            }
+        })
     })
-    // $('.selectpicker').change(function () {
 
-    //     filtersEvents('addDataToSelectpicker', filterSelected, filterTagsList)
-
-    //     Object.keys(filterTagsUncompleted).forEach(key => {
-    //         if (document.getElementById(key).style.display == 'none' && !customCheck1.checked) {
-    //             customCheck1.click()
-    //         }
-    //     })
-    // });
 }
 
-function organizeObj() {
-    var object = JSON.parse(sessionStorage.getItem('sondeoObject'))
-    console.log(object)
-    var layersList = object.layers
-    var listDepth = []
+function createDomElement(selectedKey) {
+    
+    var div = document.createElement('div')
+    div.setAttribute('id', `div${selectedKey}`)
+    div.setAttribute('class', 'divGraphs inline')
+
+    var span = document.createElement('span')
+    span.setAttribute('class', 'spanGraphs badge badge-info')
+    span.textContent = selectedKey
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute('id', `svg${selectedKey}`)
+    svg.setAttribute('width', '300')
+    svg.setAttribute('height', '500')
+
+    // div.appendChild(span)
+    div.appendChild(svg)
+    divGraphs.appendChild(div)
+
+}
+
+function organizeObj(nestList, selectedKey) {
+    // var layersList = object.layers
+    // var listDepth = []
     var [min, minX] = [null, null]
     var [max, maxX] = [null, null]
-    var texts = []
-    var colors = {}
-    // const title = object.properties.title
 
+    var prof = nestList[0]['PROFUNDIDAD_MEDIA(m)']
+    prof.forEach(v => {
 
-    Object.keys(layersList).forEach(key => {
-        listDepth.push({
-            "top": layersList[key]['TRAMO_DESDE(m)'],
-            "bottom": layersList[key]['TRAMO_HASTA(m)']
-        })
+        var depth = v.value
 
-        // Colors Object
-        get(colors, layersList[key]['USCS'], getRandomColor())
-
-        // Min value
-        if (min === null || layersList[key]['TRAMO_DESDE(m)'] < min) {
-            min = layersList[key]['TRAMO_DESDE(m)']
-        } else if (layersList[key]['TRAMO_HASTA(m)'] < min) {
-            min = layersList[key]['TRAMO_DESDE(m)']
+        // Min depth value
+        if (min === null || depth < min) {
+            min = depth
         }
 
-        // Max value
-        if (max === null || layersList[key]['TRAMO_HASTA(m)'] > max) {
-            max = layersList[key]['TRAMO_HASTA(m)']
-        } else if (layersList[key]['TRAMO_DESDE(m)'] > max) {
-            max = layersList[key]['TRAMO_DESDE(m)']
+        // Max depth value
+        if (max === null || depth > max) {
+            max = depth
         }
 
-        // Min value x
-        if (min === null || layersList[key]['TRAMO_DESDE(m)'] < min) {
-            min = layersList[key]['TRAMO_DESDE(m)']
-        } else if (layersList[key]['TRAMO_HASTA(m)'] < min) {
-            min = layersList[key]['TRAMO_DESDE(m)']
-        }
-
-        // Min value x
-        if (max === null || layersList[key]['TRAMO_HASTA(m)'] > max) {
-            max = layersList[key]['TRAMO_HASTA(m)']
-        } else if (layersList[key]['TRAMO_DESDE(m)'] > max) {
-            max = layersList[key]['TRAMO_DESDE(m)']
-        }
-
-        texts.push({
-            "text": layersList[key]
-        })
     })
 
-    // list and objects to make rects USCS info
-    var indexInfo = [{
-        "texts": [],
-        "coords": []
-    }]
-    var top = 0
-    var bottom = 5
-    Object.keys(colors).forEach(color => {
-        [top, bottom] = getIndexCoordinates(top, bottom)
-        indexInfo[0].texts.push({
-            "text": color
-        })
-        indexInfo[0].coords.push({
-            "top": top,
-            "bottom": bottom
-        })
+    var atribute = nestList[0][selectedKey]
+    atribute.forEach(v => {
+
+        var atrValue = v.value
+
+        // Min depth value
+        if (minX === null || atrValue < minX) {
+            minX = atrValue
+        }
+
+        // Max depth value
+        if (maxX === null || atrValue > maxX) {
+            maxX = atrValue
+        }
+
     })
 
-    nest = [{
-        "key": object.properties.title,
-        "values": listDepth,
-        "texts": texts
-    }]
-
-    graphColumns(nest, min, max, colors, indexInfo)
-
+    return [min, max, minX, maxX]
 
 }
 
-function graphColumns(nest, min, max, colors, indexInfo) {
-    const graphHtmlTitle = document.getElementById('graphHtmlTitle')
-    graphHtmlTitle.textContent = Obj.text.title
+function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
+    // const svg = document.getElementById(`svg${selectedKey}`)
+    // graphHtmlTitle.textContent = Obj.text.title
 
-    document.getElementById('svgGraphs').innerHTML = ''
+    // document.getElementById('svgGraphs').innerHTML = ''
 
     // 500px corresponde a la altura del svg
 
-    var svg = d3.select("#svgGraphs"),
+    // console.log(`#svg${selectedKey}`)
+    var svg = d3.select(`#svg${selectedKey}`),
         margin = {
-            top: 20,
+            top: 50, // 20
             right: 20,
             bottom: 20,
             left: 40
@@ -176,22 +178,59 @@ function graphColumns(nest, min, max, colors, indexInfo) {
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
 
+    var gZoom = svg.append("g")
+        .attr("transform", translate(margin.left, margin.top))
+        .attr("clip-path", "url(#clip)")
+
     var g = svg.append("g")
-        .attr("transform", translate(margin.left, margin.top));
+        .attr("transform", translate(margin.left, margin.top))
 
     // var svgIndex = d3.select("#svgIndex")
 
-    var x = d3.scaleBand()
-        .domain([0, 100])
-        // .domain(nest.map(function (d) {
-        //     return d.key;
-        // }))
-        .range([0, width / 2])
-        .padding(0.1);
+    var x = d3.scaleLinear()
+        // .domain([minX * 0.9, maxX])
+        .domain(d3.extent(nestList[0][selectedKey], function(d) { return d.value; }))
+        .range([0, width])
+        // .padding(0.1);
 
     var y = d3.scaleLinear()
-        .domain([100, 0])
+        .domain([max, min])
+        // .domain(d3.extent(nestList[0][selectedKey], function(d) { return d.depth; }))
         .range([height, 0]);
+
+    // Add a clipPath: everything out of this area won't be drawn.
+    var clip = svg.append("defs").append("SVG:clipPath")
+        .attr("id", "clip")
+        .append("SVG:rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
+
+    // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
+    var zoom = d3.zoom()
+        .scaleExtent([1, 50])  // This control how much you can unzoom (x0.5) and zoom (x20)
+        .extent([[0, 0], [width, height]])
+        .translateExtent([[0, 0], [width, height]])
+        .on("zoom", updateChart);
+
+    // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .call(zoom);
+    
+        // .y(function(d) { return y(d.value) })
+        // )
+
+    // lines.data(function(d) {
+    //     console.log(d.selectedKey)
+    // })
+    // lines.append("path")
+    // .attr("d", function(d) { return line(d[selectedKey]["value"]); });
 
     // Create a group for each stack.
     // var stacks = g.append("g").selectAll(".stack")
@@ -207,19 +246,137 @@ function graphColumns(nest, min, max, colors, indexInfo) {
     //     .offset([0, 10])
     //     .direction('e')
 
-    g.append("g")
-        .attr("class", "x axis")
-        .attr("transform", translate(0, 0))
-        .call(d3.axisBottom(x));
+    // g.append("g")
+    //     .attr("class", "xAxis x axis")
+    //     // .attr("transform", translate(0, 0))
+    //     .call(d3.axisBottom(x))
 
-    g.append("g")
+    // gridlines in x axis function
+    function make_x_gridlines() {		
+        return d3.axisBottom(x)
+            .ticks(10)
+    }
+
+    // gridlines in y axis function
+    function make_y_gridlines() {		
+        return d3.axisLeft(y)
+            .ticks(10)
+    }
+
+    // add the X gridlines
+    var xGrid = g.append("g")			
+      .attr("class", "grid")
+      .attr("transform", "translate(0," + height + ")")
+      .call(make_x_gridlines()
+          .tickSize(-height)
+          .tickFormat("")
+      )
+
+    // add the Y gridlines
+    var yGrid = g.append("g")			
+        .attr("class", "grid")
+        .call(make_y_gridlines()
+            .tickSize(-width)
+            .tickFormat("")
+        )
+
+    var xAxis = g.append("g")
+        .attr("class", "x axis")
+        .call(d3.axisBottom(x))
+        
+    xAxis.selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.3em")
+        .attr("dy", "-.8em")
+        .attr("transform", "rotate(65)");
+
+    var yAxis = g.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
+
+    // Add the line
+    var line = gZoom.append("path")
+      .datum(nestList[0][selectedKey])
+    //   .attr("fill", "none")
+    //   .attr("stroke", "steelblue")
+    //   .attr("stroke-width", 1.5)
+      .attr("d", d3.line()
+        .x(function(d) { 
+            return x(d.value) })
+        .y(function(d) { 
+            return y(d.depth) })
+        )
+
+            // Add the scatterplot
+    var dots = gZoom.selectAll("dot")
+        .data(nestList[0][selectedKey])
+        .enter().append("circle")
+        .attr("r", 2)
+        .attr("cx", function(d) { 
+            return x(d.value); })
+        .attr("cy", function(d) { 
+            return y(d.depth); 
+        });
 
     //functions
     function translate(x, y) {
         return "translate(" + x + "," + y + ")";
     }
+
+    function updateChart() {
+
+        // recover the new scale
+        var newX = d3.event.transform.rescaleX(x);
+        var newY = d3.event.transform.rescaleY(y);
+    
+        // update axes with these new boundaries
+        xAxis
+            .call(d3.axisBottom(newX))
+
+        xAxis.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.3em")
+            .attr("dy", "-.8em")
+            .attr("transform", "rotate(65)");
+
+        yAxis
+            .call(d3.axisLeft(newY))
+
+        // update grid
+        xGrid.call(
+            d3.axisBottom(x)
+                .scale(newX)
+                .ticks(10)
+                .tickSize(-height)
+                .tickFormat("")
+            )
+
+        yGrid.call(
+            d3.axisLeft(y)
+                .scale(newY)
+                .ticks(10)
+                .tickSize(-width)
+                .tickFormat("")
+                )
+    
+        // update circle position
+        dots
+          .attr('cx', function(d) {return newX(d.value)})
+          .attr('cy', function(d) {return newY(d.depth)});
+
+        line
+        .attr("d", d3.line()
+        .x(function(d) { 
+            return newX(d.value) })
+        .y(function(d) { 
+            return newY(d.depth) })
+        )
+      }
 }
 
 // organizeObj()
+
+// Rutina principal
+var nestList = queryAndOrganizeInfo()
+addDataToSelectpickerGraphs(nestList)
+
