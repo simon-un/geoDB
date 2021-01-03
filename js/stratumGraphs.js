@@ -38,9 +38,9 @@ function queryAndOrganizeInfo() {
 
     // Organize list ascending
     Object.keys(nestList[0]).forEach(key => {
-        nestList[0][key].sort(function(x, y){
+        nestList[0][key].sort(function (x, y) {
             return d3.ascending(x.depth, y.depth);
-         })
+        })
     })
 
     return nestList
@@ -49,7 +49,7 @@ function queryAndOrganizeInfo() {
 
 
 // Multiple selection filters
-function addDataToSelectpickerGraphs (nestList) {
+function addDataToSelectpickerGraphs(nestList) {
     $('select').selectpicker();
 
     const filterSelectedGraphs = document.getElementById('filterActiveGraphs')
@@ -70,8 +70,8 @@ function addDataToSelectpickerGraphs (nestList) {
 
         // Muestra los items que no han sido seleccionados
         let difference = filterTagsListGraphs
-                .filter(x => !selectedItemGraphs.includes(x))
-                .concat(selectedItemGraphs.filter(x => !filterTagsListGraphs.includes(x)));
+            .filter(x => !selectedItemGraphs.includes(x))
+            .concat(selectedItemGraphs.filter(x => !filterTagsListGraphs.includes(x)));
 
         difference.forEach(notSelectedKey => {
             if (graphsCache[notSelectedKey]) {
@@ -95,7 +95,7 @@ function addDataToSelectpickerGraphs (nestList) {
 }
 
 function createDomElement(selectedKey) {
-    
+
     var div = document.createElement('div')
     div.setAttribute('id', `div${selectedKey}`)
     div.setAttribute('class', 'divGraphs inline')
@@ -171,7 +171,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     var svg = d3.select(`#svg${selectedKey}`),
         margin = {
             top: 50, // 20
-            right: 20,
+            right: 100,
             bottom: 20,
             left: 40
         },
@@ -189,9 +189,11 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 
     var x = d3.scaleLinear()
         // .domain([minX * 0.9, maxX])
-        .domain(d3.extent(nestList[0][selectedKey], function(d) { return d.value; }))
+        .domain(d3.extent(nestList[0][selectedKey], function (d) {
+            return d.value;
+        }))
         .range([0, width])
-        // .padding(0.1);
+    // .padding(0.1);
 
     var y = d3.scaleLinear()
         .domain([max, min])
@@ -202,29 +204,35 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     var clip = svg.append("defs").append("SVG:clipPath")
         .attr("id", "clip")
         .append("SVG:rect")
-        .attr("width", width )
-        .attr("height", height )
+        .attr("width", width)
+        .attr("height", height)
         .attr("x", 0)
         .attr("y", 0);
 
     // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
     var zoom = d3.zoom()
-        .scaleExtent([1, 50])  // This control how much you can unzoom (x0.5) and zoom (x20)
-        .extent([[0, 0], [width, height]])
-        .translateExtent([[0, 0], [width, height]])
+        .scaleExtent([1, 50]) // This control how much you can unzoom (x0.5) and zoom (x20)
+        .extent([
+            [0, 0],
+            [width, height]
+        ])
+        .translateExtent([
+            [0, 0],
+            [width, height]
+        ])
         .on("zoom", updateChart);
 
     // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .style("fill", "none")
-        .style("pointer-events", "all")
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-        .call(zoom);
-    
-        // .y(function(d) { return y(d.value) })
-        // )
+    // svg.append("rect")
+    //     .attr("width", width)
+    //     .attr("height", height)
+    //     .style("fill", "none")
+    //     .style("pointer-events", "all")
+    //     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+    //     .call(zoom);
+
+    // .y(function(d) { return y(d.value) })
+    // )
 
     // lines.data(function(d) {
     //     console.log(d.selectedKey)
@@ -252,28 +260,28 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     //     .call(d3.axisBottom(x))
 
     // gridlines in x axis function
-    function make_x_gridlines() {		
+    function make_x_gridlines() {
         return d3.axisBottom(x)
             .ticks(10)
     }
 
     // gridlines in y axis function
-    function make_y_gridlines() {		
+    function make_y_gridlines() {
         return d3.axisLeft(y)
             .ticks(10)
     }
 
     // add the X gridlines
-    var xGrid = g.append("g")			
-      .attr("class", "grid")
-      .attr("transform", "translate(0," + height + ")")
-      .call(make_x_gridlines()
-          .tickSize(-height)
-          .tickFormat("")
-      )
+    var xGrid = g.append("g")
+        .attr("class", "grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(make_x_gridlines()
+            .tickSize(-height)
+            .tickFormat("")
+        )
 
     // add the Y gridlines
-    var yGrid = g.append("g")			
+    var yGrid = g.append("g")
         .attr("class", "grid")
         .call(make_y_gridlines()
             .tickSize(-width)
@@ -283,8 +291,8 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     var xAxis = g.append("g")
         .attr("class", "x axis")
         .call(d3.axisBottom(x))
-        
-    xAxis.selectAll("text")  
+
+    xAxis.selectAll("text")
         .style("text-anchor", "end")
         .attr("dx", "-.3em")
         .attr("dy", "-.8em")
@@ -296,27 +304,108 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 
     // Add the line
     var line = gZoom.append("path")
-      .datum(nestList[0][selectedKey])
-    //   .attr("fill", "none")
-    //   .attr("stroke", "steelblue")
-    //   .attr("stroke-width", 1.5)
-      .attr("d", d3.line()
-        .x(function(d) { 
-            return x(d.value) })
-        .y(function(d) { 
-            return y(d.depth) })
+        .datum(nestList[0][selectedKey])
+        .attr("class", "line")
+        //   .attr("fill", "none")
+        //   .attr("stroke", "steelblue")
+        //   .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+            .x(function (d) {
+                return x(d.value)
+            })
+            .y(function (d) {
+                return y(d.depth)
+            })
+            .curve(d3.curveLinear)
         )
 
-            // Add the scatterplot
+    var totalLength = line.node().getTotalLength();
+
+    // Line animation
+    line
+        .attr("stroke-dasharray", totalLength + " " + totalLength)
+        .attr("stroke-dashoffset", totalLength)
+        .transition()
+        .duration(2400)
+        .attr("stroke-dashoffset", 0);
+
+
+    // Add the scatterplot
     var dots = gZoom.selectAll("dot")
         .data(nestList[0][selectedKey])
         .enter().append("circle")
         .attr("r", 2)
-        .attr("cx", function(d) { 
-            return x(d.value); })
-        .attr("cy", function(d) { 
-            return y(d.depth); 
+        .attr("cx", function (d) {
+            return x(d.value);
+        })
+        .attr("cy", function (d) {
+            return y(d.depth);
         });
+    //
+
+    var focus = svg.append("g")
+      .attr("class", "focus")
+      .style("display", "none")
+
+    focus.append("circle")
+      .attr("r", 3)
+      .attr("fill", "red")
+
+    focus.append("text")
+      .attr("x", 9)
+      .attr("y", -9)
+      .attr("dy", ".35em");
+
+    // svg.append("rect")
+    //   .attr("class", "overlay")
+    //   .attr("width", width)
+    //   .attr("height", height)
+    //   .on("mouseover", function() {
+    //     focus.style("display", null);
+    //   })
+    //   .on("mouseout", function() {
+    //     focus.style("display", "none");
+    //   })
+    //   .on("mousemove", mousemove);
+
+      svg.append("rect")
+        .attr("class", "overlay")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+        .call(zoom)
+        .on("mouseover", function() {
+            focus.style("display", null);
+          })
+          .on("mouseout", function() {
+            focus.style("display", "none");
+          })
+          .on("mousemove", mousemove);
+
+    var h1 = document.getElementById("title1")
+    var h2 = document.getElementById("title2")
+    var path = svg.select('.line').node();
+    var totLength = path.getTotalLength();
+
+    function mousemove() {
+
+      var y0 = d3.mouse(this)[1],
+          per = height / y0;
+          point = path.getPointAtLength(totLength / per)
+          yCoor = y.invert(point.y);
+          xCoor = x.invert(point.x);
+
+        var xTot = point.x + margin.left
+        var yTot = point.y + margin.top
+
+        h1.textContent = xCoor
+        h2.textContent = yCoor
+      
+      focus.attr("transform", "translate(" + xTot + "," + yTot + ")");
+      focus.select("text").text(Math.round((xCoor + Number.EPSILON) * 100) / 100 + ", " + Math.round((yCoor + Number.EPSILON) * 100) / 100);
+    }
 
     //functions
     function translate(x, y) {
@@ -328,12 +417,12 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         // recover the new scale
         var newX = d3.event.transform.rescaleX(x);
         var newY = d3.event.transform.rescaleY(y);
-    
+
         // update axes with these new boundaries
         xAxis
             .call(d3.axisBottom(newX))
 
-        xAxis.selectAll("text")  
+        xAxis.selectAll("text")
             .style("text-anchor", "end")
             .attr("dx", "-.3em")
             .attr("dy", "-.8em")
@@ -345,33 +434,45 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         // update grid
         xGrid.call(
             d3.axisBottom(x)
-                .scale(newX)
-                .ticks(10)
-                .tickSize(-height)
-                .tickFormat("")
-            )
+            .scale(newX)
+            .ticks(10)
+            .tickSize(-height)
+            .tickFormat("")
+        )
 
         yGrid.call(
             d3.axisLeft(y)
-                .scale(newY)
-                .ticks(10)
-                .tickSize(-width)
-                .tickFormat("")
-                )
-    
+            .scale(newY)
+            .ticks(10)
+            .tickSize(-width)
+            .tickFormat("")
+        )
+
         // update circle position
         dots
-          .attr('cx', function(d) {return newX(d.value)})
-          .attr('cy', function(d) {return newY(d.depth)});
+            .attr('cx', function (d) {
+                return newX(d.value)
+            })
+            .attr('cy', function (d) {
+                return newY(d.depth)
+            });
 
         line
-        .attr("d", d3.line()
-        .x(function(d) { 
-            return newX(d.value) })
-        .y(function(d) { 
-            return newY(d.depth) })
-        )
-      }
+            .attr("stroke-dasharray", "")
+            .attr("stroke-dashoffset", "")
+            .attr("d", d3.line()
+                .x(function (d) {
+                    return newX(d.value)
+                })
+                .y(function (d) {
+                    return newY(d.depth)
+                })
+            )
+
+
+
+
+    }
 }
 
 // organizeObj()
@@ -379,4 +480,3 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 // Rutina principal
 var nestList = queryAndOrganizeInfo()
 addDataToSelectpickerGraphs(nestList)
-
