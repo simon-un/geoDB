@@ -38,7 +38,7 @@ signupForm.addEventListener('submit', (e) => {
             auth.currentUser.updateProfile({
                 displayName: String(auth.currentUser.email).match(/(.*)@.*/)[1],
             });
-            dbRt.ref('USERS/'+auth.currentUser.uid+'/PROY/').set({});
+
             dbRt.ref('/PUBLIC_USERS/emails').once('value').then((snapshot) => {
                 let users = snapshot.val();
                 dbRt.ref('PUBLIC_USERS/emails/'+String(users.length)).set(String(email));
