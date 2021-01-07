@@ -181,11 +181,12 @@ createProject = () => {
     let prjId = document.getElementById("prjId").value;
     let participants = document.getElementById("peopleTable").childNodes;
     let date = String(new Date());
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + prjId).set({
-        FECHA_UNION: date,
-        NAME: prjName,
-        ROL: "admin"
-    });
+
+    // Add info of the project to USERS
+    dbRt.ref('USERS/' + auth.currentUser.uid).once('value').then((snapshot) => {
+        let proyectsId = snapshot.val();
+        dbRt.ref('USERS/' + auth.currentUser.uid+String(proyectsId.length)).set(String(key));
+    })
 
     // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
     dbRt.ref('PROYECTOS/' + prjId).set({
