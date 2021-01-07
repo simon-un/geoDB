@@ -29,10 +29,12 @@ function queryAndOrganizeInfo() {
     Object.keys(graphNumberTitle).forEach(title => {
         nestList[0][title] = []
         Object.keys(muestras).forEach(key => {
+            if (muestras[key][title] !== undefined && muestras[key][title] !== null) {
             nestList[0][title].push({
-                "depth": muestras[key]['PROFUNDIDAD_MEDIA(m)'],
+                "depth": muestras[key]['PROFUNDIDAD_MEDIA'],
                 "value": muestras[key][title]
             })
+        }
         })
     })
 
@@ -121,7 +123,7 @@ function organizeObj(nestList, selectedKey) {
     var [min, minX] = [null, null]
     var [max, maxX] = [null, null]
 
-    var prof = nestList[0]['PROFUNDIDAD_MEDIA(m)']
+    var prof = nestList[0]['PROFUNDIDAD_MEDIA']
     prof.forEach(v => {
 
         var depth = v.value
@@ -302,6 +304,10 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
 
+    var validateX = []
+    var i = 0
+    var j = 0
+
     // Add the line
     var line = gZoom.append("path")
         .datum(nestList[0][selectedKey])
@@ -329,6 +335,9 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         .duration(2400)
         .attr("stroke-dashoffset", 0);
 
+    validateX = []
+    i = 0
+    j = 0
 
     // Add the scatterplot
     var dots = gZoom.selectAll("dot")
@@ -336,12 +345,24 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         .enter().append("circle")
         .attr("r", 2)
         .attr("cx", function (d) {
-            return x(d.value);
+
+            if (typeof d.value !== undefined) {
+                validateX[i] = true
+                i += 1
+                return x(d.value);
+            } else {
+                validateX[i] = false
+                i += 1
+            }
         })
+        // .defined(function(d) { return d.value; }) // Omit empty values.
         .attr("cy", function (d) {
-            return y(d.depth);
+            if (validateX[j]) {
+                j += 1
+                return y(d.depth);
+            }
         });
-    //
+    
 
     var focus = svg.append("g")
       .attr("class", "focus")
