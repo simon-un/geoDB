@@ -15,10 +15,11 @@ auth.onAuthStateChanged(user => {
                 showProjectsWaiting(projects_waiting);
             }
         })
-        dbRt.ref('USERS/' + user.uid + '/PROY').on('value', (snap) => {
-            var obj = snap.val();
-            if (obj) {
-                showProjects(obj);
+        dbRt.ref('USERS/' + user.uid).on('value', (snap) => {
+            var prIdList = snap.val();
+            console.log(prIdList);
+            if (prIdList) {
+                showProjects(prIdList);
             } else {
                 projects.innerHTML += `
                 <h6>No estas asociado a ningún proyecto. Si crees que es un error contacta a tu organización</h6>
@@ -31,11 +32,26 @@ auth.onAuthStateChanged(user => {
     }
 })
 
-showProjects = (obj) => {
+let showProjects = (prIdList) => {
+    const getPrName = (prId) => {
+        dbRt.ref('PROYECTOS/' + prId + '/NAME').once('value').then((snapshot) =>{
+            localStorage.setItem(prId, snapshot.val());
+        });
+    };
+    const getUserRol = (prId, userId) => {
+        dbRt.ref('PROYECTOS/' + prId + '/USERS/' + userId + '/ROL').once('value').then((snapshot) =>{
+            localStorage.setItem(userId+prId, snapshot.val());
+        });
+    }
     const projects = document.getElementById('projects');
     let rol = 'No definido';
-    for (var key in obj) {
-        switch (obj[key]['ROL']) {
+    for (var i in prIdList) {
+        getUserRol(prIdList[i], auth.currentUser.uid)
+        let userRol = localStorage.getItem(auth.currentUser.uid+prIdList[i]);
+        getPrName(prIdList[i])
+        let prName = localStorage.getItem(prIdList[i]);
+        console.log(userRol);
+        switch (userRol) {
             case 'admin':
                 rol = 'Administrador'
                 break;
@@ -53,9 +69,9 @@ showProjects = (obj) => {
         }
         projects.innerHTML += `
         <div class="project">
-            <a onclick="projectInfo('${key}', '${rol}', '${obj[key]['NAME']}')" href="map.html">${obj[key]['NAME']}</a>
+            <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" href="map.html">${prName}</a>
             <br>
-            ID del Proyecto: ${key}
+            ID del Proyecto: ${prIdList[i]}
             <br>
             Rol: ${rol}
             <br>
@@ -63,7 +79,7 @@ showProjects = (obj) => {
                 <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
                     data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
                     <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
-                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${key}')"/>
+                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${i}')"/>
                 </button>
             </div>
         </div>`;
@@ -100,22 +116,21 @@ showProjectsWaiting = (obj) => {
             <br>
             <div style="text-align:right">
             <button class="btn btn-secondary btn-sm" onclick="rejectProj('${key}')" style="margin:5px; margin-right:0px; background-color: rgb(175, 173, 173)">Rechazar</button>
-            <button class="btn btn-secondary btn-sm" onclick="acceptProj('${key}','${obj[key]['NAME']}','${obj[key]['FECHA_UNION']}','${obj[key]['ROL']}')" style="margin:5px">Aceptar</button>
+            <button class="btn btn-secondary btn-sm" onclick="acceptProj('${key}','${obj[key]['FECHA_UNION']}','${obj[key]['ROL']}')" style="margin:5px">Aceptar</button>
             </div>
         </div>`;
     }
 }
 
-acceptProj = (key, name, date, rol) => {
+acceptProj = (key, date, rol) => {
 
-    // Add info of the project to USERS/ID_USER/PROY/ID_PROJ
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + key).set({
-        FECHA_UNION: date,
-        NAME: name,
-        ROL: rol
-    });
+    // Add info of the project to USERS
+    dbRt.ref('USERS/' + auth.currentUser.uid).once('value').then((snapshot) => {
+        let proyectsId = snapshot.val();
+        dbRt.ref('USERS/' + auth.currentUser.uid+String(proyectsId.length)).set(String(key));
+    })
 
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    // Add info of the user to PROYECTOS
     dbRt.ref('PROYECTOS/' + key + '/USERS/' + auth.currentUser.uid).set({
         FECHA_UNION: date,
         ROL: rol
@@ -321,26 +336,25 @@ editProject = () =>{
     let id = JSON.parse(localStorage.prjIdEdit);
     let prjName = document.getElementById("prjName_edit").value;
     let participants = document.getElementById("peopleTable_edit").childNodes;
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/PROY/' + id).update({
+
+    // Implement this better!
+
+    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    dbRt.ref('PROYECTOS/' + id).update({
         NAME: prjName
     });
 
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    dbRt.ref('PROYECTOS/' + id).set({
-        NAME: prjName
-    });
+    // // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+    // dbRt.ref('PROYECTOS/' + id + '/USERS/').remove();
 
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    dbRt.ref('PROYECTOS/' + id + '/USERS/').remove();
-
-    participants.forEach((person) => {
-        if (person.id) {
-            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
-            dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
-                FECHA_UNION: String(new Date()),
-                NAME: prjName,
-                ROL: rol
-            });
-        }
-    });
+    // participants.forEach((person) => {
+    //     if (person.id) {
+    //         let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
+    //         dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+    //             FECHA_UNION: String(new Date()),
+    //             NAME: prjName,
+    //             ROL: rol
+    //         });
+    //     }
+    // });
 }
