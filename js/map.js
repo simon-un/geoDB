@@ -354,17 +354,20 @@ function activeTab(tab, structureObj, name) {
     myTbodySondeosNav.innerHTML = ''
     Object.keys(structureObj).forEach(key => {
 
-        pSondeos.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStruct">
-            Se muestran todos los sondeos relacionados a la estructura ${name} 
-        </p>`
+        if (key != 'reservedGeometry') {
+            pSondeos.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStruct">
+                Se muestran todos los sondeos relacionados a la estructura ${name} 
+                </p>
+                `
 
-        myTbodySondeosNav.innerHTML += `
-        <tr>
-            <td colspan="2">
-                <a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a>
-            </td>
-        </tr>
-    `
+            myTbodySondeosNav.innerHTML += `
+                <tr>
+                    <td colspan="2">
+                        <a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a>
+                    </td>
+                </tr>
+                `
+        }
 
     })
 };
@@ -383,7 +386,7 @@ function openInfo(tab, key) {
 //Getting info
 var cacheInfo = {}
 var structureAsValue = {} // Se toman las estructuras como valores,
-                          // y las exploraciones como llaves
+// y las exploraciones como llaves
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
@@ -419,261 +422,266 @@ function getInfo(key) {
 }
 
 var i = 0
+const reservedWords = ['NAME', 'USERS']
 
 const graphGeoMarkers = (Obj) => {
 
     Object.keys(Obj).forEach(key => {
-        var structureName = key
-        var group = new L.FeatureGroup()
-        var ObjPerf = Obj[key]
-        name = key
 
-        // Contenido de Estructuras
-        var tr = document.createElement('tr');
-        var td = document.createElement('td');
-        td.setAttribute("colspan", "2");
-        var a = document.createElement('a');
-        a.setAttribute('href', '#');
-        a.textContent = name
+        if (!reservedWords.includes(key)) {
 
-        a.onclick = function () {
-            myFormStructureNav.reset()
-            $("#myInputStructureNav").keyup()
-            activeTab('nav-sondeos', Obj[key], key)
-        };
-        tr.appendChild(td).appendChild(a)
-        myTbodyStructureNav.appendChild(tr)
+            var structureName = key
+            var group = new L.FeatureGroup()
+            var ObjPerf = Obj[key]
+            name = key
 
-        Object.keys(ObjPerf).forEach(key => {
-            if (key.match(/reservedGeometry/)) {
+            // Contenido de Estructuras
+            var tr = document.createElement('tr');
+            var td = document.createElement('td');
+            td.setAttribute("colspan", "2");
+            var a = document.createElement('a');
+            a.setAttribute('href', '#');
+            a.textContent = name
 
-                group.addLayer(L.geoJSON(ObjPerf[key], {
-                    onEachFeature: {
-                        title: key
-                    },
-                    onEachFeature: function (feature, layer) {
-                        layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${name}`)
-                        layer.on({
-                            mouseover: e => {
-                                layer.openPopup()
-                            },
-                            mouseout: e => {
-                                layer.closePopup()
-                            }
-                        })
-                    }
-                })).addTo(map)
+            a.onclick = function () {
+                myFormStructureNav.reset()
+                $("#myInputStructureNav").keyup()
+                activeTab('nav-sondeos', Obj[key], key)
+            };
+            tr.appendChild(td).appendChild(a)
+            myTbodyStructureNav.appendChild(tr)
 
-            } else {
+            Object.keys(ObjPerf).forEach(key => {
+                if (key.match(/reservedGeometry/)) {
 
-                get(structureAsValue, key, structureName)
-                group.addLayer(L.geoJSON(ObjPerf[key], {
-                    onEachFeature: {
-                        title: key
-                    },
-                    onEachFeature: function (feature, layer) {
-                        layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
-                        layer.on({
-                            click: (e) => {
-                                getInfo(key)
-
-                                openNav()
-                                layer.openPopup()
-                                document.getElementById('divSvg').style.display = "block";
-
-                                if (!clicked) {
+                    group.addLayer(L.geoJSON(ObjPerf[key], {
+                        onEachFeature: {
+                            title: key
+                        },
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${name}`)
+                            layer.on({
+                                mouseover: e => {
                                     layer.openPopup()
-                                    clicked = true
-                                    // console.log(clicked)
-
-                                    if ($('#inicio').is(":visible")) {
-                                        $("#inicio").children().hide();
-                                        $('#' + key + 'inicio').show()
-                                    }
-                                } else {
-                                    clicked = false
-                                    if ($('#inicio').is(":visible")) {
-                                        $("#inicio").children().hide();
-                                        $('#' + key + 'inicio').show()
-                                    }
-                                    // console.log(clicked)
+                                },
+                                mouseout: e => {
+                                    layer.closePopup()
                                 }
-                            },
-                            mouseover: e => {
-                                layer.openPopup()
-                            },
-                            mouseout: e => {
-                                layer.closePopup()
-                            }
-                        });
-                    }
-                }).addTo(map))
-            }
+                            })
+                        }
+                    })).addTo(map)
 
-            // let s = '   reservedGeometryUNA1p2 Deci, 35; sd'
+                } else {
 
-            // if (s.match(/reservedGeometry/)) {
-            //     console.log('Encontrado')
-            // } else {
-            //     console.log('No encontrado')
-            // }
+                    get(structureAsValue, key, structureName)
+                    group.addLayer(L.geoJSON(ObjPerf[key], {
+                        onEachFeature: {
+                            title: key
+                        },
+                        onEachFeature: function (feature, layer) {
+                            layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                            layer.on({
+                                click: (e) => {
+                                    getInfo(key)
 
-            // if (i == 2) {
-            //     const objeto = {
-            //         "name": key,
-            //         "type": "FeatureCollection",
-            //         "features": [{
-            //                 "type": "Feature",
-            //                 "properties": {},
-            //                 "geometry": {
-            //                     "type": "Polygon",
-            //                     "coordinates": [
-            //                         [
-            //                             [
-            //                                 -74.16080474853516,
-            //                                 4.667109618126994
-            //                             ],
-            //                             [
-            //                                 -74.13814544677734,
-            //                                 4.667109618126994
-            //                             ],
-            //                             [
-            //                                 -74.13814544677734,
-            //                                 4.679428147769262
-            //                             ],
-            //                             [
-            //                                 -74.16080474853516,
-            //                                 4.679428147769262
-            //                             ],
-            //                             [
-            //                                 -74.16080474853516,
-            //                                 4.667109618126994
-            //                             ]
-            //                         ]
-            //                     ]
-            //                 }
-            //             },
-            //             {
-            //                 "type": "Feature",
-            //                 "properties": {},
-            //                 "geometry": {
-            //                     "type": "LineString",
-            //                     "coordinates": [
-            //                         [
-            //                             -74.16526794433594,
-            //                             4.662661207034317
-            //                         ],
-            //                         [
-            //                             -74.16389465332031,
-            //                             4.685587331332217
-            //                         ],
-            //                         [
-            //                             -74.13368225097656,
-            //                             4.684902980281527
-            //                         ]
-            //                     ]
-            //                 }
-            //             }
-            //         ]
-            //     }
-            //     group.addLayer(L.geoJSON(objeto, {
-            //         onEachFeature: {
-            //             title: objeto['name']
-            //         },
-            //         onEachFeature: function (feature, layer) {
-            //             layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${objeto['name']}`)
-            //             layer.on({
-            //                 mouseover: e => {
-            //                     layer.openPopup()
-            //                 },
-            //                 mouseout: e => {
-            //                     layer.closePopup()
-            //                 }
-            //             })
-            //         }
-            //     })).addTo(map)
-            //     i = 3
-            // }
+                                    openNav()
+                                    layer.openPopup()
+                                    document.getElementById('divSvg').style.display = "block";
 
-            // if (i == 1) {
-            //     group.addLayer(L.geoJSON({
-            //         "type": "FeatureCollection",
-            //         "features": [{
-            //             "type": "Feature",
-            //             "properties": {},
-            //             "geometry": {
-            //                 "type": "Polygon",
-            //                 "coordinates": [
-            //                     [
-            //                         [
-            //                             -74.16732788085938,
-            //                             4.6133846214188114
-            //                         ],
-            //                         [
-            //                             -74.17625427246094,
-            //                             4.600722722785758
-            //                         ],
-            //                         [
-            //                             -74.17076110839844,
-            //                             4.585322812931121
-            //                         ],
-            //                         [
-            //                             -74.14260864257812,
-            //                             4.5873761534497035
-            //                         ],
-            //                         [
-            //                             -74.14398193359375,
-            //                             4.607567020318201
-            //                         ],
-            //                         [
-            //                             -74.16732788085938,
-            //                             4.6133846214188114
-            //                         ]
-            //                     ]
-            //                 ]
-            //             }
-            //         }]
-            //     })).addTo(map)
-            //     i = 2
-            // }
+                                    if (!clicked) {
+                                        layer.openPopup()
+                                        clicked = true
+                                        // console.log(clicked)
 
-            // if (i == 0) {
-            //     group.addLayer(L.geoJSON({
-            //         "type": "FeatureCollection",
-            //         "features": [{
-            //             "type": "Feature",
-            //             "properties": {},
-            //             "geometry": {
-            //                 "type": "LineString",
-            //                 "coordinates": [
-            //                     [
-            //                         -74.08252716064453,
-            //                         4.547334951577334
-            //                     ],
-            //                     [
-            //                         -74.09076690673828,
-            //                         4.671215818726475
-            //                     ],
-            //                     [
-            //                         -74.12132263183594,
-            //                         4.673268910010635
-            //                     ]
-            //                 ]
-            //             }
-            //         }]
-            //     })).addTo(map)
+                                        if ($('#inicio').is(":visible")) {
+                                            $("#inicio").children().hide();
+                                            $('#' + key + 'inicio').show()
+                                        }
+                                    } else {
+                                        clicked = false
+                                        if ($('#inicio').is(":visible")) {
+                                            $("#inicio").children().hide();
+                                            $('#' + key + 'inicio').show()
+                                        }
+                                        // console.log(clicked)
+                                    }
+                                },
+                                mouseover: e => {
+                                    layer.openPopup()
+                                },
+                                mouseout: e => {
+                                    layer.closePopup()
+                                }
+                            });
+                        }
+                    }).addTo(map))
+                }
 
-            //     // groupGen.addLayer(group)
-            //     // overlayMaps['TEST'] = group
-            //     // map.addLayer(group)
-            //     i = 1
-            // }
+                // let s = '   reservedGeometryUNA1p2 Deci, 35; sd'
 
-        })
+                // if (s.match(/reservedGeometry/)) {
+                //     console.log('Encontrado')
+                // } else {
+                //     console.log('No encontrado')
+                // }
 
-        groupGen.addLayer(group)
-        overlayMaps[name] = group
-        map.addLayer(group)
+                // if (i == 2) {
+                //     const objeto = {
+                //         "name": key,
+                //         "type": "FeatureCollection",
+                //         "features": [{
+                //                 "type": "Feature",
+                //                 "properties": {},
+                //                 "geometry": {
+                //                     "type": "Polygon",
+                //                     "coordinates": [
+                //                         [
+                //                             [
+                //                                 -74.16080474853516,
+                //                                 4.667109618126994
+                //                             ],
+                //                             [
+                //                                 -74.13814544677734,
+                //                                 4.667109618126994
+                //                             ],
+                //                             [
+                //                                 -74.13814544677734,
+                //                                 4.679428147769262
+                //                             ],
+                //                             [
+                //                                 -74.16080474853516,
+                //                                 4.679428147769262
+                //                             ],
+                //                             [
+                //                                 -74.16080474853516,
+                //                                 4.667109618126994
+                //                             ]
+                //                         ]
+                //                     ]
+                //                 }
+                //             },
+                //             {
+                //                 "type": "Feature",
+                //                 "properties": {},
+                //                 "geometry": {
+                //                     "type": "LineString",
+                //                     "coordinates": [
+                //                         [
+                //                             -74.16526794433594,
+                //                             4.662661207034317
+                //                         ],
+                //                         [
+                //                             -74.16389465332031,
+                //                             4.685587331332217
+                //                         ],
+                //                         [
+                //                             -74.13368225097656,
+                //                             4.684902980281527
+                //                         ]
+                //                     ]
+                //                 }
+                //             }
+                //         ]
+                //     }
+                //     group.addLayer(L.geoJSON(objeto, {
+                //         onEachFeature: {
+                //             title: objeto['name']
+                //         },
+                //         onEachFeature: function (feature, layer) {
+                //             layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${objeto['name']}`)
+                //             layer.on({
+                //                 mouseover: e => {
+                //                     layer.openPopup()
+                //                 },
+                //                 mouseout: e => {
+                //                     layer.closePopup()
+                //                 }
+                //             })
+                //         }
+                //     })).addTo(map)
+                //     i = 3
+                // }
+
+                // if (i == 1) {
+                //     group.addLayer(L.geoJSON({
+                //         "type": "FeatureCollection",
+                //         "features": [{
+                //             "type": "Feature",
+                //             "properties": {},
+                //             "geometry": {
+                //                 "type": "Polygon",
+                //                 "coordinates": [
+                //                     [
+                //                         [
+                //                             -74.16732788085938,
+                //                             4.6133846214188114
+                //                         ],
+                //                         [
+                //                             -74.17625427246094,
+                //                             4.600722722785758
+                //                         ],
+                //                         [
+                //                             -74.17076110839844,
+                //                             4.585322812931121
+                //                         ],
+                //                         [
+                //                             -74.14260864257812,
+                //                             4.5873761534497035
+                //                         ],
+                //                         [
+                //                             -74.14398193359375,
+                //                             4.607567020318201
+                //                         ],
+                //                         [
+                //                             -74.16732788085938,
+                //                             4.6133846214188114
+                //                         ]
+                //                     ]
+                //                 ]
+                //             }
+                //         }]
+                //     })).addTo(map)
+                //     i = 2
+                // }
+
+                // if (i == 0) {
+                //     group.addLayer(L.geoJSON({
+                //         "type": "FeatureCollection",
+                //         "features": [{
+                //             "type": "Feature",
+                //             "properties": {},
+                //             "geometry": {
+                //                 "type": "LineString",
+                //                 "coordinates": [
+                //                     [
+                //                         -74.08252716064453,
+                //                         4.547334951577334
+                //                     ],
+                //                     [
+                //                         -74.09076690673828,
+                //                         4.671215818726475
+                //                     ],
+                //                     [
+                //                         -74.12132263183594,
+                //                         4.673268910010635
+                //                     ]
+                //                 ]
+                //             }
+                //         }]
+                //     })).addTo(map)
+
+                //     // groupGen.addLayer(group)
+                //     // overlayMaps['TEST'] = group
+                //     // map.addLayer(group)
+                //     i = 1
+                // }
+
+            })
+
+            groupGen.addLayer(group)
+            overlayMaps[name] = group
+            map.addLayer(group)
+        }
     })
 
     L.control.layers({}, overlayMaps, {
@@ -811,7 +819,7 @@ function openNav() {
     } else {
         var percentage = "50%"
     }
-    
+
     document.getElementById("mySidebar").style.width = percentage;
     document.getElementById("map-div").style.marginRight = percentage;
     optionsBtn.style.display = "none";
