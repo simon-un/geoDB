@@ -175,7 +175,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
             top: 50, // 20
             right: 100,
             bottom: 20,
-            left: 40
+            left: 50
         },
         width = +svg.attr("width") - margin.left - margin.right,
         height = +svg.attr("height") - margin.top - margin.bottom;
@@ -282,6 +282,15 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
             .tickFormat("")
         )
 
+
+    // xGrid.append('text')
+    //     .attr('class', 'axis-label')
+    //     .attr('text-anchor', 'start')
+    //     .attr('x', width)
+    //     .attr('y', -height)
+    //     .attr('fill', 'black')
+    //     .text(selectedKey)
+
     // add the Y gridlines
     var yGrid = g.append("g")
         .attr("class", "grid")
@@ -296,13 +305,38 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 
     xAxis.selectAll("text")
         .style("text-anchor", "end")
+        .attr("id", "textX"+selectedKey)
         .attr("dx", "-.3em")
         .attr("dy", "-.8em")
-        .attr("transform", "rotate(65)");
+        .attr("transform", "rotate(65)")
+
+    xGrid.append('text')
+            .attr('class', 'axis-label')
+            .attr('text-anchor', 'end')
+            .attr('x', width)
+            .attr('y', function (d, i) {
+                return -d3.selectAll('#textX'+selectedKey).filter(function (d, j) { return i === j; })
+                    .node().getComputedTextLength() - height - 20})
+            .attr('fill', 'black')
+            .text(selectedKey)
 
     var yAxis = g.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
+
+    yAxis.selectAll("text")
+        .attr("id", "textY"+selectedKey)
+
+    yGrid.append('text')
+        .attr('class', 'axis-label')
+        .attr('text-anchor', 'end')
+        .attr('y', function (d, i) {
+            return d3.selectAll('#textY'+selectedKey).filter(function (d, j) { return i === j; })
+                .node().getComputedTextLength() + 25})
+        .attr('x', height)
+        .attr('fill', 'black')
+        .text("PROFUNDIDAD_MEDIA")
+        .attr("transform", "rotate(90)")
 
     var validateX = []
     var i = 0

@@ -1,7 +1,7 @@
 .divGraphs {
     margin-left: 15px;
-    border-radius: 25px;
-    border: 2px solid #54991b;
+    border-radius: 5px;
+    border: 2px solid #2f496b;
     /* width: 90%; */
 }
 
@@ -41,3 +41,6 @@ path {
     shape-rendering: crispEdges;
   }
   
+.focus {
+    opacity: 0.6;
+}
