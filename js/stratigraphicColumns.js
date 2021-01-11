@@ -1,3 +1,6 @@
+// All info cache
+var allInfoCache = {}
+
 // Check if a mobile device is used
 window.mobileCheck = function () {
     let check = false;
@@ -22,6 +25,30 @@ function getIndexCoordinates(indexCoorTop, indexCoorBottom) {
     return [indexCoorTop, indexCoorBottom]
 }
 
+function queryAndOrganizeInfo(object) {
+
+    // Aqui se hace todo el tratamiento para enviar el objeto como si fuera un estrato
+    var stratums = object.layers
+    var muestras = {}
+    var textObjAsD3 = {} // Simula el objeto text usado en d3 para la info de los estratos
+    Object.keys(stratums).forEach(stratum => {
+        if (stratums[stratum]['MUESTRAS']) {
+            Object.keys(stratums[stratum]['MUESTRAS']).forEach(muestra => {
+                get(muestras, muestra, stratums[stratum]['MUESTRAS'][muestra])
+            })
+        }
+    })
+
+    var sondeoProperties = object.properties
+    Object.keys(sondeoProperties).forEach(key => {
+        get(textObjAsD3, key, sondeoProperties[key])
+    })
+
+    textObjAsD3['MUESTRAS'] = muestras
+
+    return textObjAsD3
+}
+
 function extractStratigraphicData(object) {
 
     var layersList = object.layers
@@ -30,11 +57,12 @@ function extractStratigraphicData(object) {
     var max = null
     var texts = []
     var colors = {}
+    const title = object.properties.title
     const pStratCol = document.getElementById('pStratCol')
 
     if (!mobileCheck()) {
         pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
-                Perfil estratigráfico del sondeo: ${object.properties.title}
+                Perfil estratigráfico del sondeo: ${title}
             </p>
             <p style="text-align:justify; color:green" id="pStratCol">
                 Ubique el <img src="images/pointer.png" style="display:inline;" width="15" height="15"> <span style="color:blue;">Cursor </span> sobre un estrato para mostrar información
@@ -45,8 +73,9 @@ function extractStratigraphicData(object) {
             </p>`
     } else {
         pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
-                Perfil estratigráfico del sondeo: ${object.properties.title}
+                Perfil estratigráfico del sondeo: ${title}
             </p>
+            <br>
             <p style="text-align:justify; color:green">
                 Click sobre un estrato para mostrar información de muestras
             </p>`
@@ -54,6 +83,7 @@ function extractStratigraphicData(object) {
 
     document.getElementById('spanSvg').textContent = object.properties.title
 
+    // Creating all-info button
     var buttonSondeo = document.createElement('button')
     buttonSondeo.className = "btn btn-info"
     buttonSondeo.id = "buttonSondeo"
@@ -64,32 +94,66 @@ function extractStratigraphicData(object) {
     // Query of all "sondeo" info
     buttonSondeo.addEventListener('click', e => {
 
-        // Aqui se hace todo el tratamiento para enviar el objeto como si fuera un estrato
-        var stratums = object.layers
-        var muestras = {}
-        var textObjAsD3 = {} // Simula el objeto text usado en d3 para la info de los estratos
-        Object.keys(stratums).forEach(stratum => {
-            if (stratums[stratum]['MUESTRAS']) {
-                Object.keys(stratums[stratum]['MUESTRAS']).forEach(muestra => {
-                    get(muestras, muestra, stratums[stratum]['MUESTRAS'][muestra])
-                })
-            }
-        })
+        if (allInfoCache[title]) {
 
-        var sondeoProperties = object.properties
-        Object.keys(sondeoProperties).forEach(key => {
-            get(textObjAsD3, key, sondeoProperties[key])
-        })
+            sessionStorage.setItem('isStratum', false)
+            sessionStorage.setItem('sondeoObject', JSON.stringify({
+                "text": allInfoCache[title]
+            }))
+            window.open(
+                "stratumInfo.html", "_blank");
 
-        textObjAsD3['MUESTRAS'] = muestras
+        } else {
 
-        sessionStorage.setItem('sondeoObject', JSON.stringify({
-            "text": textObjAsD3
-        }));
-        sessionStorage.setItem('isStratum', false)
-        window.open(
-            "stratumInfo.html", "_blank");
+            // Save in cache requested organized info
+            allInfoCache[title] = queryAndOrganizeInfo(object)
+
+            sessionStorage.setItem('sondeoObject', JSON.stringify({
+                "text": allInfoCache[title]
+            }));
+            sessionStorage.setItem('isStratum', false)
+            window.open(
+                "stratumInfo.html", "_blank");
+
+        }
     })
+
+
+    // Creating graphs button
+    var buttonGraphs = document.createElement('button')
+    buttonGraphs.className = "btn btn-info"
+    buttonGraphs.id = "buttonGraphs"
+    buttonGraphs.textContent = "Generador de gráficos"
+
+    pStratCol.appendChild(buttonGraphs)
+
+    // Query of all "sondeo" info
+    buttonGraphs.addEventListener('click', e => {
+
+        if (allInfoCache[title]) {
+
+            // sessionStorage.setItem('isStratum', false)
+            sessionStorage.setItem('sondeoObject', JSON.stringify({
+                "text": allInfoCache[title]
+            }))
+            window.open(
+                "stratumGraphs.html", "_blank");
+
+        } else {
+
+            // Save in cache requested organized info
+            allInfoCache[title] = queryAndOrganizeInfo(object)
+
+            sessionStorage.setItem('sondeoObject', JSON.stringify({
+                "text": allInfoCache[title]
+            }));
+            // sessionStorage.setItem('isStratum', false)
+            window.open(
+                "stratumGraphs.html", "_blank");
+
+        }
+    })
+
 
     Object.keys(layersList).forEach(key => {
         listDepth.push({

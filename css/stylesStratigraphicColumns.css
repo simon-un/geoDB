@@ -89,7 +89,7 @@ text {
       z-index: 2;
   }
 
-  .btn-info {
+  #buttonSondeo {
     font-size: 13px;
     color: rgba(8, 111, 143, 0.75);
     letter-spacing: 1px;
@@ -99,9 +99,27 @@ text {
     background: transparent;
     transition: all 0.3s ease 0s;
   }
-  
-  .btn-info:hover {
+
+  #buttonSondeo:hover {
     color: #FFF;
     background: rgba(31, 105, 128, 0.75);
     border: 2px solid rgba(15, 82, 102, 0.75);
   }
+  
+  #buttonGraphs {
+    font-size: 13px;
+    color: rgba(221, 138, 14, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(153, 118, 22, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+  }
+
+  #buttonGraphs:hover {
+    color: #FFF;
+    background: rgba(221, 138, 14, 0.75);
+    border: 2px solid rgba(153, 118, 22, 0.75);
+  }
+

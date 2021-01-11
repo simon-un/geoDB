@@ -1,0 +1,64 @@
+.divGraphs{
+    margin-left: 15px;
+    border-radius: 5px;
+    border: 2px solid #2f496b;
+    /* width: 90% !important; */
+}
+
+.spanGraphs {
+    font-size:large; 
+    float:left; 
+    margin-left: 25px;
+}
+
+div.inline { 
+    float:left; 
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.grid path { 
+    stroke: rgb(47, 122, 165) !important;
+    stroke-width: 1;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
+  
+.focus {
+    opacity: 0.8;
+}
+
+.navbar {
+    height: auto !important;
+  }
+
+#divTableInfo {
+    border-radius: 25px;
+    border: 2px solid #2688a7;
+    padding: 20px;
+    width: 96%; 
+    height: 100px;
+}
+
+@media (max-width: 394px) {
+    #divTableInfo {
+        height: 150px;
+    }
+}

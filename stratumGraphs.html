@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageStratumGraphsTitle">Gráficos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.5.2/css/buttons.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.bootstrap4.min.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css"
+        integrity="sha512-ARJR74swou2y0Q2V9k0GbzQ/5vJ2RBSoCWokg4zkfM29Fb3vZEQyv0iWBMW/yvKgyHSR/7D64pFMmU8nYmbRkg=="
+        crossorigin="anonymous" />
+
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/stratigraphicInfo.css"> -->
+    <link rel="stylesheet" href="./css/stratumGraphs.css">
+
+    <script src="https://unpkg.com/d3@4/build/d3.min.js"></script>
+    <!-- <link rel="stylesheet" href="./css/stylesStratigraphicColumns.css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+</head>
+
+<body>
+
+    <!-- navegacion -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbarid">
+        <a class="navbar-brand" href="#">GEO-DB</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item logged-out" style="display: none;">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#signinModal">Sign In <span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item logged-out" style="display: none;">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#signupModal">Sign Up</a>
+                </li>
+                <li class="nav-item logged-in" style="display: block;">
+                    <a class="nav-link" href="./index.html" id="goback">Volver al Inicio</a>
+                </li>
+                <li class="nav-item logged-in" style="display: block;">
+                    <a class="nav-link" href="#" id="logout">Log Out</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SIMON</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="divTableTitle" class="mx-auto" style="width: 96%">
+        <br>
+        <span id="stratumGraphTitle" style="font-size:large; float:left" class="badge badge-info"></span>
+        <br>
+    </div>
+
+    <div id="divTableInfo" class="mx-auto panel panel-default">
+        <div class="inline" align="center">
+            <p style="margin-left: 10%;">Elija un gráfico :</p>
+        </div>
+
+        <div class="inline text-center" style="display: inline-block">
+            <select data-style="btn-outline-secondary" id="selectGraphs" class="selectpicker" multiple
+                data-live-search="true" data-selected-text-format="count">
+    
+            </select>
+        </div>
+        <p></p>
+    </div>
+
+    <!-- TITLE -->
+
+    <div class="col-md-12" style="display: none">
+        <ul class="list-group">
+            <li style="text-align:center" class="list-group-item">
+                <p style="text-align:justify">Filtros Activos:</p>
+                <ul class="list-group" id="filterActiveGraphs">
+                    <li>Ninguno</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <p></p>
+
+    <!-- DIV GRAPHS -->
+    <div id="divGraphs" style="width:100%">
+            
+    </div>
+
+    <!-- <svg id="svg" width="400" height="500">
+
+    </svg> -->
+
+    <div id="divTableTitle" class="mx-auto" style="width: 96%">
+        <span id="stratumTitle" style="font-size:large; float:left" class="badge badge-info"></span>
+        <!-- <h3 id="stratumTitle" style="justify-content: center; text-align: center;"></h3> -->
+    </div>
+
+    <!-- JQUERY  -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+
+    <!-- Bootstrap-Select -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"
+        integrity="sha512-yDlE7vpGDP7o2eftkCiPZ+yuUyEcaBwoJoIhdXv71KZWugFqEphIS3PU60lEkFaz8RxaVsMpSvQxMBaKVwA5xg=="
+        crossorigin="anonymous"></script>
+    <!--  -->
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        var firebaseConfig = {
+            apiKey: "AIzaSyDbBbezuZ1QgRry43lelIjXCL617fFeOD4",
+            authDomain: "proyectoprueba-e9130.firebaseapp.com",
+            databaseURL: "https://proyectoprueba-e9130.firebaseio.com",
+            projectId: "proyectoprueba-e9130",
+            storageBucket: "proyectoprueba-e9130.appspot.com",
+            messagingSenderId: "348235529752",
+            appId: "1:348235529752:web:cd6e58e31ab4cc4fce4d6d",
+            measurementId: "G-YC6KKPKCHW"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth()
+        const db = firebase.firestore()
+        const dbRt = firebase.database() // Database in real-time
+
+        // firebase.analytics();
+    </script>
+
+    <script src="./js/stratumGraphs.js"></script>
+
+</body>
+
+</html>
