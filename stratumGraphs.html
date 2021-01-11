@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">Gráficos</title>
+    <title id="pageStratumGraphsTitle">Gráficos</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
@@ -20,9 +20,9 @@
 
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/styles.css">
+    <!-- <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/index.css">
-    <link rel="stylesheet" href="./css/stratigraphicInfo.css">
+    <link rel="stylesheet" href="./css/stratigraphicInfo.css"> -->
     <link rel="stylesheet" href="./css/stratumGraphs.css">
 
     <script src="https://unpkg.com/d3@4/build/d3.min.js"></script>
@@ -33,7 +33,7 @@
 <body>
 
     <!-- navegacion -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id='navbarid'>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbarid">
         <a class="navbar-brand" href="#">GEO-DB</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,19 +61,33 @@
         </div>
     </nav>
 
-    <!-- TITLE -->
-    <div class="col-md-12 text-center">
-        <select data-style="btn-outline-secondary" id="selectGraphs" class="selectpicker" multiple
-            data-live-search="true" data-selected-text-format="count">
-
-        </select>
+    <div id="divTableTitle" class="mx-auto" style="width: 96%">
+        <br>
+        <span id="stratumGraphTitle" style="font-size:large; float:left" class="badge badge-info"></span>
+        <br>
     </div>
+
+    <div id="divTableInfo" class="mx-auto panel panel-default">
+        <div class="inline" align="center">
+            <p style="margin-left: 10%;">Elija un gráfico :</p>
+        </div>
+
+        <div class="inline text-center" style="display: inline-block">
+            <select data-style="btn-outline-secondary" id="selectGraphs" class="selectpicker" multiple
+                data-live-search="true" data-selected-text-format="count">
+    
+            </select>
+        </div>
+        <p></p>
+    </div>
+
+    <!-- TITLE -->
 
     <div class="col-md-12" style="display: none">
         <ul class="list-group">
-            <li style="text-align:center" class='list-group-item '>
+            <li style="text-align:center" class="list-group-item">
                 <p style="text-align:justify">Filtros Activos:</p>
-                <ul class="list-group" id='filterActiveGraphs'>
+                <ul class="list-group" id="filterActiveGraphs">
                     <li>Ninguno</li>
                 </ul>
             </li>
@@ -81,17 +95,14 @@
     </div>
     <p></p>
 
-    <h1 id="title1"></h1>
-    <h1 id="title2"></h1>
-
     <!-- DIV GRAPHS -->
     <div id="divGraphs" style="width:100%">
             
     </div>
 
-    <svg id="svg" width="400" height="500">
+    <!-- <svg id="svg" width="400" height="500">
 
-    </svg>
+    </svg> -->
 
     <div id="divTableTitle" class="mx-auto" style="width: 96%">
         <span id="stratumTitle" style="font-size:large; float:left" class="badge badge-info"></span>

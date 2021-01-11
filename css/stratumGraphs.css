@@ -1,8 +1,8 @@
-.divGraphs {
+.divGraphs{
     margin-left: 15px;
     border-radius: 5px;
     border: 2px solid #2f496b;
-    /* width: 90%; */
+    /* width: 90% !important; */
 }
 
 .spanGraphs {
@@ -42,5 +42,23 @@ path {
   }
   
 .focus {
-    opacity: 0.6;
+    opacity: 0.8;
+}
+
+.navbar {
+    height: auto !important;
+  }
+
+#divTableInfo {
+    border-radius: 25px;
+    border: 2px solid #2688a7;
+    padding: 20px;
+    width: 96%; 
+    height: 100px;
+}
+
+@media (max-width: 394px) {
+    #divTableInfo {
+        height: 150px;
+    }
 }

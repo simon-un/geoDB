@@ -75,6 +75,7 @@ function extractStratigraphicData(object) {
         pStratCol.innerHTML = `<p style="text-align:justify; color:#55595c" id="pStratCol">
                 Perfil estratigráfico del sondeo: ${title}
             </p>
+            <br>
             <p style="text-align:justify; color:green">
                 Click sobre un estrato para mostrar información de muestras
             </p>`

@@ -13,6 +13,12 @@ function queryAndOrganizeInfo() {
     var Obj = JSON.parse(sessionStorage.getItem('sondeoObject'))
     var muestras = Obj.text['MUESTRAS']
     var graphNumberTitle = {} // Detects if a value is a number
+    const stratumGraphTitle = document.getElementById('stratumGraphTitle')
+    const pageStratumGraphsTitle = document.getElementById('pageStratumGraphsTitle')
+    var title = Obj.text.title
+
+    stratumGraphTitle.textContent = `GRAFICO ${title}`
+    pageStratumGraphsTitle.textContent = `GRAFICO ${title}`
 
     // Save only titles that meet the type of === 'number' to use them later
     Object.keys(muestras).forEach(key => {
@@ -162,12 +168,6 @@ function organizeObj(nestList, selectedKey) {
 }
 
 function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
-    // const svg = document.getElementById(`svg${selectedKey}`)
-    // graphHtmlTitle.textContent = Obj.text.title
-
-    // document.getElementById('svgGraphs').innerHTML = ''
-
-    // 500px corresponde a la altura del svg
 
     // console.log(`#svg${selectedKey}`)
     var svg = d3.select(`#svg${selectedKey}`),
@@ -224,14 +224,61 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         ])
         .on("zoom", updateChart);
 
-    // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
-    // svg.append("rect")
-    //     .attr("width", width)
-    //     .attr("height", height)
-    //     .style("fill", "none")
-    //     .style("pointer-events", "all")
-    //     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-    //     .call(zoom);
+    var xRectLabelWidth = 20
+    var rectLabelHeight = 20
+    var rectLabelWidth = 20
+
+    // Coords X Label
+    var xRectLabel = svg.append("rect")
+        .attr("width", rectLabelWidth)
+        .attr("height", rectLabelHeight)
+        .style("fill", "#edb5b2")
+        .attr("rx", "3")
+        .attr("ry", "3")
+        // .style("stroke", "black")
+        // .style("pointer-events", "all")
+        .attr('transform', 'translate(' + (margin.left + width + 4) + ',' + margin.top + ')')
+        // .call(zoom);
+
+    var xRectText = svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('x', (margin.left + width + xRectLabelWidth))
+        .attr('y', margin.top + rectLabelHeight * 3 / 4)
+        .style("fill", "#c91d14")
+        .text('x: ')
+
+    var xCoorLabel = svg.append('text')
+        .attr('text-anchor', 'start')
+        .attr('x', (margin.left + width + xRectLabelWidth + 5))
+        .attr('y', margin.top + rectLabelHeight * 3 / 4)
+        .style("fill", "grey")
+        .text('Apunte')
+
+    // Coords Y Label
+    var yRectLabel = svg.append("rect")
+        .attr("width", rectLabelWidth)
+        .attr("height", rectLabelHeight)
+        .style("fill", "#edb5b2")
+        .attr("rx", "3")
+        .attr("ry", "3")
+        // .style("stroke", "black")
+        // .style("pointer-events", "all")
+        .attr('transform', 'translate(' + (margin.left + width + 4) + ',' + (margin.top + rectLabelHeight + 4) + ')')
+        // .call(zoom);
+
+    var yRectText = svg.append('text')
+        .attr('text-anchor', 'end')
+        .attr('x', margin.left + width + xRectLabelWidth)
+        .attr('y', margin.top + rectLabelHeight * 7 / 4 + 3)
+        .style("fill", "#c91d14")
+        .text('y: ')
+
+    var yCoorLabel = svg.append('text')
+        .attr('text-anchor', 'start')
+        .attr('x', margin.left + width + xRectLabelWidth + 5)
+        .attr('y', margin.top + rectLabelHeight * 7 / 4 + 3)
+        .style("fill", "grey")
+        .text('al gráfico')
 
     // .y(function(d) { return y(d.value) })
     // )
@@ -342,6 +389,15 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     var i = 0
     var j = 0
 
+    var lined3 = d3.line()
+        .x(function (d) {
+            return x(d.value)
+        })
+        .y(function (d) {
+            return y(d.depth)
+        })
+        .curve(d3.curveLinear)
+
     // Add the line
     var line = gZoom.append("path")
         .datum(nestList[0][selectedKey])
@@ -349,15 +405,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         //   .attr("fill", "none")
         //   .attr("stroke", "steelblue")
         //   .attr("stroke-width", 1.5)
-        .attr("d", d3.line()
-            .x(function (d) {
-                return x(d.value)
-            })
-            .y(function (d) {
-                return y(d.depth)
-            })
-            .curve(d3.curveLinear)
-        )
+        .attr("d", lined3)
 
     var totalLength = line.node().getTotalLength();
 
@@ -455,11 +503,17 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         var xTot = point.x + margin.left
         var yTot = point.y + margin.top
 
-        h1.textContent = xCoor
-        h2.textContent = yCoor
+        // h1.textContent = xCoor
+        // h2.textContent = yCoor
+        xCoorLabel.text(`${Math.round((xCoor + Number.EPSILON) * 100) / 100}`)
+        yCoorLabel.text(`${Math.round((yCoor + Number.EPSILON) * 100) / 100}`)
+        xRectLabel.style("fill", "#94f79f")
+        yRectLabel.style("fill", "#94f79f")
+        xRectText.style("fill", "#097315")
+        yRectText.style("fill", "#097315")
       
       focus.attr("transform", "translate(" + xTot + "," + yTot + ")");
-      focus.select("text").text(Math.round((xCoor + Number.EPSILON) * 100) / 100 + ", " + Math.round((yCoor + Number.EPSILON) * 100) / 100);
+    //   focus.select("text").text(Math.round((xCoor + Number.EPSILON) * 100) / 100 + ", " + Math.round((yCoor + Number.EPSILON) * 100) / 100);
     }
 
     //functions
@@ -523,10 +577,6 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
                     return newY(d.depth)
                 })
             )
-
-
-
-
     }
 }
 
