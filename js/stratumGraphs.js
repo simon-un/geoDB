@@ -36,11 +36,11 @@ function queryAndOrganizeInfo() {
         nestList[0][title] = []
         Object.keys(muestras).forEach(key => {
             if (muestras[key][title] !== undefined && muestras[key][title] !== null) {
-            nestList[0][title].push({
-                "depth": muestras[key]['PROFUNDIDAD_MEDIA'],
-                "value": muestras[key][title]
-            })
-        }
+                nestList[0][title].push({
+                    "depth": muestras[key]['PROFUNDIDAD_MEDIA'],
+                    "value": muestras[key][title]
+                })
+            }
         })
     })
 
@@ -213,7 +213,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 
     // Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
     var zoom = d3.zoom()
-        .scaleExtent([1, 50]) // This control how much you can unzoom (x0.5) and zoom (x20)
+        .scaleExtent([1, 100]) // This control how much you can unzoom (x0.5) and zoom (x20)
         .extent([
             [0, 0],
             [width, height]
@@ -238,7 +238,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         // .style("stroke", "black")
         // .style("pointer-events", "all")
         .attr('transform', 'translate(' + (margin.left + width + 4) + ',' + margin.top + ')')
-        // .call(zoom);
+    // .call(zoom);
 
     var xRectText = svg.append('text')
         .attr('text-anchor', 'end')
@@ -264,7 +264,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         // .style("stroke", "black")
         // .style("pointer-events", "all")
         .attr('transform', 'translate(' + (margin.left + width + 4) + ',' + (margin.top + rectLabelHeight + 4) + ')')
-        // .call(zoom);
+    // .call(zoom);
 
     var yRectText = svg.append('text')
         .attr('text-anchor', 'end')
@@ -352,34 +352,40 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
 
     xAxis.selectAll("text")
         .style("text-anchor", "end")
-        .attr("id", "textX"+selectedKey)
+        .attr("id", "textX" + selectedKey)
         .attr("dx", "-.3em")
         .attr("dy", "-.8em")
         .attr("transform", "rotate(65)")
 
     xGrid.append('text')
-            .attr('class', 'axis-label')
-            .attr('text-anchor', 'end')
-            .attr('x', width)
-            .attr('y', function (d, i) {
-                return -d3.selectAll('#textX'+selectedKey).filter(function (d, j) { return i === j; })
-                    .node().getComputedTextLength() - height - 20})
-            .attr('fill', 'black')
-            .text(selectedKey)
+        .attr('class', 'axis-label')
+        .attr('text-anchor', 'end')
+        .attr('x', width)
+        .attr('y', function (d, i) {
+            return -d3.selectAll('#textX' + selectedKey).filter(function (d, j) {
+                    return i === j;
+                })
+                .node().getComputedTextLength() - height - 20
+        })
+        .attr('fill', 'black')
+        .text(selectedKey)
 
     var yAxis = g.append("g")
         .attr("class", "y axis")
         .call(d3.axisLeft(y));
 
     yAxis.selectAll("text")
-        .attr("id", "textY"+selectedKey)
+        .attr("id", "textY" + selectedKey)
 
     yGrid.append('text')
         .attr('class', 'axis-label')
         .attr('text-anchor', 'end')
         .attr('y', function (d, i) {
-            return d3.selectAll('#textY'+selectedKey).filter(function (d, j) { return i === j; })
-                .node().getComputedTextLength() + 25})
+            return d3.selectAll('#textY' + selectedKey).filter(function (d, j) {
+                    return i === j;
+                })
+                .node().getComputedTextLength() + 25
+        })
         .attr('x', height)
         .attr('fill', 'black')
         .text("PROFUNDIDAD_MEDIA")
@@ -444,20 +450,20 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
                 return y(d.depth);
             }
         });
-    
+
 
     var focus = svg.append("g")
-      .attr("class", "focus")
-      .style("display", "none")
+        .attr("class", "focus")
+        .style("display", "none")
 
     focus.append("circle")
-      .attr("r", 3)
-      .attr("fill", "red")
+        .attr("r", 3)
+        .attr("fill", "red")
 
     focus.append("text")
-      .attr("x", 9)
-      .attr("y", -9)
-      .attr("dy", ".35em");
+        .attr("x", 9)
+        .attr("y", -9)
+        .attr("dy", ".35em");
 
     // svg.append("rect")
     //   .attr("class", "overlay")
@@ -471,7 +477,7 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
     //   })
     //   .on("mousemove", mousemove);
 
-      svg.append("rect")
+    svg.append("rect")
         .attr("class", "overlay")
         .attr("width", width)
         .attr("height", height)
@@ -479,41 +485,58 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
         .style("pointer-events", "all")
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
         .call(zoom)
-        .on("mouseover", function() {
+        .on("dblclick.zoom", null) // Desactiva el zoom al hacer doble click
+        .on("mouseover", function () {
             focus.style("display", null);
-          })
-          .on("mouseout", function() {
+        })
+        .on("mouseout", function () {
             focus.style("display", "none");
-          })
-          .on("mousemove", mousemove);
+        })
+        .on("mousemove", mousemove);
 
     var h1 = document.getElementById("title1")
     var h2 = document.getElementById("title2")
     var path = svg.select('.line').node();
     var totLength = path.getTotalLength();
 
+    var k = null
+
     function mousemove() {
 
-      var y0 = d3.mouse(this)[1],
-          per = height / y0;
-          point = path.getPointAtLength(totLength / per)
-          yCoor = y.invert(point.y);
-          xCoor = x.invert(point.x);
+        if (k == 1 || k === null) {
+            var y0 = d3.mouse(this)[1],
+                per = height / y0;
+            point = path.getPointAtLength(totLength / per)
+            yCoor = y.invert(point.y);
+            xCoor = x.invert(point.x);
 
-        var xTot = point.x + margin.left
-        var yTot = point.y + margin.top
+            var xTot = point.x + margin.left
+            var yTot = point.y + margin.top
 
-        // h1.textContent = xCoor
-        // h2.textContent = yCoor
-        xCoorLabel.text(`${Math.round((xCoor + Number.EPSILON) * 100) / 100}`)
-        yCoorLabel.text(`${Math.round((yCoor + Number.EPSILON) * 100) / 100}`)
-        xRectLabel.style("fill", "#94f79f")
-        yRectLabel.style("fill", "#94f79f")
-        xRectText.style("fill", "#097315")
-        yRectText.style("fill", "#097315")
-      
-      focus.attr("transform", "translate(" + xTot + "," + yTot + ")");
-    //   focus.select("text").text(Math.round((xCoor + Number.EPSILON) * 100) / 100 + ", " + Math.round((yCoor + Number.EPSILON) * 100) / 100);
+            // h1.textContent = xCoor
+            // h2.textContent = yCoor
+            xCoorLabel.text(`${Math.round((xCoor + Number.EPSILON) * 100) / 100}`)
+            yCoorLabel.text(`${Math.round((yCoor + Number.EPSILON) * 100) / 100}`)
+            xRectLabel.style("fill", "#94f79f")
+            yRectLabel.style("fill", "#94f79f")
+            xRectText.style("fill", "#097315")
+            yRectText.style("fill", "#097315")
+
+            focus.attr("transform", "translate(" + xTot + "," + yTot + ")");
+            focus.style("visibility", "visible")
+
+            //   focus.select("text").text(Math.round((xCoor + Number.EPSILON) * 100) / 100 + ", " + Math.round((yCoor + Number.EPSILON) * 100) / 100);
+        }
+        else {
+            xCoorLabel.text(`-`)
+            yCoorLabel.text(`-`)
+            xRectLabel.style("fill", "#cccccc")
+            yRectLabel.style("fill", "#cccccc")
+            xRectText.style("fill", "#7d7d7d")
+            yRectText.style("fill", "#7d7d7d")
+
+            focus.style("visibility", "hidden")
+        }
     }
 
     //functions
@@ -577,6 +600,8 @@ function makeGraph(nestList, min, max, minX, maxX, selectedKey) {
                     return newY(d.depth)
                 })
             )
+
+            k = d3.event.transform.k
     }
 }
 
