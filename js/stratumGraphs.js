@@ -106,21 +106,23 @@ function createDomElement(selectedKey) {
 
     var div = document.createElement('div')
     div.setAttribute('id', `div${selectedKey}`)
-    div.setAttribute('class', 'divGraphs inline')
+    div.setAttribute('class', 'divGraphs inline mx-center')
 
     var span = document.createElement('span')
     span.setAttribute('class', 'spanGraphs badge badge-info')
     span.textContent = selectedKey
 
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    var height = screen.height * 0.8
+    var width = screen.height / 2
     svg.setAttribute('id', `svg${selectedKey}`)
-    svg.setAttribute('width', '300')
-    svg.setAttribute('height', '500')
+    svg.setAttribute('width', width)
+    svg.setAttribute('height', height)
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+    svg.setAttribute('perserveAspectRatio', 'xMinYMid')
 
-    // div.appendChild(span)
     div.appendChild(svg)
     divGraphs.appendChild(div)
-
 }
 
 function organizeObj(nestList, selectedKey) {
