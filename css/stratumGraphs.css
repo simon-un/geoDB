@@ -1,8 +1,8 @@
 .divGraphs{
     margin-left: 15px;
     border-radius: 5px;
-    border: 2px solid #2f496b;
-    /* width: 90% !important; */
+    border: 0.5px solid #2f496b;
+    /* width: 100% !important; */
 }
 
 .spanGraphs {
