@@ -363,7 +363,7 @@ function activeTab(tab, structureObj, name) {
             myTbodySondeosNav.innerHTML += `
                 <tr>
                     <td colspan="2">
-                        <a href="#" id="a${key}" onclick="openInfo('nav-info', '${key}')">${key}</a>
+                        <a href="#" id="a${key}" onclick="openInfo('nav-stratCol', '${key}')">${key}</a>
                     </td>
                 </tr>
                 `
@@ -390,6 +390,7 @@ var structureAsValue = {} // Se toman las estructuras como valores,
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
+        document.getElementById('divSvg').style.display = "block";
         clicked = false
         infoRequested['marker' + key] = true
         // + currentProject + '/' + 
@@ -486,7 +487,6 @@ const graphGeoMarkers = (Obj) => {
 
                                     openNav()
                                     layer.openPopup()
-                                    document.getElementById('divSvg').style.display = "block";
 
                                     if (!clicked) {
                                         layer.openPopup()

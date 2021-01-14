@@ -1,6 +1,6 @@
 .table {
     margin: auto;
-    width: 70%; 
+    width: 90%; 
  }
 
  /*
@@ -80,7 +80,7 @@
   /* Position and style the close button (top right corner) */
   .sidebar .closebtn {
     position: absolute;
-    width: 20px;
+    width: 40px;
     height: 100%;
     padding: 5px 0;
     color: black;
