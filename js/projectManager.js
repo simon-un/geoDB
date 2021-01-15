@@ -16,8 +16,11 @@ auth.onAuthStateChanged(user => {
             }
         })
         dbRt.ref('USERS/' + user.uid).on('value', (snap) => {
-            var prIdList = snap.val();
-            console.log(prIdList);
+            var prIdDict = snap.val();
+            let prIdList = [];
+            for (var proj in prIdDict){
+                prIdList.push(proj);
+            }
             if (prIdList) {
                 showProjects(prIdList);
             } else {
@@ -125,10 +128,7 @@ showProjectsWaiting = (obj) => {
 acceptProj = (key, date, rol) => {
 
     // Add info of the project to USERS
-    dbRt.ref('USERS/' + auth.currentUser.uid).once('value').then((snapshot) => {
-        let proyectsId = snapshot.val();
-        dbRt.ref('USERS/' + auth.currentUser.uid+String(proyectsId.length)).set(String(key));
-    })
+    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true); //asdfh
 
     // Add info of the user to PROYECTOS
     dbRt.ref('PROYECTOS/' + key + '/USERS/' + auth.currentUser.uid).set({
@@ -156,7 +156,16 @@ const newProject = () => {
     document.getElementById("prjName").value = "";
     getUniqueId();
     dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
-        let users = snapshot.val();
+        let users_dict = snapshot.val();
+        let users = {}
+        users["emails"] = [];
+        users["ids"] = [];
+        users["names"] = [];
+        for (var user in users_dict){
+            users["emails"].push(users_dict[user]["email"]);
+            users["names"].push(users_dict[user]["name"]);
+            users["ids"].push(user);
+        }
         localStorage.users = JSON.stringify(users);
         users = users["emails"];
         let list = document.getElementById("peopleList");
@@ -167,7 +176,6 @@ const newProject = () => {
                 ${user}
             </div>`
         }
-        console.log(users);
     })
 }
 
@@ -183,10 +191,7 @@ createProject = () => {
     let date = String(new Date());
 
     // Add info of the project to USERS
-    dbRt.ref('USERS/' + auth.currentUser.uid).once('value').then((snapshot) => {
-        let proyectsId = snapshot.val();
-        dbRt.ref('USERS/' + auth.currentUser.uid+String(proyectsId.length)).set(String(key));
-    })
+    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prjId).set(true);
 
     // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
     dbRt.ref('PROYECTOS/' + prjId).set({
@@ -201,7 +206,7 @@ createProject = () => {
 
     participants.forEach((person) => {
         if (person.id) {
-            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
+            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value); //To improve
             dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
                 FECHA_UNION: String(new Date()),
                 NAME: prjName,
@@ -279,7 +284,16 @@ editProj = (key) => {
     document.getElementById("peopleTable_edit").innerHTML = "";
     localStorage.prjIdEdit = JSON.stringify(key);
     dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
-        let users = snapshot.val();
+        let users_dict = snapshot.val();
+        let users = {}
+        users["emails"] = [];
+        users["ids"] = [];
+        users["names"] = [];
+        for (var user in users_dict){
+            users["emails"].push(users_dict[user]["email"]);
+            users["names"].push(users_dict[user]["name"]);
+            users["ids"].push(user);
+        }
         localStorage.users = JSON.stringify(users);
         let names = users["names"];
         let ids = users["ids"];

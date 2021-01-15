@@ -61,6 +61,7 @@ document.getElementById('save-changes').addEventListener('click', (evt) => {
     user.updateProfile({
         displayName: document.getElementById('name').value,
     });
+    dbRt.ref('PUBLIC_USERS/'+ auth.currentUser.uid + '/' + 'name').set(document.getElementById('name').value);
     document.getElementById('alert').lastChild.textContent = 'Datos actualizados con éxito!';
     document.getElementById('alert').style.display = 'block';
 })
