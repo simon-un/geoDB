@@ -82,7 +82,7 @@ let showProjects = (prIdList) => {
                 <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
                     data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
                     <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
-                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${i}')"/>
+                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${prIdList[i]}')"/>
                 </button>
             </div>
         </div>`;
@@ -128,7 +128,7 @@ showProjectsWaiting = (obj) => {
 acceptProj = (key, date, rol) => {
 
     // Add info of the project to USERS
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true); //asdfh
+    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true);
 
     // Add info of the user to PROYECTOS
     dbRt.ref('PROYECTOS/' + key + '/USERS/' + auth.currentUser.uid).set({
@@ -309,7 +309,7 @@ editProj = (key) => {
         }
     })
     let users_public = JSON.parse(localStorage.users);
-
+    console.log(key);
     dbRt.ref('/PROYECTOS/' + key).once('value').then((snapshot) => {
         let prjInfo = snapshot.val();
         document.getElementById('prjName_edit').value = prjInfo['NAME'];
