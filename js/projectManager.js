@@ -18,7 +18,7 @@ auth.onAuthStateChanged(user => {
         dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
             var prIdDict = snap.val();
             let prIdList = [];
-            for (var proj in prIdDict){
+            for (var proj in prIdDict) {
                 prIdList.push(proj);
             }
             if (prIdList) {
@@ -37,20 +37,20 @@ auth.onAuthStateChanged(user => {
 
 let showProjects = (prIdList) => {
     const getPrName = (prId) => {
-        dbRt.ref('PROYECTOS/' + prId + '/NAME').once('value').then((snapshot) =>{
+        dbRt.ref('PROYECTOS/' + prId + '/NAME').once('value').then((snapshot) => {
             localStorage.setItem(prId, snapshot.val());
         });
     };
     const getUserRol = (prId, userId) => {
-        dbRt.ref('PROYECTOS/' + prId + '/USERS/' + userId + '/ROL').once('value').then((snapshot) =>{
-            localStorage.setItem(userId+prId, snapshot.val());
+        dbRt.ref('PROYECTOS/' + prId + '/USERS/' + userId + '/ROL').once('value').then((snapshot) => {
+            localStorage.setItem(userId + prId, snapshot.val());
         });
     }
     const projects = document.getElementById('projects');
     let rol = 'No definido';
     for (var i in prIdList) {
         getUserRol(prIdList[i], auth.currentUser.uid)
-        let userRol = localStorage.getItem(auth.currentUser.uid+prIdList[i]);
+        let userRol = localStorage.getItem(auth.currentUser.uid + prIdList[i]);
         getPrName(prIdList[i])
         let prName = localStorage.getItem(prIdList[i]);
         console.log(userRol);
@@ -89,7 +89,7 @@ let showProjects = (prIdList) => {
     }
 }
 
-showProjectsWaiting = (obj) => {
+let showProjectsWaiting = (obj) => {
     const projects = document.getElementById('projects');
     let rol = 'No definido';
     for (var key in obj) {
@@ -125,7 +125,7 @@ showProjectsWaiting = (obj) => {
     }
 }
 
-acceptProj = (key, date, rol) => {
+let acceptProj = (key, date, rol) => {
 
     // Add info of the project to USERS
     dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true);
@@ -140,18 +140,19 @@ acceptProj = (key, date, rol) => {
     // window.location.href = "index.html";
 }
 
-rejectProj = (key) => {
+let rejectProj = (key) => {
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
-    window.location.href = "index.html";
+    // window.location.href = "index.html";
 }
 
-var projectInfo = (key, rol, name) => {
+let projectInfo = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
 }
 
-const newProject = () => {
+let newProject = () => {
+    showAlert('Todos los participantes deben aceptar los cambios realizados', 'primary', '-new');
     document.getElementById("peopleTable").innerHTML = "";
     document.getElementById("prjName").value = "";
     getUniqueId();
@@ -161,7 +162,7 @@ const newProject = () => {
         users["emails"] = [];
         users["ids"] = [];
         users["names"] = [];
-        for (var user in users_dict){
+        for (var user in users_dict) {
             users["emails"].push(users_dict[user]["email"]);
             users["names"].push(users_dict[user]["name"]);
             users["ids"].push(user);
@@ -174,50 +175,58 @@ const newProject = () => {
 }
 
 
-function getUniqueId() {
+let getUniqueId = () => {
     document.getElementById("prjId").value = String(Math.floor(Math.random() * Date.now()));
 }
 
-createProject = () => {
+let createProject = () => {
     let prjName = document.getElementById("prjName").value;
     let prjId = document.getElementById("prjId").value;
-    let participants = document.getElementById("peopleTable").childNodes;
-    let date = String(new Date());
 
-    // Add info of the project to USERS
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prjId).set(true);
+    if (prjName.length < 5) {
+        showAlert('El nombre del proyecto debe contener al menos 5 caracteres', 'danger', '-new');
+        document.getElementById('prjName').focus();
+    } else {
+        let participants = document.querySelectorAll('#peopleTable>tr');
+        let date = String(new Date());
 
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    dbRt.ref('PROYECTOS/' + prjId).set({
-        NAME: prjName
-    });
+        // Add info of the project to USERS
+        dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prjId).set(true);
 
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    dbRt.ref('PROYECTOS/' + prjId + '/USERS/' + auth.currentUser.uid).set({
-        FECHA_UNION: date,
-        ROL: "admin"
-    });
+        // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+        dbRt.ref('PROYECTOS/' + prjId).set({
+            NAME: prjName
+        });
 
-    participants.forEach((person) => {
-        if (person.id) {
-            let rol = String(document.getElementById(person.id+'rol').value);
-            dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
-                FECHA_UNION: String(new Date()),
-                NAME: prjName,
-                ROL: rol
-            });
-        }
-    });
+        // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+        dbRt.ref('PROYECTOS/' + prjId + '/USERS/' + auth.currentUser.uid).set({
+            FECHA_UNION: date,
+            ROL: "admin"
+        });
+
+        participants.forEach((person) => {
+            if (person.id) {
+                let rol = String(document.getElementById(person.id + 'rol').value);
+                dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
+                    FECHA_UNION: String(new Date()),
+                    NAME: prjName,
+                    ROL: rol
+                });
+            }
+        });
+        showAlert('El proyecto fue creado con éxito!', 'success', '-new')
+    }
+
     // window.location.href = "index.html"; // Watch this line and delete if data is not updating in slow connections
 }
 
-displayMenu = (edit) => {
-    document.getElementById("peopleList"+edit).style.display = "block";
+let displayMenu = (edit) => {
+    document.getElementById("peopleList" + edit).style.display = "block";
 }
 
-filterFunction = (edit) => {
-    let person = document.getElementById("person"+edit).value;
-    let list = document.getElementById("peopleList"+edit);
+let filterFunction = (edit) => {
+    let person = document.getElementById("person" + edit).value;
+    let list = document.getElementById("peopleList" + edit);
     if (person != "" && person != "@" && person != ".") {
         let users = JSON.parse(localStorage.users);
         names = users["names"];
@@ -238,37 +247,67 @@ filterFunction = (edit) => {
     }
 }
 
-addPerson = (user, name, id, edit) => {
-    document.getElementById("peopleTable"+edit).innerHTML += `
-    <tr id="${id}">
-        <td scope="row">${name}</td>
-        <td>${user}</td>
-        <td>
-        <div class="input-group">
-        <select class="custom-select" id="${id+'rol'}" onchange="saveRoleLocal('${id}',this.value)">
-          <option selected>Elegir...</option>
-          <option value="admin">Administrador</option>
-          <option value="designer">Diseñador</option>
-          <option value="explorer">Explorador</option>
-          <option value="labguy">Laboratorista</option>
-        </select>
-      </div>
-      </td>
-      <td>
-      <div class="input-group-append">
-      <button class="btn btn-outline-secondary" style="height:30px; padding:0px; margin: auto; background-color:#fab2b2; color:black" type="button" onclick="deletePerson('${id}','${'peopleTable'+edit}')">Eliminar</button>
-      </div>
-      </td>
-    </tr>
-    `;
-    document.getElementById("peopleList"+edit).innerHTML = "";
-    document.getElementById("person"+edit).value = "";
-
-    let usersRol = JSON.parse(localStorage.usersRol);
-    for (var userId in usersRol) {
-        document.getElementById(userId + 'rol').value = usersRol[userId];
+let addPerson = (user, name, id, edit) => {
+    let shouldAdd = true;
+    if (id == auth.currentUser.uid) {
+        shouldAdd = false;
+        if (edit == '') {
+            showAlert('El creador del proyecto se añade automaticamente como Administrador', 'danger', '-new');
+        } else {
+            showAlert('Ya se encuentra dentro del proyecto', 'danger');
+        }
     }
-    // localStorage.usersRol = JSON.stringify(usersRol); // Save to local storage the role of each person
+    if (shouldAdd) {
+        let participants = ''
+        if (edit == '') {
+            participants = document.querySelectorAll('#peopleTable>tr');
+        } else {
+            participants = document.querySelectorAll('#peopleTable_edit>tr');
+        }
+        participants.forEach((person) => {
+            if (person.id == id) {
+                shouldAdd = false;
+                if (edit == '') {
+                    showAlert('La persona ya se encuentra en el proyecto', 'danger', '-new');
+                } else {
+                    showAlert('La persona ya se encuentra en el proyecto', 'danger');
+                }
+            }
+        });
+    }
+
+    if (shouldAdd) {
+        document.getElementById("peopleTable" + edit).innerHTML += `
+            <tr id="${id}">
+                <td scope="row">${name}</td>
+                <td>${user}</td>
+                <td>
+                <div class="input-group">
+                <select class="custom-select" id="${id + 'rol'}" onchange="saveRoleLocal('${id}',this.value)">
+                <option selected>Elegir...</option>
+                <option value="admin">Administrador</option>
+                <option value="designer">Diseñador</option>
+                <option value="explorer">Explorador</option>
+                <option value="labguy">Laboratorista</option>
+                </select>
+            </div>
+            </td>
+            <td>
+            <div class="input-group-append">
+            <button class="btn btn-outline-secondary" style="height:30px; padding:0px; margin: auto; background-color:#fab2b2; color:black" type="button" onclick="deletePerson('${id}','${'peopleTable' + edit}')">Eliminar</button>
+            </div>
+            </td>
+            </tr>
+            `;
+        document.getElementById("peopleList" + edit).innerHTML = "";
+        document.getElementById("person" + edit).value = "";
+
+        let usersRol = JSON.parse(localStorage.usersRol);
+        for (var userId in usersRol) {
+            document.getElementById(userId + 'rol').value = usersRol[userId];
+        }
+        // localStorage.usersRol = JSON.stringify(usersRol); // Save to local storage the role of each person
+    }
 }
 
 let saveRoleLocal = (personId, role) => {
@@ -276,19 +315,24 @@ let saveRoleLocal = (personId, role) => {
     usersRol[personId] = role;
     localStorage.usersRol = JSON.stringify(usersRol);
 }
-deletePerson = (idRow, tableID) => {
-    document.getElementById(tableID).childNodes.forEach(row => {
-        if (row.id == idRow) {
-            document.getElementById(tableID).removeChild(row)
-        }
-    });
-    let usersRol = JSON.parse(localStorage.usersRol);
-    delete usersRol[idRow];
-    localStorage.usersRol = JSON.stringify(usersRol);
+
+let deletePerson = (idRow, tableID) => {
+    if (idRow == auth.currentUser.uid) {
+        showAlert('No es posible eliminarse a si mismo del proyecto.', 'danger');
+    } else {
+        document.getElementById(tableID).childNodes.forEach(row => {
+            if (row.id == idRow) {
+                document.getElementById(tableID).removeChild(row)
+            }
+        });
+        let usersRol = JSON.parse(localStorage.usersRol);
+        delete usersRol[idRow];
+        localStorage.usersRol = JSON.stringify(usersRol);
+    }
 }
 
-editProj = (key) => {
-
+let editProj = (key) => {
+    showAlert('Todos los participantes deben aceptar los cambios realizados');
     document.getElementById("peopleTable_edit").innerHTML = "";
     localStorage.prjIdEdit = JSON.stringify(key);
     dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
@@ -297,7 +341,7 @@ editProj = (key) => {
         users["emails"] = [];
         users["ids"] = [];
         users["names"] = [];
-        for (var user in users_dict){
+        for (var user in users_dict) {
             users["emails"].push(users_dict[user]["email"]);
             users["names"].push(users_dict[user]["name"]);
             users["ids"].push(user);
@@ -332,7 +376,7 @@ editProj = (key) => {
                     <td>${users_public["emails"][users_public["ids"].indexOf(userId)]}</td>
                     <td>
                     <div class="input-group">
-                    <select class="custom-select" id="${userId+'rol'}" onchange="saveRoleLocal('${userId}',this.value)">
+                    <select class="custom-select" id="${userId + 'rol'}" onchange="saveRoleLocal('${userId}',this.value)">
                     <option value="admin">Administrador</option>
                     <option value="designer">Diseñador</option>
                     <option value="explorer">Explorador</option>
@@ -362,42 +406,52 @@ editProj = (key) => {
 }
 
 // When clicking edit project button to save changes
-editProject = () =>{
+let editProject = () => {
     let id = JSON.parse(localStorage.prjIdEdit);
     let prjName = document.getElementById("prjName_edit").value;
-    let participants = document.getElementById("peopleTable_edit").childNodes;
+    if (prjName.length < 5) {
+        showAlert('El nombre del proyecto debe contener al menos 5 caracteres', 'danger');
+        document.getElementById('prjName_edit').focus();
+    } else {
+        let participants = document.querySelectorAll('#peopleTable_edit>tr');
 
-    // Implement this better!
-
-    // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    dbRt.ref('PROYECTOS/' + id).update({
-        NAME: prjName
-    });
-
-    // Remove all the users from the project
-    dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
-
-    participants.forEach((person) => {
-        if (person.id) {
-            let rol = String(document.getElementById(person.id+'rol').value);
-            dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
-                FECHA_UNION: String(new Date()),
-                NAME: prjName,
-                ROL: rol
+        if (participants.length < 1) {
+            showAlert('El proyecto debe tener al menos un participante', 'danger');
+        } else {
+            // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+            dbRt.ref('PROYECTOS/' + id).update({
+                NAME: prjName
             });
-        }
-    });
 
-    showAlert('Los cambios fueron actualizados con éxito con éxito!', 'success')
+            // Remove all the users from the project
+            dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
+
+            participants.forEach((person) => {
+                if (person.id) {
+                    let rol = String(document.getElementById(person.id + 'rol').value);
+                    dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+                        FECHA_UNION: String(new Date()),
+                        NAME: prjName,
+                        ROL: rol
+                    });
+                }
+            });
+            showAlert('Los cambios fueron actualizados con éxito!', 'success')
+        }
+    }
 }
 
 let hideAlert = () => {
     document.getElementById('alert-notif-modal').style.display = 'none';
 }
 
-let showAlert = (content, alertClass) => {
-    document.getElementById('alert-notif-modal').style.display = 'none';
-    document.getElementById('alertMsgP').textContent = content;
-    document.getElementById('alert-notif-modal').className = "alert alert-"+alertClass;
-    document.getElementById('alert-notif-modal').style.display = 'block';
+let hideAlertNew = () => {
+    document.getElementById('alert-notif-modal-new').style.display = 'none';
+}
+
+let showAlert = (content, alertClass = "primary", newli = '') => {
+    document.getElementById('alert-notif-modal' + newli).style.display = 'none';
+    document.getElementById('alertMsgP' + newli).textContent = content;
+    document.getElementById('alert-notif-modal' + newli).className = "alert alert-" + alertClass;
+    document.getElementById('alert-notif-modal' + newli).style.display = 'block';
 }
