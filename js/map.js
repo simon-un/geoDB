@@ -182,13 +182,13 @@ function get(object, key, default_value) {
 //List data for auth state changes
 
 auth.onAuthStateChanged(user => {
-    if (user) {
+    if (user && infoRequested) {
         userUid = user.uid
         loggedInLinks.forEach(link => {
             link.style.display = 'block'
         })
-
-        dbRt.ref('PROYECTOS').child(currentProject).on('value', async snap => {
+        
+        dbRt.ref('PROYECTOS').child(currentProject).once('value', async snap => {
             var obj = snap.val()
             await graphGeoMarkers(obj)
             await groupGenFilters() // Find it in filters.js file
@@ -201,31 +201,7 @@ auth.onAuthStateChanged(user => {
 
         })
 
-        dbRt.ref('COORDS').on('value', (snap) => {
-            var obj = snap.val(); //equivalente a Dictionary en pyhon
-
-            // Por el momento se trabaja con geoJSON pero NO descartar
-
-        });
-
-        // document.getElementById('welcome-message').innerHTML += ' ' + String(user.displayName).match(/(\w*)/)[1] + '! Bienvenido a tu gestor de información geotécnica';
         document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
-
-        // dbRt.ref('COORDS').on('value', (snap) => { 
-        //     var obj = snap.val(); //equivalente a Dictionary en pyhon
-
-        //     // obj = {'EXPLORACIONES': obj}
-        //     // console.log(obj);
-        //     graphMarkers(obj)
-
-        // });
-
-        // Grafica todos los marcadores contenidos en COORDSGEOJSON
-        dbRt.ref('COORDSGEOJSON').on('value', (snap) => {
-            var obj = snap.val();
-            // graphGeoMarkers(obj)
-        })
-
 
     } else {
         userUid = null
@@ -394,7 +370,7 @@ function getInfo(key) {
         clicked = false
         infoRequested['marker' + key] = true
         // + currentProject + '/' + 
-        dbRt.ref('PROYECTOS/' + currentProject + '/' + structureAsValue[key]).child(key).on('value', (snap) => {
+        dbRt.ref('PROYECTOS/' + currentProject + '/' + structureAsValue[key]).child(key).once('value', (snap) => {
             var obj = snap.val()
             cacheInfo[key] = obj
             extractStratigraphicData(obj)
