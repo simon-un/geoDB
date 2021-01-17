@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="./css/index.css">
-    
+
 </head>
 
 <body>
@@ -274,9 +274,11 @@
                         <br>
                         <div class="col-lg-12">
                             <label class="col-lg-9 control-label">Añadir personas al proyecto:</label>
-                            <input type="text" id='person' class="form-control" placeholder="Buscar persona (ingresar la dirección de correo)..." onkeyup="filterFunction('')" onfocus="displayMenu('')">
+                            <input type="text" id='person' class="form-control"
+                                placeholder="Buscar persona (ingresar la dirección de correo)..."
+                                onkeyup="filterFunction('')" onfocus="displayMenu('')">
                         </div>
-                        <div class="col-lg-9" id="peopleList" style="display: none;">                      
+                        <div class="col-lg-9" id="peopleList" style="display: none;">
                         </div>
                         <br>
                         <div class="col-lg-12">
@@ -319,6 +321,17 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+                <!-- <div class="alert alert-dark" id="alert-edit" style="width: 80%; margin: auto; margin-top: 5px;">
+                    <a class="panel-close close" onclick="hideAlert()" style="cursor: pointer;">×</a> 
+                    <i class="fa fa-coffee"></i>
+                    Los cambios se reflejan una vez los participantes los acepten.
+                </div> -->
+                <br>
+                <div class="alert alert-primary" role="alert" id="alert-notif-modal"
+                    style="z-index: 2; padding: 5px 10px; margin: auto; width: 90%" onclick="hideAlert()">
+                    <p id="alertMsgP" style="display:inline; margin-top: 10%;">Todos los participantes deben aceptar los cambios realizados</p>
+                    <p style="display:inline; float: right; margin: 0;">(Click para esconder)</p>
+                </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <!-- <form id="newPrj-form"> -->
@@ -330,9 +343,11 @@
                         <br>
                         <div class="col-lg-12">
                             <label class="col-lg-9 control-label">Administrar participantes:</label>
-                            <input type="text" id='person_edit' class="form-control" placeholder="Buscar persona (ingresar la dirección de correo)..." onkeyup="filterFunction('_edit')" onfocus="displayMenu('_edit')">
+                            <input type="text" id='person_edit' class="form-control"
+                                placeholder="Buscar persona (ingresar la dirección de correo)..."
+                                onkeyup="filterFunction('_edit')" onfocus="displayMenu('_edit')">
                         </div>
-                        <div class="col-lg-9" id="peopleList_edit" style="display: none;">                      
+                        <div class="col-lg-9" id="peopleList_edit" style="display: none;">
                         </div>
                         <br>
                         <div class="col-lg-12">
