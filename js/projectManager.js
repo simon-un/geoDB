@@ -9,13 +9,13 @@ auth.onAuthStateChanged(user => {
             </div>
             <br>`;
 
-        dbRt.ref('WAITING_LIST/' + user.uid).on('value', (snap) => {
+        dbRt.ref('WAITING_LIST/' + user.uid).once('value', (snap) => {
             var projects_waiting = snap.val();
             if (projects_waiting) {
                 showProjectsWaiting(projects_waiting);
             }
         })
-        dbRt.ref('USERS/' + user.uid).on('value', (snap) => {
+        dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
             var prIdDict = snap.val();
             let prIdList = [];
             for (var proj in prIdDict){
@@ -359,17 +359,17 @@ editProject = () =>{
         NAME: prjName
     });
 
-    // // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    // dbRt.ref('PROYECTOS/' + id + '/USERS/').remove();
+    // Remove all the users from the project
+    dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
 
-    // participants.forEach((person) => {
-    //     if (person.id) {
-    //         let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
-    //         dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
-    //             FECHA_UNION: String(new Date()),
-    //             NAME: prjName,
-    //             ROL: rol
-    //         });
-    //     }
-    // });
+    participants.forEach((person) => {
+        if (person.id) {
+            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
+            dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+                FECHA_UNION: String(new Date()),
+                NAME: prjName,
+                ROL: rol
+            });
+        }
+    });
 }
