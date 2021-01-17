@@ -9,13 +9,13 @@ auth.onAuthStateChanged(user => {
             </div>
             <br>`;
 
-        dbRt.ref('WAITING_LIST/' + user.uid).on('value', (snap) => {
+        dbRt.ref('WAITING_LIST/' + user.uid).once('value', (snap) => {
             var projects_waiting = snap.val();
             if (projects_waiting) {
                 showProjectsWaiting(projects_waiting);
             }
         })
-        dbRt.ref('USERS/' + user.uid).on('value', (snap) => {
+        dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
             var prIdDict = snap.val();
             let prIdList = [];
             for (var proj in prIdDict){
@@ -82,7 +82,7 @@ let showProjects = (prIdList) => {
                 <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
                     data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
                     <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
-                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${i}')"/>
+                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${prIdList[i]}')"/>
                 </button>
             </div>
         </div>`;
@@ -128,7 +128,7 @@ showProjectsWaiting = (obj) => {
 acceptProj = (key, date, rol) => {
 
     // Add info of the project to USERS
-    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true); //asdfh
+    dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true);
 
     // Add info of the user to PROYECTOS
     dbRt.ref('PROYECTOS/' + key + '/USERS/' + auth.currentUser.uid).set({
@@ -167,16 +167,10 @@ const newProject = () => {
             users["ids"].push(user);
         }
         localStorage.users = JSON.stringify(users);
-        users = users["emails"];
-        let list = document.getElementById("peopleList");
-        for (let i = 0; i < users.length; i++) {
-            const user = users[i];
-            list.innerHTML += `
-            <div class="personOpt" onclick="addPerson()>
-                ${user}
-            </div>`
-        }
     })
+
+    let usersRol = {};
+    localStorage.usersRol = JSON.stringify(usersRol);
 }
 
 
@@ -206,7 +200,7 @@ createProject = () => {
 
     participants.forEach((person) => {
         if (person.id) {
-            let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value); //To improve
+            let rol = String(document.getElementById(person.id+'rol').value);
             dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
                 FECHA_UNION: String(new Date()),
                 NAME: prjName,
@@ -251,7 +245,7 @@ addPerson = (user, name, id, edit) => {
         <td>${user}</td>
         <td>
         <div class="input-group">
-        <select class="custom-select" id="inputGroupSelect04">
+        <select class="custom-select" id="${id+'rol'}" onchange="saveRoleLocal('${id}',this.value)">
           <option selected>Elegir...</option>
           <option value="admin">Administrador</option>
           <option value="designer">Diseñador</option>
@@ -267,16 +261,30 @@ addPerson = (user, name, id, edit) => {
       </td>
     </tr>
     `;
-    document.getElementById("peopleList").innerHTML = "";
-    document.getElementById("person").value = "";
+    document.getElementById("peopleList"+edit).innerHTML = "";
+    document.getElementById("person"+edit).value = "";
+
+    let usersRol = JSON.parse(localStorage.usersRol);
+    for (var userId in usersRol) {
+        document.getElementById(userId + 'rol').value = usersRol[userId];
+    }
+    // localStorage.usersRol = JSON.stringify(usersRol); // Save to local storage the role of each person
 }
 
+let saveRoleLocal = (personId, role) => {
+    let usersRol = JSON.parse(localStorage.usersRol);
+    usersRol[personId] = role;
+    localStorage.usersRol = JSON.stringify(usersRol);
+}
 deletePerson = (idRow, tableID) => {
     document.getElementById(tableID).childNodes.forEach(row => {
         if (row.id == idRow) {
             document.getElementById(tableID).removeChild(row)
         }
     });
+    let usersRol = JSON.parse(localStorage.usersRol);
+    delete usersRol[idRow];
+    localStorage.usersRol = JSON.stringify(usersRol);
 }
 
 editProj = (key) => {
@@ -309,7 +317,9 @@ editProj = (key) => {
         }
     })
     let users_public = JSON.parse(localStorage.users);
+    console.log(key);
 
+    // Fill the table with current participants of the project
     dbRt.ref('/PROYECTOS/' + key).once('value').then((snapshot) => {
         let prjInfo = snapshot.val();
         document.getElementById('prjName_edit').value = prjInfo['NAME'];
@@ -322,7 +332,7 @@ editProj = (key) => {
                     <td>${users_public["emails"][users_public["ids"].indexOf(userId)]}</td>
                     <td>
                     <div class="input-group">
-                    <select class="custom-select" id="${userId + 'rol'}">
+                    <select class="custom-select" id="${userId+'rol'}" onchange="saveRoleLocal('${userId}',this.value)">
                     <option value="admin">Administrador</option>
                     <option value="designer">Diseñador</option>
                     <option value="explorer">Explorador</option>
@@ -341,12 +351,17 @@ editProj = (key) => {
             document.getElementById("person_edit").value = "";
         }
 
+        // Set users role for the current participants
+        let usersRol = {};
         for (var userId in users) {
-        document.getElementById(userId + 'rol').value = users[userId]['ROL'];
+            document.getElementById(userId + 'rol').value = users[userId]['ROL'];
+            usersRol[userId] = users[userId]['ROL'];
         }
+        localStorage.usersRol = JSON.stringify(usersRol); // Save to local storage the role of each person
     })
 }
 
+// When clicking edit project button to save changes
 editProject = () =>{
     let id = JSON.parse(localStorage.prjIdEdit);
     let prjName = document.getElementById("prjName_edit").value;
@@ -359,17 +374,30 @@ editProject = () =>{
         NAME: prjName
     });
 
-    // // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-    // dbRt.ref('PROYECTOS/' + id + '/USERS/').remove();
+    // Remove all the users from the project
+    dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
 
-    // participants.forEach((person) => {
-    //     if (person.id) {
-    //         let rol = String(person.childNodes[5].childNodes[1].childNodes[1].value);
-    //         dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
-    //             FECHA_UNION: String(new Date()),
-    //             NAME: prjName,
-    //             ROL: rol
-    //         });
-    //     }
-    // });
+    participants.forEach((person) => {
+        if (person.id) {
+            let rol = String(document.getElementById(person.id+'rol').value);
+            dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+                FECHA_UNION: String(new Date()),
+                NAME: prjName,
+                ROL: rol
+            });
+        }
+    });
+
+    showAlert('Los cambios fueron actualizados con éxito con éxito!', 'success')
+}
+
+let hideAlert = () => {
+    document.getElementById('alert-notif-modal').style.display = 'none';
+}
+
+let showAlert = (content, alertClass) => {
+    document.getElementById('alert-notif-modal').style.display = 'none';
+    document.getElementById('alertMsgP').textContent = content;
+    document.getElementById('alert-notif-modal').className = "alert alert-"+alertClass;
+    document.getElementById('alert-notif-modal').style.display = 'block';
 }
