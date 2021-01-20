@@ -1,39 +1,43 @@
 auth.onAuthStateChanged(user => {
     if (user) {
-        const projects = document.getElementById('projects');
-        projects.style.display = 'block';
-        projects.innerHTML = `
-            <h5>Proyectos:</h5>
-            <div style="width:100%; margin-bottom:5px;">
-            <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
-            </div>
-            <br>`;
-
-        dbRt.ref('WAITING_LIST/' + user.uid).once('value', (snap) => {
-            var projects_waiting = snap.val();
-            if (projects_waiting) {
-                showProjectsWaiting(projects_waiting);
-            }
-        })
-        dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
-            var prIdDict = snap.val();
-            let prIdList = [];
-            for (var proj in prIdDict) {
-                prIdList.push(proj);
-            }
-            if (prIdList) {
-                showProjects(prIdList);
-            } else {
-                projects.innerHTML += `
-                <h6>No estas asociado a ningún proyecto. Si crees que es un error contacta a tu organización</h6>
-                <br>`;
-            }
-        })
-
+        reloadProjectsList(user);
     } else {
         document.getElementById('projects').style.display = 'none';
     }
 })
+
+let reloadProjectsList = (user) => {
+    const projects = document.getElementById('projects');
+    projects.style.display = 'block';
+    projects.innerHTML = `
+        <h5>Proyectos:</h5>
+        <div style="width:100%; margin-bottom:5px;">
+        <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
+        </div>
+        <br>`;
+
+    dbRt.ref('WAITING_LIST/' + user.uid).once('value', (snap) => {
+        var projects_waiting = snap.val();
+        if (projects_waiting) {
+            showProjectsWaiting(projects_waiting);
+        }
+    });
+    dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
+        var prIdDict = snap.val();
+        let prIdList = [];
+        for (var proj in prIdDict) {
+            prIdList.push(proj);
+        }
+        if (prIdList) {
+            // setTimeout(showProjects,3000,prIdList);
+            showProjects(prIdList);
+        } else {
+            projects.innerHTML += `
+            <h6>No estas asociado a ningún proyecto. Si crees que es un error contacta a tu organización</h6>
+            <br>`;
+        }
+    });
+}
 
 let showProjects = (prIdList) => {
     const getPrName = (prId) => {
@@ -49,43 +53,49 @@ let showProjects = (prIdList) => {
     const projects = document.getElementById('projects');
     let rol = 'No definido';
     for (var i in prIdList) {
+        rol = 'No definido';
         getUserRol(prIdList[i], auth.currentUser.uid)
         let userRol = localStorage.getItem(auth.currentUser.uid + prIdList[i]);
-        getPrName(prIdList[i])
-        let prName = localStorage.getItem(prIdList[i]);
-        console.log(userRol);
-        switch (userRol) {
-            case 'admin':
-                rol = 'Administrador'
-                break;
-            case 'designer':
-                rol = 'Diseñador'
-                break;
-            case 'explorer':
-                rol = 'Explorador'
-                break;
-            case 'labguy':
-                rol = 'Laboratorista'
-                break;
-            default:
-                break;
+        if (userRol == 'null') {
+            // dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prIdList[i]).remove();
+            console.log('Fuiste eliminado del proyecto '+ prIdList[i]);
+        } else {
+            getPrName(prIdList[i])
+            let prName = localStorage.getItem(prIdList[i]);
+            console.log(userRol);
+            switch (userRol) {
+                case 'admin':
+                    rol = 'Administrador'
+                    break;
+                case 'designer':
+                    rol = 'Diseñador'
+                    break;
+                case 'explorer':
+                    rol = 'Explorador'
+                    break;
+                case 'labguy':
+                    rol = 'Laboratorista'
+                    break;
+                default:
+                    break;
+            }
+            projects.innerHTML += `
+            <div class="project">
+                <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" href="map.html">${prName}</a>
+                <br>
+                ID del Proyecto: ${prIdList[i]}
+                <br>
+                Rol: ${rol}
+                <br>
+                <div style="text-align:right; margin-bottom:5px; margin-right:5px">
+                    <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
+                        data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
+                        <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
+                        data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${prIdList[i]}')"/>
+                    </button>
+                </div>
+            </div>`;
         }
-        projects.innerHTML += `
-        <div class="project">
-            <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" href="map.html">${prName}</a>
-            <br>
-            ID del Proyecto: ${prIdList[i]}
-            <br>
-            Rol: ${rol}
-            <br>
-            <div style="text-align:right; margin-bottom:5px; margin-right:5px">
-                <button type="button" class="btn btn-secondary" id="settings" data-toggle="tooltip"
-                    data-placement="left" title="Editar Proyecto" style="padding:0px; border-radius:2px">
-                    <img src="./images/settings.png" alt="" style="max-height: 24px; max-width: 24px;"
-                    data-toggle="modal" data-target="#editProjectModal" onclick="editProj('${prIdList[i]}')"/>
-                </button>
-            </div>
-        </div>`;
     }
 }
 
@@ -138,11 +148,14 @@ let acceptProj = (key, date, rol) => {
 
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
     // window.location.href = "index.html";
+
+    reloadProjectsList(auth.currentUser);
 }
 
 let rejectProj = (key) => {
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
     // window.location.href = "index.html";
+    reloadProjectsList(auth.currentUser);
 }
 
 let projectInfo = (key, rol, name) => {
@@ -188,33 +201,39 @@ let createProject = () => {
         document.getElementById('prjName').focus();
     } else {
         let participants = document.querySelectorAll('#peopleTable>tr');
-        let date = String(new Date());
+        let usersRol = JSON.parse(localStorage.usersRol);
+        if (Object.keys(usersRol).length < participants.length) {
+            showAlert('Todos los participantes deben tener un rol', 'danger', '-new');
+        } else {
+            let date = String(new Date());
 
-        // Add info of the project to USERS
-        dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prjId).set(true);
+            // Add info of the project to USERS
+            dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prjId).set(true);
 
-        // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-        dbRt.ref('PROYECTOS/' + prjId).set({
-            NAME: prjName
-        });
+            // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+            dbRt.ref('PROYECTOS/' + prjId).set({
+                NAME: prjName
+            });
 
-        // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-        dbRt.ref('PROYECTOS/' + prjId + '/USERS/' + auth.currentUser.uid).set({
-            FECHA_UNION: date,
-            ROL: "admin"
-        });
+            // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+            dbRt.ref('PROYECTOS/' + prjId + '/USERS/' + auth.currentUser.uid).set({
+                FECHA_UNION: date,
+                ROL: "admin"
+            });
 
-        participants.forEach((person) => {
-            if (person.id) {
-                let rol = String(document.getElementById(person.id + 'rol').value);
-                dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
-                    FECHA_UNION: String(new Date()),
-                    NAME: prjName,
-                    ROL: rol
-                });
-            }
-        });
-        showAlert('El proyecto fue creado con éxito!', 'success', '-new')
+            participants.forEach((person) => {
+                if (person.id) {
+                    let rol = String(document.getElementById(person.id + 'rol').value);
+                    dbRt.ref('WAITING_LIST/' + person.id + '/' + prjId).set({
+                        FECHA_UNION: String(new Date()),
+                        NAME: prjName,
+                        ROL: rol
+                    });
+                }
+            });
+            showAlert('El proyecto fue creado con éxito!', 'success', '-new')
+            reloadProjectsList(auth.currentUser);
+        }
     }
 
     // window.location.href = "index.html"; // Watch this line and delete if data is not updating in slow connections
@@ -418,25 +437,31 @@ let editProject = () => {
         if (participants.length < 1) {
             showAlert('El proyecto debe tener al menos un participante', 'danger');
         } else {
-            // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
-            dbRt.ref('PROYECTOS/' + id).update({
-                NAME: prjName
-            });
+            let usersRol = JSON.parse(localStorage.usersRol);
+            if (Object.keys(usersRol).length < participants.length) {
+                showAlert('Todos los participantes deben tener un rol', 'danger');
+            } else {
+                // Add info of the user to PROYECTOS/ID_PROJ/ID_PERSON
+                dbRt.ref('PROYECTOS/' + id).update({
+                    NAME: prjName
+                });
 
-            // Remove all the users from the project
-            dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
+                // Remove all the users from the project
+                dbRt.ref('PROYECTOS/' + id + '/USERS').remove();
 
-            participants.forEach((person) => {
-                if (person.id) {
-                    let rol = String(document.getElementById(person.id + 'rol').value);
-                    dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
-                        FECHA_UNION: String(new Date()),
-                        NAME: prjName,
-                        ROL: rol
-                    });
-                }
-            });
-            showAlert('Los cambios fueron actualizados con éxito!', 'success')
+                participants.forEach((person) => {
+                    if (person.id) {
+                        let rol = String(document.getElementById(person.id + 'rol').value);
+                        dbRt.ref('WAITING_LIST/' + person.id + '/' + id).set({
+                            FECHA_UNION: String(new Date()),
+                            NAME: prjName,
+                            ROL: rol
+                        });
+                    }
+                });
+                showAlert('Los cambios fueron actualizados con éxito!', 'success')
+                reloadProjectsList(auth.currentUser);
+            }
         }
     }
 }
