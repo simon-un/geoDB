@@ -6,7 +6,7 @@ let projectName = sessionStorage.currentProjName;
 let currentRole = sessionStorage.currentRol;
 
 // Set current project's name and role
-if (currentRole) {
+if (currentRole) { 
     document.getElementById('rol_p').innerHTML = currentRole;
 }
 if (projectName) {
