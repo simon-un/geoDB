@@ -79,10 +79,10 @@ let showProjects = (prIdList) => {
                 default:
                     break;
             }
-            //href="map.html"
+            
             projects.innerHTML += ` 
             <div class="project">
-                <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" >${prName}</a>
+                <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" href="map.html">${prName}</a>
                 <br>
                 ID del Proyecto: ${prIdList[i]}
                 <br>
