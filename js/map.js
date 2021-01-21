@@ -12,7 +12,7 @@ if (currentRole) {
 if (projectName) {
     document.getElementById('proj_p').innerHTML = projectName;
     document.getElementById('pStruct').innerHTML += projectName;
-}
+} 
 
 const loggedOutLinks = document.querySelectorAll('.logged-out')
 const loggedInLinks = document.querySelectorAll('.logged-in')
