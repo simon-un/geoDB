@@ -118,12 +118,14 @@ logout.addEventListener('click', e => {
 
 // Clean up the current state variables
 window.onload = () => {
+
     sessionStorage.currentProject = '';
     sessionStorage.currentProjName = '';
     sessionStorage.currentRol = '';
 }
 
 loadPublic = () => {
+    parent.location.href=`/map.html?v=@PUBLIC?`
     sessionStorage.currentProject = 'PUBLIC';
     sessionStorage.currentProjName = 'Base de datos pública';
     sessionStorage.currentRol = 'Visitante';
