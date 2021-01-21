@@ -79,9 +79,10 @@ let showProjects = (prIdList) => {
                 default:
                     break;
             }
-            projects.innerHTML += `
+            //href="map.html"
+            projects.innerHTML += ` 
             <div class="project">
-                <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" href="map.html">${prName}</a>
+                <a onclick="projectInfo('${prIdList[i]}', '${rol}', '${prName}')" >${prName}</a>
                 <br>
                 ID del Proyecto: ${prIdList[i]}
                 <br>
@@ -162,6 +163,7 @@ let projectInfo = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
+    parent.location.href=`/map.html?v=@${key}?`
 }
 
 let newProject = () => {
