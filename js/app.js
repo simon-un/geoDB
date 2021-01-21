@@ -128,7 +128,6 @@ loadPublic = () => {
     sessionStorage.currentProject = 'PUBLIC';
     sessionStorage.currentProjName = 'Base de datos pública';
     sessionStorage.currentRol = 'Visitante';
-    parent.location.href=`/map.html?v=@PUBLIC?`
 }
 
 //Insertar tareas

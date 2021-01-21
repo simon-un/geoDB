@@ -1,12 +1,7 @@
 // const { auth } = require("firebase-admin");
 
-var r = window.location.search
-
-currentProjectName = r.match('@([a-zA-Z0-9]+)')
-
 // const { auth } = require("firebase");
-// var currentProject = sessionStorage.getItem('currentProject');
-var currentProject = currentProjectName[1]
+var currentProject = sessionStorage.getItem('currentProject');
 let projectName = sessionStorage.currentProjName;
 let currentRole = sessionStorage.currentRol;
 

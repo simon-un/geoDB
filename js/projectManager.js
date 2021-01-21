@@ -163,7 +163,6 @@ let projectInfo = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
-    parent.location.href=`/map.html?v=@${key}?`
 }
 
 let newProject = () => {
