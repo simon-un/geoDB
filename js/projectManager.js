@@ -384,6 +384,7 @@ let editProj = (key) => {
     })
     let users_public = JSON.parse(localStorage.users);
     console.log(key);
+    localStorage.currentEditingId = JSON.stringify(key);
 
     // Fill the table with current participants of the project
     dbRt.ref('/PROYECTOS/' + key).once('value').then((snapshot) => {
@@ -482,4 +483,21 @@ let showAlert = (content, alertClass = "primary", newli = '') => {
     document.getElementById('alertMsgP' + newli).textContent = content;
     document.getElementById('alert-notif-modal' + newli).className = "alert alert-" + alertClass;
     document.getElementById('alert-notif-modal' + newli).style.display = 'block';
+}
+
+let clearForm = () =>{
+    document.getElementById('delete-check').value = ''
+}
+
+let deleteProj = () =>{
+    let check = document.getElementById('delete-check').value;
+    if (check == "eliminar"){
+        let prId = JSON.parse(localStorage.currentEditingId);
+        dbRt.ref('PROYECTOS/' + prId).remove();
+        $('#deletePrjModal').modal('hide')
+        $('#editProjectModal').modal('hide')
+        reloadProjectsList(auth.currentUser);
+    }else{
+        document.getElementById('delete-check').focus();
+    }
 }

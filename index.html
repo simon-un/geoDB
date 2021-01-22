@@ -254,7 +254,8 @@
                 <br>
                 <div class="alert alert-primary" role="alert" id="alert-notif-modal-new"
                     style="z-index: 2; padding: 5px 10px; margin: auto; width: 90%" onclick="hideAlertNew()">
-                    <p id="alertMsgP-new" style="display:inline; margin-top: 10%;">Todos los participantes deben aceptar los
+                    <p id="alertMsgP-new" style="display:inline; margin-top: 10%;">Todos los participantes deben aceptar
+                        los
                         cambios realizados</p>
                     <p style="display:inline; float: right; margin: 0;">(Click para esconder)</p>
                 </div>
@@ -328,11 +329,6 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <!-- <div class="alert alert-dark" id="alert-edit" style="width: 80%; margin: auto; margin-top: 5px;">
-                    <a class="panel-close close" onclick="hideAlert()" style="cursor: pointer;">×</a> 
-                    <i class="fa fa-coffee"></i>
-                    Los cambios se reflejan una vez los participantes los acepten.
-                </div> -->
                 <br>
                 <div class="alert alert-primary" role="alert" id="alert-notif-modal"
                     style="z-index: 2; padding: 5px 10px; margin: auto; width: 90%" onclick="hideAlert()">
@@ -373,8 +369,53 @@
                             </table>
                         </div>
                     </div>
-                    <button type="submit" id='create-project' class="btn btn-primary btn-block"
-                        onclick="editProject()">Editar proyecto</button>
+                    <!-- <button type="submit" id='create-project' class="btn btn-primary btn-block"
+                        onclick="editProject()">Editar proyecto</button> -->
+
+                    <div class="btn-group" style="width: 100%;">
+                        <button type="button" class="btn btn-primary btn-block" onclick="editProject()">Editar
+                            proyecto</button>
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div style="margin: auto; color: #fd4646; text-align: center;">Zona de peligro</div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#deletePrjModal"
+                                onclick="clearForm()">Eliminar
+                                proyecto</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete project Modal -->
+    <div class="modal fade" id="deletePrjModal" tabindex="-1" role="dialog" aria-labelledby="deletePrjModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deletePrjModalLabel">Confirmación</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que deseas eliminar el proyecto definitivamente?
+                    <br>
+                    Esta acción no se puede deshacer.
+                    <div class="input-group mb-3" style="margin-top: 10px;">
+                        <input type="text" class="form-control" placeholder="Escribe 'eliminar' y pulsa el botón" aria-label="eliminar"
+                            aria-describedby="basic-addon2" id="delete-check">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="deleteProj()">Eliminar definitivamente</button>
                 </div>
             </div>
         </div>
