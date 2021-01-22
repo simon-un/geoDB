@@ -1,9 +1,32 @@
 // const { auth } = require("firebase-admin");
 
+const regex = /%22([a-zA-Z0-9]+)%/gm;
+const str = window.location.search
+let m;
+
+var listMatches = []
+while ((m = regex.exec(str)) !== null) {
+    // This is necessary to avoid infinite loops with zero-width matches
+    if (m.index === regex.lastIndex) {
+        regex.lastIndex++;
+    }
+    
+    // The result can be accessed through the `m`-variable.
+    m.forEach((match, groupIndex) => {
+        if (groupIndex == 1){
+            listMatches.push(match)
+        }
+        // console.log(`Found match, group ${groupIndex}: ${match}`);
+    });
+}
+
+var currentProject = listMatches[0]
+let currentRole = listMatches[1];
+let projectName = listMatches[2];
 // const { auth } = require("firebase");
-var currentProject = sessionStorage.getItem('currentProject');
-let projectName = sessionStorage.currentProjName;
-let currentRole = sessionStorage.currentRol;
+// var currentProject = sessionStorage.getItem('currentProject');
+// let projectName = sessionStorage.currentProjName;
+// let currentRole = sessionStorage.currentRol;
 
 // Set current project's name and role
 if (currentRole) { 
