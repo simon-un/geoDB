@@ -163,7 +163,7 @@ let projectInfo = (key, rol, name) => {
     sessionStorage.setItem('currentProject', key);
     sessionStorage.currentRol = rol;
     sessionStorage.currentProjName = name;
-    var url = `map.html?key="${encodeURIComponent(key)}"&rol="${encodeURIComponent(rol)}"&name="${encodeURIComponent(name)}"`;
+    var url = `map.html?key="${encodeURIComponent(key.replace(' ', '_'))}"&rol="${encodeURIComponent(rol)}"&name="${encodeURIComponent(name)}"`;
     document.location.href = url
 }
 
