@@ -80,6 +80,7 @@ const groupGenFilters = () => {
         div1.setAttribute('class', 'form-check form-check-inline')
         var p1 = document.createElement('p')
         var label1 = document.createElement('label')
+        label1.setAttribute('id', 'labelTitle' + key)
         label1.setAttribute('class', 'form-check-label')
         label1.setAttribute('for', 'inlineCheckbox1')
         label1.textContent = key
@@ -163,6 +164,7 @@ const groupGenFilters = () => {
                 'max': 0.0001
             }
         }).on('update', e => {
+            console.log('update')
             groupGen.eachLayer(function (group) {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {
