@@ -216,13 +216,18 @@ auth.onAuthStateChanged(user => {
         var prIdList = [];
         dbRt.ref('USERS/' + userUid).once('value', (snap) => {
             var prIdDict = snap.val();
-            Object.keys(prIdDict).forEach(key => {
 
-                if (prIdDict[key]) {
-                    prIdList.push(key)
-                }
+            try {
+                Object.keys(prIdDict).forEach(key => {
 
-            })
+                    if (prIdDict[key]) {
+                        prIdList.push(key)
+                    }
+
+                })
+            } catch {
+                
+            }
         }).then(() => {
 
             if (prIdList.includes(currentProject) || currentProject == 'PUBLIC') {
