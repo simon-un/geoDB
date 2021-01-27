@@ -449,6 +449,7 @@ function getInfo(key) {
 
 var i = 0
 const reservedWords = ['NAME', 'USERS']
+var dictCountFigures = {}
 
 const graphGeoMarkers = (Obj) => {
 
@@ -485,6 +486,7 @@ const graphGeoMarkers = (Obj) => {
                             title: key
                         },
                         onEachFeature: function (feature, layer) {
+                            dictCountFigures[name] = get(dictCountFigures, name, 0)[name] + 1
                             layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${name}`)
                             layer.on({
                                 mouseover: e => {
@@ -712,6 +714,9 @@ const graphGeoMarkers = (Obj) => {
     L.control.layers({}, overlayMaps, {
         position: 'bottomleft'
     }).addTo(map);
+
+    console.log('aaaa', dictCountFigures)
+
 }
 
 map.addLayer(groupGen)

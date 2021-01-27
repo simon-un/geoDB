@@ -55,13 +55,46 @@ var drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl);
 
+var i = 0
+
 map.on('draw:created', function (e) {
     var type = e.layerType,
         layer = e.layer;
+
+    var layerGeoJson = layer.toGeoJSON()
+
+    layerGeoJson.properties['title'] = 'reservedGeometry'
 
     if (type === 'marker') {
         layer.bindPopup('A popup!');
     }
 
+    console.log(e)
+
     drawnItems.addLayer(layer);
+    console.log(layerGeoJson[0])
+    console.log(Object.keys(layerGeoJson))
+    i += 1
+
+    console.log(dictCountFigures['ESTACION_1'])
+
+    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + dictCountFigures['ESTACION_1'])
+    // var newPostRef = postListRef.push()
+    postListRef.set({
+        "type": layerGeoJson["type"],
+        "geometry": layerGeoJson["geometry"],
+        "properties": layerGeoJson["properties"]
+    });
+
+    dictCountFigures['ESTACION_1'] = dictCountFigures['ESTACION_1'] + 1
+});
+
+map.on('draw:deleted', function (e) {
+    console.log(e)
+
+    layer = e.layers
+
+    drawnItems.removeLayer(layer)
+
+    console.log(layer.toGeoJSON())
 });
