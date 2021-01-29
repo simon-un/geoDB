@@ -478,14 +478,29 @@ const graphGeoMarkers = (Obj) => {
             tr.appendChild(td).appendChild(a)
             myTbodyStructureNav.appendChild(tr)
 
+            var reservedGeometryToList = []
             Object.keys(ObjPerf).forEach(key => {
                 if (key.match(/reservedGeometry/)) {
 
-                    group.addLayer(L.geoJSON(ObjPerf[key], {
+                    var reservedGeometryObjects = ObjPerf[key]
+                    var features = reservedGeometryObjects['features']
+
+                    try {
+                        Object.keys(features).forEach(key => {
+                            reservedGeometryToList.push(features[key])
+                        })
+                    } catch {
+
+                    }
+                    
+
+
+                    group.addLayer(L.geoJSON(reservedGeometryToList, {
                         onEachFeature: {
                             title: key
                         },
                         onEachFeature: function (feature, layer) {
+                            loadLeafletDrawFigures(layer)
                             dictCountFigures[name] = get(dictCountFigures, name, 0)[name] + 1
                             layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${name}`)
                             layer.on({
