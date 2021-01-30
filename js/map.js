@@ -2,7 +2,6 @@
 
 const regex = /"([a-zñA-Z0-9Ñ -]*)"/gm;
 const str = decodeURI(window.location.search) //.replace(/%20/g, ' ').replace(/%C3%B1/g, 'n')
-console.log(str)
 let m;
 
 var listMatches = []
@@ -205,6 +204,8 @@ function get(object, key, default_value) {
 //Events
 //List data for auth state changes
 
+
+var obj;
 auth.onAuthStateChanged(user => {
     if (user && infoRequested) {
         userUid = user.uid
@@ -233,7 +234,7 @@ auth.onAuthStateChanged(user => {
             if (prIdList.includes(currentProject) || currentProject == 'PUBLIC') {
 
                 dbRt.ref('PROYECTOS').child(currentProject).once('value', async snap => {
-                    var obj = snap.val()
+                    obj = snap.val()
                     await graphGeoMarkers(obj)
                     await groupGenFilters() // Find it in filters.js file
                     await enableAllLayers()
@@ -412,6 +413,7 @@ function openInfo(tab, key) {
 var cacheInfo = {}
 var structureAsValue = {} // Se toman las estructuras como valores,
 // y las exploraciones como llaves
+var LControlLayers;
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
@@ -453,6 +455,7 @@ var dictCountFigures = {}
 
 const graphGeoMarkers = (Obj) => {
 
+    myTbodyStructureNav.innerHTML = ""
     Object.keys(Obj).forEach(key => {
 
         if (!reservedWords.includes(key)) {
@@ -726,15 +729,19 @@ const graphGeoMarkers = (Obj) => {
         }
     })
 
-    L.control.layers({}, overlayMaps, {
+    LControlLayers = L.control.layers({}, overlayMaps, {
         position: 'bottomleft'
     }).addTo(map);
 
-    console.log('aaaa', dictCountFigures)
+}
+
+function addGroupGenToMap() {
+
+    map.addLayer(groupGen)
 
 }
 
-map.addLayer(groupGen)
+addGroupGenToMap()
 
 // Show map and markers boundaries
 function fitBounds() {
@@ -754,24 +761,33 @@ map.on('click', e => {
     }
 })
 
-// General structures filter
-var overLayers = [{
-    group: "Filtro general",
-    layers: [{
-        active: true,
-        name: "Estructuras",
-        layer: groupGen,
+var panelLayers;
+var overLayers;
 
+
+function createPanelLayers(groupGen) {
+
+    // General structures filter
+    overLayers = [{
+        group: "Filtro general",
+        layers: [{
+            active: true,
+            name: "Estructuras",
+            layer: groupGen,
+
+        }]
     }]
-}]
 
-var panelLayers = new L.Control.PanelLayers({}, overLayers, {
-    compact: true,
-    collapsibleGroups: true,
-    position: 'bottomleft',
-});
+    panelLayers = new L.Control.PanelLayers({}, overLayers, {
+        compact: true,
+        collapsibleGroups: true,
+        position: 'bottomleft',
+    });
+    
+    map.addControl(panelLayers);
+}
 
-map.addControl(panelLayers);
+createPanelLayers(groupGen) 
 
 // Structures nav filter
 $(document).ready(function () {
@@ -817,25 +833,30 @@ var blueIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-// Search control
-var controlSearch = new L.Control.Search({
-    position: 'topleft',
-    layer: groupGen,
-    initial: true,
-    zoom: 20,
-    marker: false,
-    firstTipSubmit: true,
-    textErr: 'Exploración no encontrada',
-    textPlaceholder: 'Buscar',
-});
+var controlSearch
+function addSearchControlToMap() {
+    // Search control
+        controlSearch = new L.Control.Search({
+        position: 'topleft',
+        layer: groupGen,
+        initial: true,
+        zoom: 20,
+        marker: false,
+        firstTipSubmit: true,
+        textErr: 'Exploración no encontrada',
+        textPlaceholder: 'Buscar',
+    });
 
-controlSearch.on('search:locationfound', e => {
+    controlSearch.on('search:locationfound', e => {
 
-    e.layer.setIcon(greenIcon)
-    e.layer.openPopup()
-})
+        e.layer.setIcon(greenIcon)
+        e.layer.openPopup()
+    })
 
-map.addControl(controlSearch)
+    map.addControl(controlSearch)
+}
+
+addSearchControlToMap()
 
 showMsg = (msg, className = 'alert alert-primary') => {
     // Options for className:

@@ -2,8 +2,6 @@ function loadLeafletDrawFigures(layer){
     drawnItems.addLayer(layer);
 }
 
-
-
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
 
@@ -45,14 +43,13 @@ var drawControl = new L.Control.Draw({
 });
 map.addControl(drawControl);
 
-var i = 0
-
 map.on('draw:created', function (e) {
     var type = e.layerType,
         layer = e.layer;
 
-        console.log(layer)
-        console.log(layer._leaflet_id)
+    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/')
+    var newPostRef = postListRef.push()
+    var firebaseKey = newPostRef.key
 
     var layerGeoJson;
 
@@ -75,40 +72,113 @@ map.on('draw:created', function (e) {
         }
 
         var layer = L.polygon(polygon); //convert geometry to a leaflet polygon and add it to the map
-        drawnItems.addLayer(layer);
-        layerGeoJson = layer.toGeoJSON()
-        layerGeoJson.properties['title'] = 'reservedGeometry'
-        console.log('circle')
-    } else {
-        layerGeoJson = layer.toGeoJSON()
-        layerGeoJson.properties['title'] = 'reservedGeometry'
-        drawnItems.addLayer(layer);
-    }
-    
-    i += 1
+        
+        // layerGeoJson.properties['title'] = 'reservedGeometry'
+        // layerGeoJson.properties['key'] = newPostRef.key
 
-    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/')
-    var newPostRef = postListRef.push()
-    layerGeoJson.properties['key'] = newPostRef.key
+        // Se agrega propiedad key a la capa 'layer'
+
+        var feature = layer.feature = layer.feature || {}; // Initialize feature
+
+        feature.type = feature.type || "Feature"; // Initialize feature.type
+        var props = feature.properties = feature.properties || {}; // Initialize feature.properties
+        props.key = newPostRef.key
+        props.title = 'reservedGeometry'
+
+        layerGeoJson = layer.toGeoJSON()
+
+        // drawnItems.addLayer(layer);
+    } else {
+        // layerGeoJson = layer.toGeoJSON()
+        // layerGeoJson.properties['title'] = 'reservedGeometry'
+        // layerGeoJson.properties['key'] = newPostRef.key
+
+        // Se agrega propiedad key a la capa 'layer'
+
+        var feature = layer.feature = layer.feature || {}; // Initialize feature
+
+        feature.type = feature.type || "Feature"; // Initialize feature.type
+        var props = feature.properties = feature.properties || {}; // Initialize feature.properties
+        props.key = newPostRef.key
+        props.title = 'reservedGeometry'
+
+        layerGeoJson = layer.toGeoJSON()
+
+        // drawnItems.addLayer(layer);
+        
+    }
+
+    try {
+        obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey] = layerGeoJson
+    } catch {
+        obj['ESTACION_1']['reservedGeometry']['features'] = []
+        obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey] = layerGeoJson
+    }
+
+    resetMap() // Se resetea el mapa con las nuevas capas
+ 
     newPostRef.set({
         "type": layerGeoJson["type"],
         "geometry": layerGeoJson["geometry"],
         "properties": layerGeoJson["properties"]
     });
 
+    
+
     dictCountFigures['ESTACION_1'] = dictCountFigures['ESTACION_1'] + 1
 });
 
 map.on('draw:deleted', function (e) {
     
-    layer = e.layers
+    var layersRemoved = e.layers
+    var layersRemovedGeoJSON = layersRemoved.toGeoJSON()
+    var layersRemovedList = layersRemovedGeoJSON.features
+    var firebaseKey
+    layersRemovedList.forEach(objRemoved => {
+        firebaseKey = objRemoved.properties.key
+        dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + firebaseKey).remove()
 
-    drawnItems.removeLayer(layer)
+        // groupGen.removeLayer(objRemoved)
+        // drawnItems.removeLayer(objRemoved)
+        // panelLayers.removeLayer(objRemoved)
+        // map.removeLayer(objRemoved)
+        // LControlLayers.removeLayer(objRemoved)
 
-    console.log(layer.toGeoJSON())
+        delete obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey]
+    })
+
+    // drawnItems.removeLayer(layersRemoved)
+
+    resetMap() // Se resetea el mapa quitando las capas eliminadas
+    
 });
 
+function resetMap() {
 
+    map.removeControl(panelLayers);
+    map.removeControl(LControlLayers);
+    map.removeControl(controlSearch)
+
+    groupGen.eachLayer(function (group) {
+        map.removeLayer(group)
+    })
+    map.removeLayer(groupGen)
+
+    groupGen = new L.FeatureGroup()
+    graphGeoMarkers(obj)
+    // addGroupGenToMap()
+    createPanelLayers(groupGen) 
+    addSearchControlToMap()
+    
+}
+// map.on("draw:drawstart", e => {
+    
+//     window.alert('Acaba de iniciar un dibujo')
+//     console.log(e)
+//     //if saved;
+
+//     //if cancelled,
+//   });
 
 
 // Create circle as polygon 
