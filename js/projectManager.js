@@ -29,7 +29,6 @@ let reloadProjectsList = (user) => {
             prIdList.push(proj);
         }
         if (prIdList) {
-            // setTimeout(showProjects,3000,prIdList);
             showProjects(prIdList);
         } else {
             projects.innerHTML += `
@@ -231,8 +230,9 @@ let createProject = () => {
                     });
                 }
             });
-            showAlert('El proyecto fue creado con éxito!', 'success', '-new')
+            showAlertGen('El proyecto fue creado con éxito!', 'success')
             reloadProjectsList(auth.currentUser);
+            $('#newProjectModal').modal('hide');
         }
     }
 
@@ -460,8 +460,9 @@ let editProject = () => {
                         });
                     }
                 });
-                showAlert('Los cambios fueron actualizados con éxito!', 'success')
+                showAlertGen('Los cambios fueron actualizados con éxito!', 'success')
                 reloadProjectsList(auth.currentUser);
+                $('#editProjectModal').modal('hide');
             }
         }
     }
@@ -473,6 +474,17 @@ let hideAlert = () => {
 
 let hideAlertNew = () => {
     document.getElementById('alert-notif-modal-new').style.display = 'none';
+}
+
+let hideAlertGeneral = () => {
+    document.getElementById('alert-notif-general').style.display = 'none';
+}
+
+let showAlertGen = (content, alertClass = "primary") => {
+    document.getElementById('alert-notif-general').style.display = 'none';
+    document.getElementById('alertMsg-general').textContent = content;
+    document.getElementById('alert-notif-general').className = "alert alert-" + alertClass;
+    document.getElementById('alert-notif-general').style.display = 'block';
 }
 
 let showAlert = (content, alertClass = "primary", newli = '') => {
