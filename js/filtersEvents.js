@@ -2,7 +2,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
     switch (eventName) {
 
         case 'activateGenFilter':
-
+            console.log('tt')
             groupGen.eachLayer(group => {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {
@@ -15,6 +15,8 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                 })
             })
 
+            var anyFilterTagsUncompletedActivated = false // Chequea si algun condicional de FilterTagsUncompleted esta activado
+            var difference3
             Object.keys(filterTagsUncompleted).forEach(key => {
                 groupGen.eachLayer(group => {
                     group.eachLayer(layer => {
@@ -28,17 +30,46 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                     })
                 })
                 if (document.getElementById(key).style.display == 'block' && customCheck1.checked) {
-                    let difference3 = $('.selectpicker').val().filter(x => !Object.keys(filterTagsUncompleted).includes(x));
+                    window[key + 'Slider'].setAttribute('disabled', true);
+                    document.getElementById(key + 'InputMin').disabled = true;
+                    document.getElementById(key + 'InputMax').disabled = true;
+                    document.getElementById('labelTitle' + key).textContent = key
+                    difference3 = $('.selectpicker').val().filter(x => !Object.keys(filterTagsUncompleted).includes(x));
                     difference3.forEach(key => {
                             window[key + 'Slider'].noUiSlider.updateOptions({
                                 start: [defaultValues[key][0], defaultValues[key][1]],
                             })
                         })
                     customCheck1.checked = true
-                    window[key + 'Slider'].setAttribute('disabled', true);
+                    anyFilterTagsUncompletedActivated = true
                 } else if (document.getElementById(key).style.display == 'block' && !customCheck1.checked) {
-                    window[key + 'Slider'].noUiSlider.set(defaultValues[key][0], defaultValues[key][1])
                     window[key + 'Slider'].removeAttribute('disabled');
+                    document.getElementById(key + 'InputMin').disabled = false;
+                    document.getElementById(key + 'InputMax').disabled = false;
+                    document.getElementById('labelTitle' + key).textContent = key + ' (Exploraciones sin esta propriedad: ocultas)'
+                    window[key + 'Slider'].noUiSlider.updateOptions({
+                                start: [defaultValues[key][0], defaultValues[key][1]],
+                            })
+                    anyFilterTagsUncompletedActivated = true
+                }
+            })
+
+            // Evento para resetear los filtros completos al estar seleccionado customcheck1
+            difference3 = $('.selectpicker').val().filter(x => !Object.keys(filterTagsUncompleted).includes(x));
+            difference3.forEach(key => {
+                if (customCheck1.checked && document.getElementById(key).style.display == 'block'){
+                    window[key + 'Slider'].removeAttribute('disabled');
+                    document.getElementById(key + 'InputMin').disabled = false;
+                    document.getElementById(key + 'InputMax').disabled = false;
+                    window[key + 'Slider'].noUiSlider.updateOptions({
+                        start: [defaultValues[key][0], defaultValues[key][1]],
+                    })
+                    customCheck1.checked = true
+                } else if (!customCheck1.checked && document.getElementById(key).style.display == 'block' && !anyFilterTagsUncompletedActivated) {
+                    document.getElementById(key + 'InputMin').disabled = true;
+                    document.getElementById(key + 'InputMax').disabled = true;
+                    window[key + 'Slider'].setAttribute('disabled', true);
+                    customCheck1.checked = false
                 }
             })
 
@@ -46,6 +77,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
 
         case 'addDataToSelectpicker':
 
+            console.log('tt2')
             var selectedItem = $('.selectpicker').val();
 
             // Muestra los objetos que no estan checkeados en el SelectPicker
@@ -63,6 +95,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
             filterSelected.innerHTML = ''
 
             if (selectedItem == '') {
+                console.log('dentro2')
                 filterSelected.innerHTML = `
                 <li>Ninguno</li>
             `
@@ -77,6 +110,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                 }
 
             } else {
+                console.log('dentro2')
                 selectedItem.forEach(value => {
                     filterSelected.innerHTML += `
                 <li>${value}</li>
@@ -96,7 +130,7 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                     } else if (!Object.keys(filterTagsUncompleted).includes(value) && customCheck1.checked) {
                         customCheck1.click()
                         customCheck1.click()
-                    }
+                    } 
                     // window[value + 'Slider'].noUiSlider.set(defaultValues[value][0], defaultValues[value][1])
                     window[value + 'Slider'].noUiSlider.updateOptions({
                         start: [defaultValues[value][0], defaultValues[value][1]],
@@ -107,8 +141,10 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
 
         case 'noUiSliderUpdate':
 
+            // console.log('tt2')
             $('.selectpicker').val().every(key => {
                 if (!Object.keys(filterTagsUncompleted).includes(key)) {
+                    console.log('tt3')
                     if (window[key + 'Slider'].noUiSlider.get().map(Number) == defaultValues[key].toString()) {
                         return customCheck1.checked = true
                     } else {
@@ -127,6 +163,11 @@ const filterReset = document.getElementById('filterReset')
 
 filterReset.addEventListener('click', e => {
     $('.selectpicker').val().forEach(key => {
+        if (filterTagsUncompleted[key] === false){
+            document.getElementById('labelTitle' + key).textContent = key + ' (Exploraciones sin esta propriedad: ocultas)'
+        } else {
+            document.getElementById('labelTitle' + key).textContent = key
+        }
         window[key + 'Slider'].removeAttribute('disabled');
         window[key + 'Slider'].noUiSlider.updateOptions({
             start: [defaultValues[key][0], defaultValues[key][1]],

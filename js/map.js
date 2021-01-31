@@ -1,9 +1,33 @@
 // const { auth } = require("firebase-admin");
 
+const regex = /"([a-zñA-Z0-9Ñ -]*)"/gm;
+const str = decodeURI(window.location.search) //.replace(/%20/g, ' ').replace(/%C3%B1/g, 'n')
+console.log(str)
+let m;
+
+var listMatches = []
+while ((m = regex.exec(str)) !== null) {
+    // This is necessary to avoid infinite loops with zero-width matches
+    if (m.index === regex.lastIndex) {
+        regex.lastIndex++;
+    }
+
+    // The result can be accessed through the `m`-variable.
+    m.forEach((match, groupIndex) => {
+        if (groupIndex == 1) {
+            listMatches.push(match)
+        }
+        // console.log(`Found match, group ${groupIndex}: ${match}`);
+    });
+}
+
+var currentProject = listMatches[0]
+let currentRole = listMatches[1];
+let projectName = listMatches[2];
 // const { auth } = require("firebase");
-var currentProject = sessionStorage.getItem('currentProject');
-let projectName = sessionStorage.currentProjName;
-let currentRole = sessionStorage.currentRol;
+// var currentProject = sessionStorage.getItem('currentProject');
+// let projectName = sessionStorage.currentProjName;
+// let currentRole = sessionStorage.currentRol;
 
 // Set current project's name and role
 if (currentRole) {
@@ -187,21 +211,46 @@ auth.onAuthStateChanged(user => {
         loggedInLinks.forEach(link => {
             link.style.display = 'block'
         })
-        
-        dbRt.ref('PROYECTOS').child(currentProject).once('value', async snap => {
-            var obj = snap.val()
-            await graphGeoMarkers(obj)
-            await groupGenFilters() // Find it in filters.js file
-            await enableAllLayers()
-            await activateGenFilter()
-            await fitBounds()
 
-            // await groupGenTreatmentProf() // Find it in filters.js file
-            // await groupGenTreatmentNivel() // Find it in filters.js file
+        // Chequea los proyectos en los que se encuentra el usuario
+        var prIdList = [];
+        dbRt.ref('USERS/' + userUid).once('value', (snap) => {
+            var prIdDict = snap.val();
 
+            try {
+                Object.keys(prIdDict).forEach(key => {
+
+                    if (prIdDict[key]) {
+                        prIdList.push(key)
+                    }
+
+                })
+            } catch {
+                
+            }
+        }).then(() => {
+
+            if (prIdList.includes(currentProject) || currentProject == 'PUBLIC') {
+
+                dbRt.ref('PROYECTOS').child(currentProject).once('value', async snap => {
+                    var obj = snap.val()
+                    await graphGeoMarkers(obj)
+                    await groupGenFilters() // Find it in filters.js file
+                    await enableAllLayers()
+                    await activateGenFilter()
+                    await fitBounds()
+
+                    // await groupGenTreatmentProf() // Find it in filters.js file
+                    // await groupGenTreatmentNivel() // Find it in filters.js file
+
+                })
+
+                document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
+
+            } else {
+                document.location.href = 'exception.html'
+            }
         })
-
-        document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
 
     } else {
         userUid = null
