@@ -1,3 +1,34 @@
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+      // Fetch all the forms we want to apply custom Bootstrap validation styles to
+      var forms = document.getElementsByClassName('needs-validation');
+      // Loop over them and prevent submission
+      var validation = Array.prototype.filter.call(forms, function(form) {
+        form.addEventListener('submit', function(event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('Mallll')
+          } else {
+          event.preventDefault();
+          event.stopPropagation();
+          var inputCreateStructureValue = document.getElementById('inputCreateStructure').value
+          dbRt.ref('PROYECTOS/' + currentProject + '/' + inputCreateStructureValue + '/').set({
+              'reservedGeometry': 0
+          })
+
+          document.getElementById('btnDismissModalCreateStructure').click()
+          }
+          form.classList.add('was-validated');
+
+
+        }, false);
+      });
+    }, false);
+  })();
+
+
 function loadLeafletDrawFigures(layer){
     drawnItems.addLayer(layer);
 }
@@ -138,12 +169,6 @@ map.on('draw:deleted', function (e) {
         firebaseKey = objRemoved.properties.key
         dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + firebaseKey).remove()
 
-        // groupGen.removeLayer(objRemoved)
-        // drawnItems.removeLayer(objRemoved)
-        // panelLayers.removeLayer(objRemoved)
-        // map.removeLayer(objRemoved)
-        // LControlLayers.removeLayer(objRemoved)
-
         delete obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey]
     })
 
@@ -152,6 +177,243 @@ map.on('draw:deleted', function (e) {
     resetMap() // Se resetea el mapa quitando las capas eliminadas
     
 });
+
+map.on('draw:edited', function (e) {
+
+    var layersEdited = e.layers
+    var layersEditedGeoJSON = layersEdited.toGeoJSON()
+    var layersEditedList = layersEditedGeoJSON.features
+    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/')
+    var newPostRef = postListRef.push()
+    var previousFirebaseKey
+
+    layersEditedList.forEach(objEdited => {
+        previousFirebaseKey = objEdited.properties.key
+        dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + previousFirebaseKey)
+            .set({
+                "type": objEdited["type"],
+                "geometry": objEdited["geometry"],
+                "properties": objEdited["properties"]
+            })
+
+        obj['ESTACION_1']['reservedGeometry']['features'][previousFirebaseKey] = objEdited
+    })
+
+    resetMap() // Se resetea el mapa modificando las capas
+
+})
+
+var table = $('#chooseStructureTable').DataTable({ // Tabla 
+    pageLength: 5,
+    language: {
+    "processing": "Procesando...",
+    "lengthMenu": "Mostrar _MENU_ registros",
+    "zeroRecords": "No se encontraron resultados",
+    "emptyTable": "Ningún dato disponible en esta tabla",
+    "info": "Mostrando _START_ - _END_, de _TOTAL_ estructuras totales",
+    "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+    "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+    "search": "Buscar:",
+    "infoThousands": ",",
+    "loadingRecords": "Cargando...",
+    "paginate": {
+        "first": "Primero",
+        "last": "Último",
+        "next": "Siguiente",
+        "previous": "Anterior"
+    },
+    "aria": {
+        "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+        "sortDescending": ": Activar para ordenar la columna de manera descendente"
+    },
+    "buttons": {
+        "copy": "Copiar",
+        "colvis": "Visibilidad",
+        "collection": "Colección",
+        "colvisRestore": "Restaurar visibilidad",
+        "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
+        "copySuccess": {
+            "1": "Copiada 1 fila al portapapeles",
+            "_": "Copiadas %d fila al portapapeles"
+        },
+        "copyTitle": "Copiar al portapapeles",
+        "csv": "CSV",
+        "excel": "Excel",
+        "pageLength": {
+            "-1": "Mostrar todas las filas",
+            "1": "Mostrar 1 fila",
+            "_": "Mostrar %d filas"
+        },
+        "pdf": "PDF",
+        "print": "Imprimir"
+    },
+    "autoFill": {
+        "cancel": "Cancelar",
+        "fill": "Rellene todas las celdas con <i>%d<\/i>",
+        "fillHorizontal": "Rellenar celdas horizontalmente",
+        "fillVertical": "Rellenar celdas verticalmentemente"
+    },
+    "decimal": ",",
+    "searchBuilder": {
+        "add": "Añadir condición",
+        "button": {
+            "0": "Constructor de búsqueda",
+            "_": "Constructor de búsqueda (%d)"
+        },
+        "clearAll": "Borrar todo",
+        "condition": "Condición",
+        "conditions": {
+            "date": {
+                "after": "Despues",
+                "before": "Antes",
+                "between": "Entre",
+                "empty": "Vacío",
+                "equals": "Igual a",
+                "not": "No",
+                "notBetween": "No entre",
+                "notEmpty": "No Vacio"
+            },
+            "moment": {
+                "after": "Despues",
+                "before": "Antes",
+                "between": "Entre",
+                "empty": "Vacío",
+                "equals": "Igual a",
+                "not": "No",
+                "notBetween": "No entre",
+                "notEmpty": "No vacio"
+            },
+            "number": {
+                "between": "Entre",
+                "empty": "Vacio",
+                "equals": "Igual a",
+                "gt": "Mayor a",
+                "gte": "Mayor o igual a",
+                "lt": "Menor que",
+                "lte": "Menor o igual que",
+                "not": "No",
+                "notBetween": "No entre",
+                "notEmpty": "No vacío"
+            },
+            "string": {
+                "contains": "Contiene",
+                "empty": "Vacío",
+                "endsWith": "Termina en",
+                "equals": "Igual a",
+                "not": "No",
+                "notEmpty": "No Vacio",
+                "startsWith": "Empieza con"
+            }
+        },
+        "data": "Data",
+        "deleteTitle": "Eliminar regla de filtrado",
+        "leftTitle": "Criterios anulados",
+        "logicAnd": "Y",
+        "logicOr": "O",
+        "rightTitle": "Criterios de sangría",
+        "title": {
+            "0": "Constructor de búsqueda",
+            "_": "Constructor de búsqueda (%d)"
+        },
+        "value": "Valor"
+    },
+    "searchPanes": {
+        "clearMessage": "Borrar todo",
+        "collapse": {
+            "0": "Paneles de búsqueda",
+            "_": "Paneles de búsqueda (%d)"
+        },
+        "count": "{total}",
+        "countFiltered": "{shown} ({total})",
+        "emptyPanes": "Sin paneles de búsqueda",
+        "loadMessage": "Cargando paneles de búsqueda",
+        "title": "Filtros Activos - %d"
+    },
+    "select": {
+        "1": "%d fila seleccionada",
+        "_": "%d filas seleccionadas",
+        "cells": {
+            "1": "1 celda seleccionada",
+            "_": "$d celdas seleccionadas"
+        },
+        "columns": {
+            "1": "1 columna seleccionada",
+            "_": "%d columnas seleccionadas"
+        }
+    },
+    "thousands": "."
+}
+}); 
+
+var currentProjectStructures = [];
+var currentProjectStructuresAsRegex = []
+var currentProjectStructuresSTR = ''
+var specialObjects = ['NAME', 'USERS']
+var btnChooseStructure = document.getElementById('btnChooseStructure')
+var btnCreateStructure = document.getElementById('btnCreateStructure')
+var selectedStruct = document.getElementById('selectedStruct')
+var inputCreateStructure = document.getElementById('inputCreateStructure')
+
+map.on('draw:drawstart', function (e) {
+
+    if (currentProjectStructures.length == 0) {
+        Object.keys(obj).forEach((key, i) => {
+            if (!specialObjects.includes(key))
+            {
+                currentProjectStructures.push(key)
+                currentProjectStructuresAsRegex.push(`^${key}$`)
+                table.row.add( [
+                    key
+                ] ).draw( false );
+            }
+        })
+    }
+
+    currentProjectStructuresSTR = currentProjectStructuresAsRegex.toString().replace(/,/g, '|')
+
+    inputCreateStructure.setAttribute('pattern', '(?=^((?!(' + currentProjectStructuresSTR + ')).)*$)([a-zA-Z0-9-]*)')
+
+    btnChooseStructure.click(); // Se simula click que abre el modal
+
+})
+
+$(document).ready(function() {
+    // var t = $('#example').DataTable();
+    var counter = 1;
+ 
+    $('#addStructure').on( 'click', function () {
+        
+        btnCreateStructure.click();
+
+
+        // table.row.add( [
+        //     counter +'.1',
+        // //     // counter +'.2',
+        // //     // counter +'.3',
+        // //     // counter +'.4',
+        // //     // counter +'.5'
+        // ] ).draw( false );
+ 
+        // counter++;
+    } );
+
+    $('#chooseStructureTable tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+            selectedStruct.textContent = 'Seleccione una estructura.'
+            selectedStruct.style.color = 'red'
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            selectedStruct.textContent = this.textContent
+            selectedStruct.style.color = 'green'
+        }
+    } );
+ 
+    // Automatically add a first row of data
+    // $('#addRow').click();
+} );
 
 function resetMap() {
 
