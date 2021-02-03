@@ -9,25 +9,39 @@
           if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
-            console.log('Mallll')
           } else {
           event.preventDefault();
           event.stopPropagation();
           var inputCreateStructureValue = document.getElementById('inputCreateStructure').value
           dbRt.ref('PROYECTOS/' + currentProject + '/' + inputCreateStructureValue + '/').set({
-              'reservedGeometry': 0
+              'reservedGeometry': {
+                  'features': true,
+                  'type': "FeatureCollection",
+              }
           })
 
           document.getElementById('btnDismissModalCreateStructure').click()
-          }
-          form.classList.add('was-validated');
 
+          table.row.add( [
+            inputCreateStructureValue
+          ]).draw( false );
+
+          obj[inputCreateStructureValue] = {
+              'reservedGeometry':{
+                'features':{},
+                'type': 'FeatureCollection',
+                }
+            }
+          }
+
+          form.classList.add('was-validated');
 
         }, false);
       });
     }, false);
   })();
 
+var selectedStructName = null
 
 function loadLeafletDrawFigures(layer){
     drawnItems.addLayer(layer);
@@ -78,7 +92,7 @@ map.on('draw:created', function (e) {
     var type = e.layerType,
         layer = e.layer;
 
-    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/')
+    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + `/${selectedStructName}/reservedGeometry/features/`)
     var newPostRef = postListRef.push()
     var firebaseKey = newPostRef.key
 
@@ -115,6 +129,7 @@ map.on('draw:created', function (e) {
         var props = feature.properties = feature.properties || {}; // Initialize feature.properties
         props.key = newPostRef.key
         props.title = 'reservedGeometry'
+        props.structure = selectedStructName
 
         layerGeoJson = layer.toGeoJSON()
 
@@ -132,6 +147,7 @@ map.on('draw:created', function (e) {
         var props = feature.properties = feature.properties || {}; // Initialize feature.properties
         props.key = newPostRef.key
         props.title = 'reservedGeometry'
+        props.structure = selectedStructName
 
         layerGeoJson = layer.toGeoJSON()
 
@@ -140,10 +156,10 @@ map.on('draw:created', function (e) {
     }
 
     try {
-        obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey] = layerGeoJson
+        obj[selectedStructName]['reservedGeometry']['features'][firebaseKey] = layerGeoJson
     } catch {
-        obj['ESTACION_1']['reservedGeometry']['features'] = []
-        obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey] = layerGeoJson
+        obj[selectedStructName]['reservedGeometry']['features'] = []
+        obj[selectedStructName]['reservedGeometry']['features'][firebaseKey] = layerGeoJson
     }
 
     resetMap() // Se resetea el mapa con las nuevas capas
@@ -156,7 +172,7 @@ map.on('draw:created', function (e) {
 
     
 
-    dictCountFigures['ESTACION_1'] = dictCountFigures['ESTACION_1'] + 1
+    dictCountFigures[selectedStructName] = dictCountFigures[selectedStructName] + 1
 });
 
 map.on('draw:deleted', function (e) {
@@ -164,12 +180,15 @@ map.on('draw:deleted', function (e) {
     var layersRemoved = e.layers
     var layersRemovedGeoJSON = layersRemoved.toGeoJSON()
     var layersRemovedList = layersRemovedGeoJSON.features
-    var firebaseKey
+    var firebaseKey, structureName
     layersRemovedList.forEach(objRemoved => {
-        firebaseKey = objRemoved.properties.key
-        dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + firebaseKey).remove()
 
-        delete obj['ESTACION_1']['reservedGeometry']['features'][firebaseKey]
+        firebaseKey = objRemoved.properties.key
+        structureName = objRemoved.properties.structure
+
+        dbRt.ref('PROYECTOS/' + currentProject + `/${structureName}/reservedGeometry/features/` + firebaseKey).remove()
+
+        delete obj[structureName]['reservedGeometry']['features'][firebaseKey]
     })
 
     // drawnItems.removeLayer(layersRemoved)
@@ -183,20 +202,21 @@ map.on('draw:edited', function (e) {
     var layersEdited = e.layers
     var layersEditedGeoJSON = layersEdited.toGeoJSON()
     var layersEditedList = layersEditedGeoJSON.features
-    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/')
+    var postListRef = dbRt.ref('PROYECTOS/' + currentProject + `/${selectedStructName}/reservedGeometry/features/`)
     var newPostRef = postListRef.push()
-    var previousFirebaseKey
+    var previousFirebaseKey, structureName
 
     layersEditedList.forEach(objEdited => {
         previousFirebaseKey = objEdited.properties.key
-        dbRt.ref('PROYECTOS/' + currentProject + '/ESTACION_1/reservedGeometry/features/' + previousFirebaseKey)
+        structureName = objEdited.properties.structure
+        dbRt.ref('PROYECTOS/' + currentProject + `/${structureName}/reservedGeometry/features/` + previousFirebaseKey)
             .set({
                 "type": objEdited["type"],
                 "geometry": objEdited["geometry"],
                 "properties": objEdited["properties"]
             })
 
-        obj['ESTACION_1']['reservedGeometry']['features'][previousFirebaseKey] = objEdited
+        obj[structureName]['reservedGeometry']['features'][previousFirebaseKey] = objEdited
     })
 
     resetMap() // Se resetea el mapa modificando las capas
@@ -407,6 +427,7 @@ $(document).ready(function() {
             table.$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
             selectedStruct.textContent = this.textContent
+            selectedStructName = selectedStruct.textContent
             selectedStruct.style.color = 'green'
         }
     } );
@@ -436,7 +457,6 @@ function resetMap() {
 // map.on("draw:drawstart", e => {
     
 //     window.alert('Acaba de iniciar un dibujo')
-//     console.log(e)
 //     //if saved;
 
 //     //if cancelled,
