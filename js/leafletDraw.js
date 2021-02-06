@@ -22,9 +22,12 @@
 
           document.getElementById('btnDismissModalCreateStructure').click()
 
-          table.row.add( [
-            inputCreateStructureValue
-          ]).draw( false );
+        //   table.row.add( [
+        //     inputCreateStructureValue
+        //   ]).draw( false );
+
+          addCurrentStructuresToTable(inputCreateStructureValue) // Añade estructura a la tabla
+          actualizeStructuresRegex()
 
           obj[inputCreateStructureValue] = {
               'reservedGeometry':{
@@ -35,6 +38,8 @@
           }
 
           form.classList.add('was-validated');
+
+          inputCreateStructure.value = ''
 
         }, false);
       });
@@ -49,6 +54,11 @@ function loadLeafletDrawFigures(layer){
 
 var drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
+
+// Se quita la opción clear all al momento de borrar figuras
+L.EditToolbar.Delete.include({
+    removeAllLayers: false
+});
 
 var drawControl = new L.Control.Draw({
     position: 'bottomright',
@@ -81,6 +91,9 @@ var drawControl = new L.Control.Draw({
                 color: 'steelblue'
             },
         },
+        marker: false,
+        circlemarker: false,
+
     },
     edit: {
         featureGroup: drawnItems
@@ -97,8 +110,6 @@ map.on('draw:created', function (e) {
     var firebaseKey = newPostRef.key
 
     var layerGeoJson;
-
-    // 
 
     if (type === 'marker') {
         layer.bindPopup('A popup!');
@@ -117,11 +128,6 @@ map.on('draw:created', function (e) {
         }
 
         var layer = L.polygon(polygon); //convert geometry to a leaflet polygon and add it to the map
-        
-        // layerGeoJson.properties['title'] = 'reservedGeometry'
-        // layerGeoJson.properties['key'] = newPostRef.key
-
-        // Se agrega propiedad key a la capa 'layer'
 
         var feature = layer.feature = layer.feature || {}; // Initialize feature
 
@@ -135,9 +141,6 @@ map.on('draw:created', function (e) {
 
         // drawnItems.addLayer(layer);
     } else {
-        // layerGeoJson = layer.toGeoJSON()
-        // layerGeoJson.properties['title'] = 'reservedGeometry'
-        // layerGeoJson.properties['key'] = newPostRef.key
 
         // Se agrega propiedad key a la capa 'layer'
 
@@ -223,8 +226,68 @@ map.on('draw:edited', function (e) {
 
 })
 
+map.on('draw:drawstart', function (e) {
+
+    if (currentProjectStructures.length == 0) {
+        Object.keys(obj).forEach((key, i) => {
+            addCurrentStructuresToTable(key)
+        })
+    }
+
+    actualizeStructuresRegex()
+
+    btnChooseStructure.click(); // Se simula click que abre el modal
+
+})
+
+map.on('draw:drawstop', function (e) {
+
+    alertMsgP.textContent = 'Bienvenido al mapa ' + username + '!'
+    alertNotif.style.backgroundColor = '#d1d1d1';
+    alertNotif.borderColor = '#bfbfbf';
+
+})
+
+var btnClose = document.getElementById('btnClose')
+var xBtn = document.querySelector('.close')
+var btnAccept = document.getElementById('btnAccept')
+var alertMsgP = document.getElementById('alertMsgP')
+var alertNotif = document.getElementById('alert-notif')
+
+// var drawer = new L.Draw.Marker(map, drawControl.options.marker);
+
+btnClose.addEventListener('click', e => {
+
+    drawControl._toolbars['draw'].disable();
+
+})
+
+xBtn.addEventListener('click', e => {
+
+    console.log('Cerró los gráficos')
+    drawControl._toolbars['draw'].disable();
+
+})
+
+btnAccept.addEventListener('click', e => {
+
+    if (selectedStruct.textContent == 'Seleccione una estructura.'){
+        window.alert('Debe seleccionar una estructura antes de empezar a graficar')
+
+    } else {
+        $('#modalChooseStructure').modal('hide');
+
+        alertMsgP.textContent = `Graficando en: ${selectedStruct.textContent}`
+        alertMsgP.color = '#3d8760'
+        alertNotif.style.backgroundColor = 'rgba(189, 255, 233, 0.6)';
+        alertnotif.style.display = 'block';
+    }
+
+})
+
 var table = $('#chooseStructureTable').DataTable({ // Tabla 
     pageLength: 5,
+    lengthChange: false,
     language: {
     "processing": "Procesando...",
     "lengthMenu": "Mostrar _MENU_ registros",
@@ -374,28 +437,25 @@ var btnCreateStructure = document.getElementById('btnCreateStructure')
 var selectedStruct = document.getElementById('selectedStruct')
 var inputCreateStructure = document.getElementById('inputCreateStructure')
 
-map.on('draw:drawstart', function (e) {
-
-    if (currentProjectStructures.length == 0) {
-        Object.keys(obj).forEach((key, i) => {
-            if (!specialObjects.includes(key))
-            {
-                currentProjectStructures.push(key)
-                currentProjectStructuresAsRegex.push(`^${key}$`)
-                table.row.add( [
-                    key
-                ] ).draw( false );
-            }
-        })
+var addCurrentStructuresToTable = (key) => {
+    
+    if (!specialObjects.includes(key))
+    {
+        currentProjectStructures.push(key)
+        currentProjectStructuresAsRegex.push(`^${key}$`)
+        table.row.add( [
+            key
+        ] ).draw( false );
     }
 
-    currentProjectStructuresSTR = currentProjectStructuresAsRegex.toString().replace(/,/g, '|')
+}
 
+var actualizeStructuresRegex = () => {
+
+    currentProjectStructuresSTR = currentProjectStructuresAsRegex.toString().replace(/,/g, '|')
     inputCreateStructure.setAttribute('pattern', '(?=^((?!(' + currentProjectStructuresSTR + ')).)*$)([a-zA-Z0-9-]*)')
 
-    btnChooseStructure.click(); // Se simula click que abre el modal
-
-})
+}
 
 $(document).ready(function() {
     // var t = $('#example').DataTable();
@@ -422,6 +482,7 @@ $(document).ready(function() {
             $(this).removeClass('selected');
             selectedStruct.textContent = 'Seleccione una estructura.'
             selectedStruct.style.color = 'red'
+            selectedStruct.style.backgroundColor = '#ffd6d6'
         }
         else {
             table.$('tr.selected').removeClass('selected');
@@ -429,6 +490,9 @@ $(document).ready(function() {
             selectedStruct.textContent = this.textContent
             selectedStructName = selectedStruct.textContent
             selectedStruct.style.color = 'green'
+            selectedStruct.style.backgroundColor = '#aaff96'
+            selectedStruct.style.textAlign = 'center'
+
         }
     } );
  

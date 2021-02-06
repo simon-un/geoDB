@@ -204,6 +204,7 @@ function get(object, key, default_value) {
 //Events
 //List data for auth state changes
 
+var username = null;
 
 var obj;
 auth.onAuthStateChanged(user => {
@@ -246,7 +247,8 @@ auth.onAuthStateChanged(user => {
 
                 })
 
-                document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
+                username = String(user.displayName).match(/(\w*)/)[1]
+                document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + username + '!'
 
             } else {
                 document.location.href = 'exception.html'
