@@ -2,7 +2,6 @@
 
 const regex = /"([a-zñA-Z0-9Ñ -]*)"/gm;
 const str = decodeURI(window.location.search) //.replace(/%20/g, ' ').replace(/%C3%B1/g, 'n')
-console.log(str)
 let m;
 
 var listMatches = []
@@ -205,6 +204,9 @@ function get(object, key, default_value) {
 //Events
 //List data for auth state changes
 
+var username = null;
+
+var obj;
 auth.onAuthStateChanged(user => {
     if (user && infoRequested) {
         userUid = user.uid
@@ -233,19 +235,21 @@ auth.onAuthStateChanged(user => {
             if (prIdList.includes(currentProject) || currentProject == 'PUBLIC') {
 
                 dbRt.ref('PROYECTOS').child(currentProject).once('value', async snap => {
-                    var obj = snap.val()
+                    obj = snap.val()
                     await graphGeoMarkers(obj)
                     await groupGenFilters() // Find it in filters.js file
                     await enableAllLayers()
                     await activateGenFilter()
                     await fitBounds()
+                    await addDrawControlToMap()
 
                     // await groupGenTreatmentProf() // Find it in filters.js file
                     // await groupGenTreatmentNivel() // Find it in filters.js file
 
                 })
 
-                document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + String(user.displayName).match(/(\w*)/)[1] + '!'
+                username = String(user.displayName).match(/(\w*)/)[1]
+                document.getElementById('alertMsgP').textContent += 'Bienvenido al mapa ' + username + '!'
 
             } else {
                 document.location.href = 'exception.html'
@@ -412,6 +416,7 @@ function openInfo(tab, key) {
 var cacheInfo = {}
 var structureAsValue = {} // Se toman las estructuras como valores,
 // y las exploraciones como llaves
+var LControlLayers;
 
 function getInfo(key) {
     if (!infoRequested['marker' + key]) {
@@ -449,9 +454,11 @@ function getInfo(key) {
 
 var i = 0
 const reservedWords = ['NAME', 'USERS']
+var dictCountFigures = {}
 
 const graphGeoMarkers = (Obj) => {
 
+    myTbodyStructureNav.innerHTML = ""
     Object.keys(Obj).forEach(key => {
 
         if (!reservedWords.includes(key)) {
@@ -477,14 +484,30 @@ const graphGeoMarkers = (Obj) => {
             tr.appendChild(td).appendChild(a)
             myTbodyStructureNav.appendChild(tr)
 
+            var reservedGeometryToList = []
             Object.keys(ObjPerf).forEach(key => {
                 if (key.match(/reservedGeometry/)) {
 
-                    group.addLayer(L.geoJSON(ObjPerf[key], {
+                    var reservedGeometryObjects = ObjPerf[key]
+                    var features = reservedGeometryObjects['features']
+
+                    try {
+                        Object.keys(features).forEach(key => {
+                            reservedGeometryToList.push(features[key])
+                        })
+                    } catch {
+
+                    }
+                    
+
+
+                    group.addLayer(L.geoJSON(reservedGeometryToList, {
                         onEachFeature: {
                             title: key
                         },
                         onEachFeature: function (feature, layer) {
+                            loadLeafletDrawFigures(layer)
+                            dictCountFigures[name] = get(dictCountFigures, name, 0)[name] + 1
                             layer.bindPopup(`<b>ID_ESTRUCTURA:</b><br>${name}`)
                             layer.on({
                                 mouseover: e => {
@@ -709,12 +732,19 @@ const graphGeoMarkers = (Obj) => {
         }
     })
 
-    L.control.layers({}, overlayMaps, {
+    LControlLayers = L.control.layers({}, overlayMaps, {
         position: 'bottomleft'
     }).addTo(map);
+
 }
 
-map.addLayer(groupGen)
+function addGroupGenToMap() {
+
+    map.addLayer(groupGen)
+
+}
+
+addGroupGenToMap()
 
 // Show map and markers boundaries
 function fitBounds() {
@@ -734,24 +764,33 @@ map.on('click', e => {
     }
 })
 
-// General structures filter
-var overLayers = [{
-    group: "Filtro general",
-    layers: [{
-        active: true,
-        name: "Estructuras",
-        layer: groupGen,
+var panelLayers;
+var overLayers;
 
+
+function createPanelLayers(groupGen) {
+
+    // General structures filter
+    overLayers = [{
+        group: "Filtro general",
+        layers: [{
+            active: true,
+            name: "Estructuras",
+            layer: groupGen,
+
+        }]
     }]
-}]
 
-var panelLayers = new L.Control.PanelLayers({}, overLayers, {
-    compact: true,
-    collapsibleGroups: true,
-    position: 'bottomleft',
-});
+    panelLayers = new L.Control.PanelLayers({}, overLayers, {
+        compact: true,
+        collapsibleGroups: true,
+        position: 'bottomleft',
+    });
+    
+    map.addControl(panelLayers);
+}
 
-map.addControl(panelLayers);
+createPanelLayers(groupGen) 
 
 // Structures nav filter
 $(document).ready(function () {
@@ -797,25 +836,30 @@ var blueIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
-// Search control
-var controlSearch = new L.Control.Search({
-    position: 'topleft',
-    layer: groupGen,
-    initial: true,
-    zoom: 20,
-    marker: false,
-    firstTipSubmit: true,
-    textErr: 'Exploración no encontrada',
-    textPlaceholder: 'Buscar',
-});
+var controlSearch
+function addSearchControlToMap() {
+    // Search control
+        controlSearch = new L.Control.Search({
+        position: 'topleft',
+        layer: groupGen,
+        initial: true,
+        zoom: 20,
+        marker: false,
+        firstTipSubmit: true,
+        textErr: 'Exploración no encontrada',
+        textPlaceholder: 'Buscar',
+    });
 
-controlSearch.on('search:locationfound', e => {
+    controlSearch.on('search:locationfound', e => {
 
-    e.layer.setIcon(greenIcon)
-    e.layer.openPopup()
-})
+        e.layer.setIcon(greenIcon)
+        e.layer.openPopup()
+    })
 
-map.addControl(controlSearch)
+    map.addControl(controlSearch)
+}
+
+addSearchControlToMap()
 
 showMsg = (msg, className = 'alert alert-primary') => {
     // Options for className:

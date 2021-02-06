@@ -44,4 +44,8 @@
     width: 90%;
   }
 
+  .leaflet-popup-tip {
+    visibility: hidden;
+  }
+
   /* border: 2px solid #2688a7; */

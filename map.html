@@ -47,6 +47,15 @@
   <script src="https://unpkg.com/d3@4/build/d3.min.js"></script>
   <link rel="stylesheet" href="./css/stylesStratigraphicColumns.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+
+  <!-- leaflet draw -->
+  <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
+  <!-- datatables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css">
+  
 </head>
 
 <body>
@@ -151,64 +160,66 @@
           </div>
         </div>
 
-        <div class="tab-pane fade" id="nav-structures" role="tabpanel" aria-labelledby="nav-home-tab" style="height: 100%;">
+        <div class="tab-pane fade" id="nav-structures" role="tabpanel" aria-labelledby="nav-home-tab"
+          style="height: 100%;">
           <div id="div-structures-tab" style="position: relative; width: 100%; overflow-y: scroll;">
             <p></p>
             <!-- <div class="container" style="width: 100%;"> -->
-              <div class="col-md-12">
-                <ul class="list-group">
-                  <li style="text-align:center" class="list-group-item">
-                    <p style="text-align:justify" id="pStruct">Se muestran todas las estructuras relacionadas al
-                      proyecto </p>
-                  </li>
-                </ul>
-              </div>
-              <br>
-              <table class="table table-bordered table-striped table-sm">
-                <thead>
-                  <tr>
-                    <th class="table-success"></th>
-                    <th>
-                      <form id="myFormStructureNav"><input class="form-control" id="myInputStructureNav" type="text"
-                          placeholder="Buscar..."></form>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="myTbodyStructureNav">
-                </tbody>
-              </table>
+            <div class="col-md-12">
+              <ul class="list-group">
+                <li style="text-align:center" class="list-group-item">
+                  <p style="text-align:justify" id="pStruct">Se muestran todas las estructuras relacionadas al
+                    proyecto </p>
+                </li>
+              </ul>
+            </div>
+            <br>
+            <table class="table table-bordered table-striped table-sm">
+              <thead>
+                <tr>
+                  <th class="table-success"></th>
+                  <th>
+                    <form id="myFormStructureNav"><input class="form-control" id="myInputStructureNav" type="text"
+                        placeholder="Buscar..."></form>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="myTbodyStructureNav">
+              </tbody>
+            </table>
 
             <!-- </div> -->
           </div>
         </div>
 
-        <div class="tab-pane fade" id="nav-sondeos" role="tabpanel" aria-labelledby="nav-profile-tab" style="height: 100%;">
+        <div class="tab-pane fade" id="nav-sondeos" role="tabpanel" aria-labelledby="nav-profile-tab"
+          style="height: 100%;">
           <div id="div-sondeos-tab" style="position: relative; width: 100%; height: 1000px; overflow-y: scroll;">
             <p></p>
             <!-- <div class="container" style="width: 100%;"> -->
-              <div class="col-md-12">
-                <ul class="list-group">
-                  <li style="text-align:center" class="list-group-item">
-                    <p style="text-align:justify; color: red" id="pSondeos">Seleccione una estructura para mostrar
-                      información de
-                      sondeos </p>
-                  </li>
-                </ul>
-              </div>
-              <br>
-              <table id="myTableSondeosNav" class="table table-bordered table-striped table-sm" style="display: none;">
-                <thead>
-                  <tr>
-                    <th class="table-success"></th>
-                    <th>
-                      <form id="myFormSondeosNav"><input class="form-control" id="myInputSondeosNav" type="text"
-                          placeholder="Buscar..."></form>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody id="myTbodySondeosNav">
-                </tbody>
-              </table>
+            <div class="col-md-12">
+              <ul class="list-group">
+                <li style="text-align:center" class="list-group-item">
+                  <p style="text-align:justify; color: red" id="pSondeos">Seleccione una estructura para mostrar
+                    información de
+                    sondeos </p>
+                </li>
+              </ul>
+            </div>
+            <br>
+            <table id="myTableSondeosNav" class="table table-bordered table-striped table-sm" style="display: none;">
+              <thead>
+                <tr>
+                  <th class="table-success"></th>
+                  <th>
+                    <form id="myFormSondeosNav"><input class="form-control" id="myInputSondeosNav" type="text"
+                        placeholder="Buscar..."></form>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="myTbodySondeosNav">
+              </tbody>
+            </table>
 
             <!-- </div> -->
           </div>
@@ -217,7 +228,8 @@
           </ul>
         </div>
 
-        <div class="tab-pane fade" id="nav-filtros" role="tabpanel" aria-labelledby="nav-profile-tab" style="height: 100%;">
+        <div class="tab-pane fade" id="nav-filtros" role="tabpanel" aria-labelledby="nav-profile-tab"
+          style="height: 100%;">
           <div id="div-filtros-tab" style="max-width: 100%; height: auto; margin:auto; padding: 40px">
             <div class="form-group text-center">
               <div class="custom-control custom-checkbox">
@@ -261,6 +273,94 @@
     </div>
   </div>
 
+  <!-- Leaflet draw modal -->
+  <div id="modalChooseStructure" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Elija una estructura</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="selectedStruct" style="color: red; background-color:#ffd6d6; text-align: center">Seleccione una estructura.</p>
+        </div>
+        <button id="addStructure">Añadir nueva estructura</button>
+        <table id="chooseStructureTable" class="display" style="width:100%">
+          <thead>
+            <tr>
+              <th>Proyecto</th>
+              <!-- <th>Column 2</th>
+              <th>Column 3</th>
+              <th>Column 4</th>
+              <th>Column 5</th> -->
+            </tr>
+          </thead>
+          <!-- <tfoot>
+            <tr>
+              <th>Column 1</th>
+              <th>Column 2</th>
+              <th>Column 3</th>
+              <th>Column 4</th>
+              <th>Column 5</th>
+            </tr>
+          </tfoot> -->
+        </table>
+        <div class="modal-footer">
+          <button id="btnAccept" type="accept" class="btn btn-primary">Aceptar</button>
+          <button id="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-secondary" id="btnChooseStructure" data-toggle="modal"
+    data-target="#modalChooseStructure" style="display: none;">
+  </button>
+
+  <!-- modal create structure -->
+
+  <div id="modalCreateStructure" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear nueva estructura</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Nombre de la nueva estructura.</p>
+        </div>
+
+        <form id="formCreateStructure" class="container was-validated needs-validation" novalidate > <!-- action="/echo" method="POST" -->
+          <div class="form-group">
+              <label class="form-control-label" for="inputSuccess2"> </label>
+              <input type="text" class="form-control" placeholder="Ingrese el nombre" name="inputCreateStructure" required pattern=""  minlength="5" id="inputCreateStructure">
+              <div class="invalid-feedback"> 
+                <p>El nombre debe contener: mínimo 5 caracteres. 
+                  Únicamente incluir: Números, letras y -. 
+                  No pueden asignarse nombres iguales a las estructuras </p>
+              </div>
+              <div class="valid-feedback">El nombre es válido</div>
+              <button class="btn btn-success btn-block" type="submit">CREAR</button>
+          </div>
+      </form>
+
+        <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-primary">Crear estructura</button> -->
+          <button id="btnDismissModalCreateStructure" type="button" class="btn btn-danger btn-block" data-dismiss="modal">Descartar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-secondary" id="btnCreateStructure" data-toggle="modal"
+    data-target="#modalCreateStructure" style="display: none;">
+  </button>
+
+
   <!-- BOOTSTRAP SCRIPTS -->
   <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
@@ -279,6 +379,8 @@
     integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
   </script>
 
+  <!-- datatables -->
+  <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
 
   <!-- The core Firebase JS SDK is always required and must be listed first -->
   <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
@@ -316,6 +418,7 @@
 
   <!-- CUSTOM CODE -->
   <script src="./js/map.js"></script>
+  <script src="./js/leafletDraw.js"></script>
   <script src="./js/filters.js"></script>
   <script src="./js/filtersEvents.js"></script>
   <script src="./js/stratigraphicColumns.js"></script>

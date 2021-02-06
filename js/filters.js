@@ -164,7 +164,6 @@ const groupGenFilters = () => {
                 'max': 0.0001
             }
         }).on('update', e => {
-            console.log('update')
             groupGen.eachLayer(function (group) {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {

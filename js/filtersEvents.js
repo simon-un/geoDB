@@ -2,7 +2,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
     switch (eventName) {
 
         case 'activateGenFilter':
-            console.log('tt')
             groupGen.eachLayer(group => {
                 group.eachLayer(layer => {
                     layer.eachLayer(l => {
@@ -77,7 +76,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
 
         case 'addDataToSelectpicker':
 
-            console.log('tt2')
             var selectedItem = $('.selectpicker').val();
 
             // Muestra los objetos que no estan checkeados en el SelectPicker
@@ -95,7 +93,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
             filterSelected.innerHTML = ''
 
             if (selectedItem == '') {
-                console.log('dentro2')
                 filterSelected.innerHTML = `
                 <li>Ninguno</li>
             `
@@ -110,7 +107,6 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
                 }
 
             } else {
-                console.log('dentro2')
                 selectedItem.forEach(value => {
                     filterSelected.innerHTML += `
                 <li>${value}</li>
@@ -141,10 +137,8 @@ function filtersEvents(eventName, filterSelected, filterTagsList) {
 
         case 'noUiSliderUpdate':
 
-            // console.log('tt2')
             $('.selectpicker').val().every(key => {
                 if (!Object.keys(filterTagsUncompleted).includes(key)) {
-                    console.log('tt3')
                     if (window[key + 'Slider'].noUiSlider.get().map(Number) == defaultValues[key].toString()) {
                         return customCheck1.checked = true
                     } else {
