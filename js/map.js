@@ -241,6 +241,7 @@ auth.onAuthStateChanged(user => {
                     await enableAllLayers()
                     await activateGenFilter()
                     await fitBounds()
+                    await addDrawControlToMap()
 
                     // await groupGenTreatmentProf() // Find it in filters.js file
                     // await groupGenTreatmentNivel() // Find it in filters.js file
