@@ -1,12 +1,27 @@
 auth.onAuthStateChanged(user => {
     if (user) {
-        reloadProjectsList(user);
+        dbRt.ref('USERS/' + user.uid).on('value', (snapshot) => {
+            const data = snapshot.val();
+            reloadProjectsList(user.uid);
+            localStorage.numberReloads = JSON.stringify(0);
+        })
     } else {
         document.getElementById('projects').style.display = 'none';
     }
 })
 
 let reloadProjectsList = (user) => {
+    projects.innerHTML = `
+        <h5>Proyectos:</h5>
+        <div style="width:100%; margin-bottom:5px;">
+        <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
+        </div>
+        <br>
+        <img src="images/loading.gif" width="100">`;
+    setTimeout(reloadProjectsListThen, 1000, user);
+}
+
+let reloadProjectsListThen = (user) => {
     const projects = document.getElementById('projects');
     projects.style.display = 'block';
     projects.innerHTML = `
@@ -15,21 +30,13 @@ let reloadProjectsList = (user) => {
         <div id="new-pr" onclick="newProject()" data-toggle="modal" data-target="#newProjectModal">Nuevo Proyecto</div>
         </div>
         <br>`;
-
-    dbRt.ref('WAITING_LIST/' + user.uid).once('value', (snap) => {
-        var projects_waiting = snap.val();
-        if (projects_waiting) {
-            showProjectsWaiting(projects_waiting);
-        }
-    });
-    dbRt.ref('USERS/' + user.uid).once('value', (snap) => {
+    dbRt.ref('USERS/' + user).once('value', (snap) => {
         var prIdDict = snap.val();
         let prIdList = [];
         for (var proj in prIdDict) {
             prIdList.push(proj);
         }
         if (prIdList) {
-            // setTimeout(showProjects,3000,prIdList);
             showProjects(prIdList);
         } else {
             projects.innerHTML += `
@@ -37,6 +44,7 @@ let reloadProjectsList = (user) => {
             <br>`;
         }
     });
+    showProjectsWaiting(user)
 }
 
 let showProjects = (prIdList) => {
@@ -58,11 +66,11 @@ let showProjects = (prIdList) => {
         let userRol = localStorage.getItem(auth.currentUser.uid + prIdList[i]);
         if (userRol == 'null') {
             // dbRt.ref('USERS/' + auth.currentUser.uid + '/' + prIdList[i]).remove();
-            console.log('Fuiste eliminado del proyecto '+ prIdList[i]);
+            console.log('Fuiste eliminado del proyecto ' + prIdList[i]);
         } else {
             getPrName(prIdList[i])
             let prName = localStorage.getItem(prIdList[i]);
-            console.log(userRol);
+            // console.log(userRol);
             switch (userRol) {
                 case 'admin':
                     rol = 'Administrador'
@@ -98,45 +106,74 @@ let showProjects = (prIdList) => {
             </div>`;
         }
     }
+    let prjDivs = document.querySelectorAll('#projects > div.project')
+    const regex = new RegExp('.*null.*');
+    prjDivs.forEach(prjDiv => {
+        if (regex.test(prjDiv.innerHTML)) {
+            let numberReloads = JSON.parse(localStorage.numberReloads) + 1;
+            localStorage.numberReloads = JSON.stringify(numberReloads);
+            if (numberReloads >= 5){
+                showAlertGen("Alguno de los proyectos fue eliminado. Contacta al administrador", "danger")
+            }else {
+                reloadProjectsList(auth.currentUser.uid)
+            }
+        }
+    });
 }
 
-let showProjectsWaiting = (obj) => {
+let showProjectsWaiting = (user) => {
     const projects = document.getElementById('projects');
+    const prWaitDiv = document.createElement('div');
+    projects.appendChild(prWaitDiv);
     let rol = 'No definido';
-    for (var key in obj) {
-        switch (obj[key]['ROL']) {
-            case 'admin':
-                rol = 'Administrador'
-                break;
-            case 'designer':
-                rol = 'Diseñador'
-                break;
-            case 'explorer':
-                rol = 'Explorador'
-                break;
-            case 'labguy':
-                rol = 'Laboratorista'
-                break;
-            default:
-                break;
+    dbRt.ref('WAITING_LIST/' + user).once('value', (snap) => {
+        var projects_waiting = snap.val();
+        if (projects_waiting) {
+            if (Object.keys(projects_waiting).length < document.querySelectorAll("#projects > .project_wait").length){
+                reloadProjectsList(auth.currentUser.uid)
+                console.log("MAL");
+            }
+            for (var key in projects_waiting) {
+                switch (projects_waiting[key]['ROL']) {
+                    case 'admin':
+                        rol = 'Administrador'
+                        break;
+                    case 'designer':
+                        rol = 'Diseñador'
+                        break;
+                    case 'explorer':
+                        rol = 'Explorador'
+                        break;
+                    case 'labguy':
+                        rol = 'Laboratorista'
+                        break;
+                    default:
+                        break;
+                }
+                prWaitDiv.innerHTML += `
+                    <div class="project_wait" id = ${key}>
+                        <a>${projects_waiting[key]['NAME']}</a>
+                        <br>
+                        ID del Proyecto: ${key}
+                        <br>
+                        Rol: ${rol}
+                        <br>
+                        <div style="text-align:right">
+                        <button class="btn btn-secondary btn-sm" onclick="rejectProj('${key}')" style="margin:5px; margin-right:0px; background-color: rgb(175, 173, 173)">Rechazar</button>
+                        <button class="btn btn-secondary btn-sm" onclick="acceptProj('${key}','${projects_waiting[key]['FECHA_UNION']}','${projects_waiting[key]['ROL']}')" style="margin:5px">Aceptar</button>
+                        </div>
+                    </div>`;
+
+            }
         }
-        projects.innerHTML += `
-        <div class="project_wait">
-            <a>${obj[key]['NAME']}</a>
-            <br>
-            ID del Proyecto: ${key}
-            <br>
-            Rol: ${rol}
-            <br>
-            <div style="text-align:right">
-            <button class="btn btn-secondary btn-sm" onclick="rejectProj('${key}')" style="margin:5px; margin-right:0px; background-color: rgb(175, 173, 173)">Rechazar</button>
-            <button class="btn btn-secondary btn-sm" onclick="acceptProj('${key}','${obj[key]['FECHA_UNION']}','${obj[key]['ROL']}')" style="margin:5px">Aceptar</button>
-            </div>
-        </div>`;
-    }
+    });
 }
 
 let acceptProj = (key, date, rol) => {
+    dbRt.ref('WAITING_LIST/').on('value', (snapshot) => {
+        const data = snapshot.val();
+        reloadProjectsList(auth.currentUser.uid);
+    });
 
     // Add info of the project to USERS
     dbRt.ref('USERS/' + auth.currentUser.uid + '/' + key).set(true);
@@ -149,14 +186,15 @@ let acceptProj = (key, date, rol) => {
 
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
     // window.location.href = "index.html";
-
-    reloadProjectsList(auth.currentUser);
 }
 
 let rejectProj = (key) => {
+    dbRt.ref('WAITING_LIST/').on('value', (snapshot) => {
+        const data = snapshot.val();
+        reloadProjectsList(auth.currentUser.uid);
+    });
     dbRt.ref('WAITING_LIST/' + auth.currentUser.uid + '/' + key).remove()
     // window.location.href = "index.html";
-    reloadProjectsList(auth.currentUser);
 }
 
 let projectInfo = (key, rol, name) => {
@@ -208,6 +246,12 @@ let createProject = () => {
         if (Object.keys(usersRol).length < participants.length) {
             showAlert('Todos los participantes deben tener un rol', 'danger', '-new');
         } else {
+
+            dbRt.ref('PROYECTOS/' + prjId).on('value', (snapshot) => {
+                const data = snapshot.val();
+                reloadProjectsList(auth.currentUser.uid);
+            })
+
             let date = String(new Date());
 
             // Add info of the project to USERS
@@ -234,8 +278,9 @@ let createProject = () => {
                     });
                 }
             });
-            showAlert('El proyecto fue creado con éxito!', 'success', '-new')
-            reloadProjectsList(auth.currentUser);
+            showAlertGen('El proyecto fue creado con éxito!', 'success')
+            // reloadProjectsList(auth.currentUser);
+            $('#newProjectModal').modal('hide');
         }
     }
 
@@ -355,6 +400,12 @@ let deletePerson = (idRow, tableID) => {
 
 let editProj = (key) => {
     showAlert('Todos los participantes deben aceptar los cambios realizados');
+
+    dbRt.ref('PROYECTOS/' + key).on('value', (snapshot) => {
+        const data = snapshot.val();
+        reloadProjectsList(auth.currentUser.uid);
+    })
+
     document.getElementById("peopleTable_edit").innerHTML = "";
     localStorage.prjIdEdit = JSON.stringify(key);
     dbRt.ref('/PUBLIC_USERS/').once('value').then((snapshot) => {
@@ -383,7 +434,7 @@ let editProj = (key) => {
         }
     })
     let users_public = JSON.parse(localStorage.users);
-    console.log(key);
+    // console.log(key);
     localStorage.currentEditingId = JSON.stringify(key);
 
     // Fill the table with current participants of the project
@@ -463,8 +514,8 @@ let editProject = () => {
                         });
                     }
                 });
-                showAlert('Los cambios fueron actualizados con éxito!', 'success')
-                reloadProjectsList(auth.currentUser);
+                showAlertGen('Los cambios fueron actualizados con éxito!', 'success')
+                $('#editProjectModal').modal('hide');
             }
         }
     }
@@ -478,6 +529,17 @@ let hideAlertNew = () => {
     document.getElementById('alert-notif-modal-new').style.display = 'none';
 }
 
+let hideAlertGeneral = () => {
+    document.getElementById('alert-notif-general').style.display = 'none';
+}
+
+let showAlertGen = (content, alertClass = "primary") => {
+    document.getElementById('alert-notif-general').style.display = 'none';
+    document.getElementById('alertMsg-general').textContent = content;
+    document.getElementById('alert-notif-general').className = "alert alert-" + alertClass;
+    document.getElementById('alert-notif-general').style.display = 'block';
+}
+
 let showAlert = (content, alertClass = "primary", newli = '') => {
     document.getElementById('alert-notif-modal' + newli).style.display = 'none';
     document.getElementById('alertMsgP' + newli).textContent = content;
@@ -485,19 +547,27 @@ let showAlert = (content, alertClass = "primary", newli = '') => {
     document.getElementById('alert-notif-modal' + newli).style.display = 'block';
 }
 
-let clearForm = () =>{
+let clearForm = () => {
     document.getElementById('delete-check').value = ''
 }
 
-let deleteProj = () =>{
+let deleteProj = () => {
+    let prId = JSON.parse(localStorage.currentEditingId);
+    dbRt.ref('PROYECTOS/' + prId).on('value', (snapshot) => {
+        const data = snapshot.val();
+        reloadProjectsList(auth.currentUser.uid);
+    })
     let check = document.getElementById('delete-check').value;
-    if (check == "eliminar"){
-        let prId = JSON.parse(localStorage.currentEditingId);
+    if (check == "eliminar") {
         dbRt.ref('PROYECTOS/' + prId).remove();
         $('#deletePrjModal').modal('hide')
         $('#editProjectModal').modal('hide')
-        reloadProjectsList(auth.currentUser);
-    }else{
+        showAlertGen('El proyecto fue eliminado con éxito!', 'success');
+    } else {
+        document.getElementById('delete-check').onkeypress = () => {
+            document.getElementById('delete-check').style.backgroundColor = "#F7F7F9";
+        }
+        document.getElementById('delete-check').style.backgroundColor = "#fab2b2";
         document.getElementById('delete-check').focus();
     }
 }

@@ -19,7 +19,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">GEO-DB</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarNav" aria-expanded="false" aria-   label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -47,6 +47,13 @@
         </div>
     </nav>
 
+    <div class="alert alert-primary" role="alert" id="alert-notif-general"
+        style="z-index: 2; padding: 5px 10px; margin: auto; width: 90%; margin-top: 10px; display: none;" onclick="hideAlertGeneral()">
+        <p id="alertMsg-general" style="display:inline; margin-top: 10%;">Todos los participantes deben aceptar
+            los
+            cambios realizados</p>
+        <p style="display:inline; float: right; margin: 0;">(Click para esconder)</p>
+    </div>
     <!-- MAIN CONTENT -->
     <div class="container p-4">
         <div class="row">
@@ -409,13 +416,14 @@
                     <br>
                     Esta acción no se puede deshacer.
                     <div class="input-group mb-3" style="margin-top: 10px;">
-                        <input type="text" class="form-control" placeholder="Escribe 'eliminar' y pulsa el botón" aria-label="eliminar"
-                            aria-describedby="basic-addon2" id="delete-check">
+                        <input type="text" class="form-control" placeholder="Escribe 'eliminar' y pulsa el botón"
+                            aria-label="eliminar" aria-describedby="basic-addon2" id="delete-check">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="deleteProj()">Eliminar definitivamente</button>
+                    <button type="button" class="btn btn-primary" onclick="deleteProj()">Eliminar
+                        definitivamente</button>
                 </div>
             </div>
         </div>
