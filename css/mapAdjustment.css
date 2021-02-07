@@ -48,4 +48,16 @@
     visibility: hidden;
   }
 
+  #infoTable {
+    /* z-index: 2; */
+    margin: 10px;
+    line-height: 1;
+    /* font-weight: bold; */
+    padding: 25px;
+    background: rgba(245, 245, 245, 0.9);
+    color: rgba(7, 50, 53, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgb(0, 0, 0);
+  }
+
   /* border: 2px solid #2688a7; */

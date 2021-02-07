@@ -412,6 +412,22 @@ function openInfo(tab, key) {
     $("#myInputSondeosNav").keyup()
 }
 
+var infoTable = document.getElementById('infoTable')
+var spanInfoTable = document.getElementById('spanInfoTable')
+function createInfoTable(obj){
+    var html = ''
+    var properties = obj.properties;
+    infoTable.innerHTML = ''
+    Object.keys(properties).forEach(key => {
+        html += `<p></p>
+        <strong>${key}:</strong> <span style='color:#118f8b'>${properties[key]}</span><br>
+        `
+    })
+    
+    infoTable.innerHTML = html
+    spanInfoTable.textContent = `Información del sondeo ${properties.title}`
+}
+
 //Getting info
 var cacheInfo = {}
 var structureAsValue = {} // Se toman las estructuras como valores,
@@ -428,23 +444,24 @@ function getInfo(key) {
             var obj = snap.val()
             cacheInfo[key] = obj
             extractStratigraphicData(obj)
+            createInfoTable(obj)
+            // dict = {}
+            // dictLevel = {}
 
-            dict = {}
-            dictLevel = {}
-
-            div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
+            // div = `<div class="table-responsive text-nowrap col-md-12 mx-auto inicio" id="${key}inicio">
             
-            </div>`
-            inicio.innerHTML += div
+            // </div>`
+            // inicio.innerHTML += div
 
-            var objMod = {}
+            // var objMod = {}
 
-            objMod[key] = obj
-            unpack(objMod, Object.values(obj).filter(v => typeof v === 'object').length, '', false, key + 'inicio', 0, dict, '', 8, false)
+            // objMod[key] = obj
+            // unpack(objMod, Object.values(obj).filter(v => typeof v === 'object').length, '', false, key + 'inicio', 0, dict, '', 8, false)
         })
     } else {
         console.log('Object requested')
         extractStratigraphicData(cacheInfo[key])
+        createInfoTable(cacheInfo[key])
     }
 
     if ($('#inicio').is(":hidden")) {
@@ -528,7 +545,13 @@ const graphGeoMarkers = (Obj) => {
                             title: key
                         },
                         onEachFeature: function (feature, layer) {
-                            layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                            var perfProperties = ObjPerf[key].properties
+                            var html = ''
+                            Object.keys(perfProperties).forEach(key => {
+                                html += `<b>${key}: </b>${perfProperties[key]}<br>`
+                            })
+                            // layer.bindPopup(`<b>ID_EXPLORACION:</b><br>${key}`)
+                            layer.bindPopup(html)
                             layer.on({
                                 click: (e) => {
                                     getInfo(key)
