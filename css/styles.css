@@ -1,6 +1,6 @@
 .table {
     margin: auto;
-    width: 70%; 
+    width: 90%; 
  }
 
  /*
@@ -49,10 +49,6 @@
     margin-top: 2.1px;
 }
 
-#mapid{
-    position: relative;
-}
-
 /* The sidebar menu */
 .sidebar {
     height: 0; /* 100% Full-height */
@@ -84,17 +80,22 @@
   /* Position and style the close button (top right corner) */
   .sidebar .closebtn {
     position: absolute;
-    width: 20px;
-    padding: 0;
+    width: 40px;
+    height: 100%;
+    padding: 5px 0;
     color: black;
     top: 0;
     right: 0;
     font-size: 20px;
     cursor: pointer;
-    border-left: solid black 1px;
+    border-left: solid #E5E5E5 1px;
     text-align: center;
   } 
 
   .headerdiv {
     border-bottom: solid black 1px;
+  }
+
+  .nav {
+    background-color: #cac9c9;
   }

@@ -1,3 +1,5 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5502,
+    "python.pythonPath": "/usr/bin/python3",
+    "liveServer.settings.multiRootWorkspaceName": "geoDB"
 }

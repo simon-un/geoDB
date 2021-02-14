@@ -1,0 +1,62 @@
+.project{
+    width: 90%;
+    border: solid 1px gray;
+    height: auto;
+    border-radius: 5px;
+    margin: 10px 5%;
+    text-align: center;
+}
+
+.project_wait{
+    width: 90%;
+    height: auto;
+    border-radius: 5px;
+    margin: 10px 5%;
+    text-align: center;
+    background-color: rgb(216, 216, 216);
+}
+
+.project:hover{
+    background-color: rgb(223, 223, 223);
+    cursor: pointer;
+}
+
+#projects{
+    text-align: center;
+}
+
+#new-pr{
+    text-align: right;
+    text-decoration: underline;
+    width: auto;
+}
+
+#new-pr:hover{
+    color: rgb(185, 181, 181);
+    cursor: pointer;
+}
+
+.personOpt{
+    background-color: #F7F7F9;
+    margin-left: 20px;
+    z-index: 10;
+}
+
+.personOpt:hover{
+    background-color: white;
+    cursor: pointer;
+}
+
+.table th{
+    padding: 10px;
+    text-align: center;
+}
+.table td{
+    padding: 0px;
+    text-align: center;
+    vertical-align: middle;
+ }
+
+ .table{
+     width: 100%;
+ }

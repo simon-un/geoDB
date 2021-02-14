@@ -9,15 +9,13 @@ var userUid = null; // Id del usuario para trar info
 
 const loginCheck = user => {
     if (user) {
-        loggedInLinks.forEach(link => {link.style.display = 'block'})
-        loggedOutLinks.forEach(link => {link.style.display = 'none'})
-        loggedInForms.forEach(container => {container.style.display = 'block'})
-
+        loggedInLinks.forEach(link => { link.style.display = 'block' })
+        loggedOutLinks.forEach(link => { link.style.display = 'none' })
+        loggedInForms.forEach(container => { container.style.display = 'block' })
     } else {
-        loggedInLinks.forEach(link => {link.style.display = 'none'})
-        loggedOutLinks.forEach(link => {link.style.display = 'block'})
-        loggedInForms.forEach(container => {container.style.display = 'none'})
-
+        loggedInLinks.forEach(link => { link.style.display = 'none' })
+        loggedOutLinks.forEach(link => { link.style.display = 'block' })
+        loggedInForms.forEach(container => { container.style.display = 'none' })
     }
 }
 
@@ -37,8 +35,14 @@ signupForm.addEventListener('submit', (e) => {
             signupForm.reset()
             $('#signupModal').modal('hide')
             // console.log('sign up')
+            auth.currentUser.updateProfile({
+                displayName: String(auth.currentUser.email).match(/(.*)@.*/)[1],
+            });
+
+            dbRt.ref('PUBLIC_USERS/'+ auth.currentUser.uid + '/' + 'email').set(String(email));
+            dbRt.ref('PUBLIC_USERS/'+ auth.currentUser.uid + '/' + 'name').set(String(auth.currentUser.email).match(/(.*)@.*/)[1]);
         })
-        .catch(error =>{
+        .catch(error => {
             // https://firebase.google.com/docs/reference/js/firebase.auth.Error
             let code = error.code;
             let msg = "Ocurrió un error. Por favor contacta a SIMON.\nDiles que tienes el error: " + error.code;
@@ -54,8 +58,8 @@ signupForm.addEventListener('submit', (e) => {
                     break;
                 default:
                     break;
-            
-                }
+
+            }
             document.getElementById("warning-msg-signup").innerHTML = msg;
             document.getElementById("warning-msg-signup").style.display = 'block';
         })
@@ -99,7 +103,7 @@ signinForm.addEventListener('submit', (e) => {
             }
             document.getElementById("warning-msg-signin").innerHTML = msg;
             document.getElementById("warning-msg-signin").style.display = 'block';
-        }) 
+        })
 })
 
 //Logout
@@ -112,16 +116,29 @@ logout.addEventListener('click', e => {
     })
 })
 
-//Insertar tareas
+// Clean up the current state variables
+window.onload = () => {
 
+    sessionStorage.currentProject = '';
+    sessionStorage.currentProjName = '';
+    sessionStorage.currentRol = '';
+}
+
+loadPublic = () => {
+    sessionStorage.currentProject = 'PUBLIC';
+    sessionStorage.currentProjName = 'Base de datos pública';
+    sessionStorage.currentRol = 'Visitante';
+}
+
+//Insertar tareas
 const taskform = document.querySelector('#task-form');
 const taskContainer = document.querySelector('#tasks-container');
 var editStatus = false
-var id =''
+var id = ''
 const onGetTasks = (callback) => db.collection(userUid).onSnapshot(callback) //Cada vez que hay cambios actualiza
 const deleteTask = id => db.collection(userUid).doc(id).delete()
 
-const saveTask = (title,description) => { // Guarda los datos
+const saveTask = (title, description) => { // Guarda los datos
     db.collection(userUid).doc().set({
         "title": title,
         "description": description
@@ -132,18 +149,18 @@ const saveTask = (title,description) => { // Guarda los datos
 const getTask = (id) => db.collection(userUid).doc(id).get();
 const updateTask = (id, updatedTask) => db.collection(userUid).doc(id).update(updatedTask)
 
-    //Cuando carga la pagina quiero que se muestren las tareas guardadas
+//Cuando carga la pagina quiero que se muestren las tareas guardadas
 
-window.addEventListener('DOMContentLoaded', async (e) => { 
+window.addEventListener('DOMContentLoaded', async (e) => {
 
-    
+
     onGetTasks((querySnapshot) => { // Cada vez que se cambia algo de la db se ejecuta
         taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
         querySnapshot.forEach(doc => {
 
-            
+
             // console.log(doc.data())
-    
+
             const task = doc.data();
             task.id = doc.id;
 
@@ -182,7 +199,7 @@ window.addEventListener('DOMContentLoaded', async (e) => {
         })
     })
 
-    
+
 
 
 })
@@ -194,7 +211,7 @@ taskform.addEventListener('submit', async (e) => {
     const title = taskform['task-title'];
     const description = taskform['task-description'];
 
-    if (!editStatus){
+    if (!editStatus) {
         await saveTask(title.value, description.value);
     } else {
         await updateTask(id, {
@@ -206,7 +223,7 @@ taskform.addEventListener('submit', async (e) => {
         id = ''
         taskform['btn-task-form'].innerText = 'Save'
 
-        
+
     }
 
     taskform.reset()
@@ -228,14 +245,14 @@ const setupPosts = data => {
                     <h5>${post.title}</h5>
                     <p style="text-align:justify">${post.description}</p>
                 </li>
-            `; 
+            `;
             html += li;
         })
         postList.innerHTML = html;
     } else {
         postList.innerHTML = `<p class="text-center" ><h5>Inicie sesión para mostrar información de sus proyectos</h5></p>
                                 <div class="view overlay zoom">
-                                    <img src="/images/logo.png" class="img-fluid " alt="smaple image">
+                                    <img src="./images/logo.png" class="img-fluid " alt="logo del semillero">
                                 </div>
         `
     }
@@ -252,7 +269,7 @@ const setupData = (obj) => {
         keys.forEach(key => {
             const th = `
                 <th scope="col" style ="word-break:break-all;">${key}</th>
-            `; 
+            `;
             html += th;
         })
         dataTitle.innerHTML = html;
@@ -263,10 +280,10 @@ const setupData = (obj) => {
 
             const td = `
             <td>${obj[key]}</th>
-            `; 
+            `;
             html += td;
-          });
-          dataList.innerHTML = html;
+        });
+        dataList.innerHTML = html;
     } else {
         dataTitle.innerHTML = ''
         dataList.innerHTML = ''
@@ -275,31 +292,32 @@ const setupData = (obj) => {
 
 var dict = {}
 var dictLevel = {}
-const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {Object.keys(obj).forEach(key => {
+const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
+    Object.keys(obj).forEach(key => {
 
 
-    if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
+        if (typeof (obj[key]) === 'object' && obj[key] !== null && i <= depth) {
 
-        var id = ''
-        color_btn = color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
-        'btn-warning', 'btn-danger']
+            var id = ''
+            color_btn = color_btn = ['btn-primary', 'btn-primary', 'btn-success', 'btn-primary', 'btn-info',
+                'btn-warning', 'btn-danger']
 
-        color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
-                 'text-warning', 'text-info']
+            color = ['text-primary', 'text-primary', 'text-secondary', 'text-success', 'text-danger',
+                'text-warning', 'text-info']
 
-        color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary','table-info', 'table-warning', 'table-danger']
-        position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
-            
-        id = key + uniqueID() // Para crear ids unicos
-        dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
-        Level = get(dictLevel, key+ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
+            color_tr = ['table-primary', 'table-primary', 'table-success', 'table-primary', 'table-info', 'table-warning', 'table-danger']
+            position = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh']
 
-        
+            id = key + uniqueID() // Para crear ids unicos
+            dicc = get(dicc, ID, [color_btn[i], color_tr[i], position[i]])
+            Level = get(dictLevel, key + ID, get(dictLevel, ID_prev, 0)[ID_prev] + 1)
+
+
             if (status === true) {
                 t = `
                 <tr>
                     <td colspan="10">
-                        <div class="${ID} collapse ${dicc[ID][2]}" id="${key+ID}" >
+                        <div class="${ID} collapse ${dicc[ID][2]}" id="${key + ID}" >
                             <button class="btn ${dicc[ID][0]} btn-sm" type="button" data-toggle="collapse" data-target=".${id}" aria-expanded="false" aria-controls="${id}">
                                 ${key}
                             </button>
@@ -316,11 +334,11 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
                 </tr>
                 `;
 
-                var doc = document.querySelector('#tbody'+ID)
-                
+                var doc = document.querySelector('#tbody' + ID)
+
             } else {
                 t = `
-                <div id="${key+ID}">
+                <div id="${key + ID}">
                     <table class="table borderless w-auto small table-sm" >
                         <tbody>
                             <tr>
@@ -346,47 +364,47 @@ const unpack = (obj, lenObj, ID, status, ID_prev, i, dicc, col, depth, rec) => {
                 
                 `;
 
-                var doc = document.querySelector('#'+ID_prev);
+                var doc = document.querySelector('#' + ID_prev);
 
             }
-    
+
             doc.innerHTML += t;
 
             i = dictLevel[key + ID]
-            i+=1
+            i += 1
 
             var color = dicc[ID][1]
             console.log(document.documentElement.innerHTML)
-            
-            unpack(obj[key], Object.values(obj[key]).filter( v => typeof v === 'object').length, id, true, key+ID, i, dicc, color, depth, true);
-        
-    } else {
 
-        color_tr = ['table-primary', 'table-success', 'table-info', 'table-warning', 'table-danger']
+            unpack(obj[key], Object.values(obj[key]).filter(v => typeof v === 'object').length, id, true, key + ID, i, dicc, color, depth, true);
 
-        t_r = `
+        } else {
+
+            color_tr = ['table-primary', 'table-success', 'table-info', 'table-warning', 'table-danger']
+
+            t_r = `
                         <tr class="${col}">
                             <th scope="row">${key}</td>
                             <td>${obj[key]}</td>
                         </tr>
             `
 
-        var docInfo = document.querySelector('#tbody'+ID);
-        docInfo.innerHTML += t_r;
-    
-    } 
+            var docInfo = document.querySelector('#tbody' + ID);
+            docInfo.innerHTML += t_r;
 
-    
-})
+        }
+
+
+    })
 }
 
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
-  }
+}
 
 function uniqueID() {
     return Math.floor(Math.random() * Date.now())
-    }   
+}
 
 function get(object, key, default_value) {
     if (typeof object[key] == "undefined") {
@@ -439,16 +457,16 @@ auth.onAuthStateChanged(user => {
                 // console.log(snapshot.docs)
                 setupPosts(snapshot.docs);
                 loginCheck(user);
-            })    
-            onGetTasks((querySnapshot) => { // Cada vez que se cambia algo de la db se ejecuta
-                taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
-                querySnapshot.forEach(doc => {
-        
-            
-                    const task = doc.data();
-                    task.id = doc.id;
-        
-                    taskContainer.innerHTML += `<div class="card card-body mt-2 border-primary">
+            })
+        onGetTasks((querySnapshot) => { // Cada vez que se cambia algo de la db se ejecuta
+            taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
+            querySnapshot.forEach(doc => {
+
+
+                const task = doc.data();
+                task.id = doc.id;
+
+                taskContainer.innerHTML += `<div class="card card-body mt-2 border-primary">
                             <h3 class="h5">${task.title}</h3>
                             <p>${task.description}</p>
                             <div>
@@ -456,56 +474,56 @@ auth.onAuthStateChanged(user => {
                                 <button class='btn btn-info btn-edit' data-id="${task.id}">Edit</button>
                             </div> 
                             </div> `;
-        
-                    const btnsDelete = document.querySelectorAll('.btn-delete')
-                    btnsDelete.forEach(btn => {
-                        btn.addEventListener('click', async (e) => {
-                            // console.log(e.target.dataset['id']) // o .id
-                            await deleteTask(e.target.dataset['id'])
-                        })
+
+                const btnsDelete = document.querySelectorAll('.btn-delete')
+                btnsDelete.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        // console.log(e.target.dataset['id']) // o .id
+                        await deleteTask(e.target.dataset['id'])
                     })
-        
-                    const btnEdit = document.querySelectorAll('.btn-edit')
-                    btnEdit.forEach(btn => {
-                        btn.addEventListener('click', async (e) => {
-                            const doc = await getTask(e.target.dataset['id'])
-                            const task = doc.data()
-        
-                            editStatus = true
-                            id = doc.id
-                            // console.log('ID', id)
-        
-                            taskform['task-title'].value = task.title
-                            taskform['task-description'].value = task.description
-                            taskform['btn-task-form'].innerText = 'Update'
-                        })
+                })
+
+                const btnEdit = document.querySelectorAll('.btn-edit')
+                btnEdit.forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const doc = await getTask(e.target.dataset['id'])
+                        const task = doc.data()
+
+                        editStatus = true
+                        id = doc.id
+                        // console.log('ID', id)
+
+                        taskform['task-title'].value = task.title
+                        taskform['task-description'].value = task.description
+                        taskform['btn-task-form'].innerText = 'Update'
                     })
                 })
             })
+        })
 
-            // dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
-            //     obj = snap.val(); //equivalente a Dictionary en pyhon
-            //     // var keys = Object.keys(obj); // Obtiene las llaves del objeto
-            //     console.log(typeof obj)
-            //     obj = {'EXPLORACIONES': obj}
-            //     var idInicial = ''
-            //     Object.values(obj).filter( v => { 
-            //         if (typeof v === 'object') {
-            //             idInicial = getKeyByValue(obj, v)
-            //         }
-            //     })
-            //     console.log(idInicial)
-            //     setupData(obj)
-                
-            //     unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
-            //     console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
-            //   });
+        // dbRt.ref('EXPLORACIONES').on('value',(snap)=>{
+        //     obj = snap.val(); //equivalente a Dictionary en pyhon
+        //     // var keys = Object.keys(obj); // Obtiene las llaves del objeto
+        //     console.log(typeof obj)
+        //     obj = {'EXPLORACIONES': obj}
+        //     var idInicial = ''
+        //     Object.values(obj).filter( v => { 
+        //         if (typeof v === 'object') {
+        //             idInicial = getKeyByValue(obj, v)
+        //         }
+        //     })
+        //     console.log(idInicial)
+        //     setupData(obj)
+
+        //     unpack(obj, Object.values(obj).filter( v => typeof v === 'object').length, idInicial, false, 'inicio', 0, dict, '', 8, false)
+        //     console.log('objjjj', Object.keys(snap.child('ESTRATOS').val()))
+        //   });
     } else {
         userUid = null
         setupPosts([]);
-        setupData([]) 
+        setupData([])
         loginCheck(user);
         // Cada vez que se cambia algo de la db se ejecuta
         taskContainer.innerHTML = '' // Lo pongo en blanco para que no se dupliquen los datos
-        }
-    })
+    }
+})

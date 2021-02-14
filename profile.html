@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/lux/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/profile.css">
+</head>
+<body>
+
+    <!-- navegacion -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id='navbarid'>
+            <a class="navbar-brand" href="#">GEO-DB</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item logged-out" style="display: none;">
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#signinModal">Sign In <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item logged-out" style="display: none;">
+                  <a class="nav-link" href="#" data-toggle="modal" data-target="#signupModal">Sign Up</a>
+                </li>
+                <li class="nav-item logged-in" style="display: none;">
+                    <a class="nav-link" href="./index.html" id="goback">Volver al Inicio</a>
+                  </li>
+                <li class="nav-item logged-in" style="display: none;">
+                  <a class="nav-link" href="#" id="logout">Log Out</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SIMON</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+      <!-- <div id="maininfo"> -->
+        <!-- <p id="welcome-message" style="float: left;font-weight: bold;">Hola</p> -->
+      <!-- </div> -->
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <h1 style="margin-top: 20px;">EDITAR PERFIL</h1>
+          <hr>
+        <div class="row">
+          <!-- left column -->
+          <div class="col-md-3">
+            <div class="text-center" id="profile-container">
+              <img src="./images/change.png" id="changeImage" class="avatar img-circle" alt="avatar">
+              <img src="./images/avatar.jpg" id="profileImage" class="avatar img-circle" alt="avatar">
+              <input type="file" id="imageUpload">
+            </div>
+          </div>
+          
+          <!-- edit form column -->
+          <div class="col-md-9 personal-info">
+            <div class="alert alert-info" id="alert">
+              <a class="panel-close close" onclick="hideAlert()" style="cursor: pointer;">×</a> 
+              <i class="fa fa-coffee"></i>
+              Revisa con atención la información antes de guardar cambios.
+            </div>
+            <h3>Información Personal</h3>
+            
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label class="col-lg-3 control-label">Nombre:</label>
+                <div class="col-lg-8">
+                  <input class="form-control" type="text" id="name" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-lg-3 control-label">Correo (no editable):</label>
+                <div class="col-lg-8">
+                  <input class="form-control" type="text" id="mail" value="" readonly>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-8">
+                    <input type="button" onclick="changePassword()" class="btn btn-secundary" value="Cambiar contraseña">
+                </div>
+              </div>
+              <div class="form-group" id="emailVer">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-8">
+                    <input type="button" onclick="sendVerification()"  class="btn btn-secundary" value="Verificar email">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-3 control-label"></label>
+                <div class="col-md-8">
+                  <input type="button" id="save-changes" class="btn btn-primary" value="Guardar cambios">
+                  <span></span>
+                  <input type="reset" class="btn btn-default" onclick="cancel()" value="Cancelar">
+                </div>
+              </div>
+            </form>
+          </div>
+      </div>
+    </div>
+    <hr>
+
+  
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <!-- JQuery script -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-storage.js"></script>
+
+
+    <script src="https://www.gstatic.com/firebasejs/7.21.0/firebase-analytics.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+        apiKey: "AIzaSyDbBbezuZ1QgRry43lelIjXCL617fFeOD4",
+        authDomain: "proyectoprueba-e9130.firebaseapp.com",
+        databaseURL: "https://proyectoprueba-e9130.firebaseio.com",
+        projectId: "proyectoprueba-e9130",
+        storageBucket: "proyectoprueba-e9130.appspot.com",
+        messagingSenderId: "348235529752",
+        appId: "1:348235529752:web:cd6e58e31ab4cc4fce4d6d",
+        measurementId: "G-YC6KKPKCHW"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth()
+    const db = firebase.firestore()
+    const dbRt = firebase.database() // Database in real-time
+    const storageFb = firebase.storage();
+    
+    // firebase.analytics();
+    </script>
+
+    <!-- CUSTOM CODE -->
+    <script src="./js/profile.js"></script>
+
+</body>
+</html>

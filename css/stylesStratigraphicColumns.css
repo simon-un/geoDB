@@ -1,0 +1,125 @@
+/* Quita el margen al body de la pagina
+body {
+    margin: 0px;
+}
+
+.multilineas {
+    stroke: blue;
+    stroke-width: 1;
+    fill: gainsboro
+}
+
+.multilineas path {
+    stroke: green;
+    stroke-width: 5;
+    stroke-linejoin: round;
+}
+
+rect {
+    fill: steelblue
+}
+
+text {
+    font-family: sans-serif;
+}
+
+.tick text {
+    font-size: 1.2em;
+    fill: #8E8883;
+}
+
+.tick line {
+    stroke: #C0C0BB;
+}
+
+.axis-label {
+    font-size: 2.5em;
+    fill: #8E8883;
+}
+
+.title {
+    font-size: 1.5em;
+    fill: #8E8883;
+} */
+
+.element {
+    /* fill: lightgrey; */
+    /* stroke: grey; */
+    shape-rendering: crispEdges;
+}
+
+.stack rect {
+    /* fill: white; */
+    stroke: black;
+    stroke-width: 0.5;
+}
+
+.stackIndex rect {
+    /* fill: white; */
+    stroke: black;
+    stroke-width: 0.5;
+}
+
+.element:hover {
+    stroke:rgb(23, 177, 248);
+    stroke-width: 3;
+    fill:  rgba(188, 226, 248, 0.8);
+    opacity: 1;
+}
+
+.d3-tip {
+    z-index: 2;
+    line-height: 1;
+    /* font-weight: bold; */
+    padding: 12px;
+    background: rgba(245, 245, 245, 0.9);
+    color: rgba(7, 50, 53, 0.8);
+    border-radius: 10px;
+    border: 1px solid rgb(0, 0, 0);
+  }
+  
+  /* Style northward tooltips differently */
+  .d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+  }
+
+  .stratText {
+      z-index: 2;
+  }
+
+  #buttonSondeo {
+    font-size: 13px;
+    color: rgba(8, 111, 143, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(8, 111, 143, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+  }
+
+  #buttonSondeo:hover {
+    color: #FFF;
+    background: rgba(31, 105, 128, 0.75);
+    border: 2px solid rgba(15, 82, 102, 0.75);
+  }
+  
+  #buttonGraphs {
+    font-size: 13px;
+    color: rgba(221, 138, 14, 0.75);
+    letter-spacing: 1px;
+    line-height: 15px;
+    border: 2px solid rgba(153, 118, 22, 0.75);
+    border-radius: 40px;
+    background: transparent;
+    transition: all 0.3s ease 0s;
+  }
+
+  #buttonGraphs:hover {
+    color: #FFF;
+    background: rgba(221, 138, 14, 0.75);
+    border: 2px solid rgba(153, 118, 22, 0.75);
+  }
+
